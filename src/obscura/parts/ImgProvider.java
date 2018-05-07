@@ -13,6 +13,7 @@ import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 
+import obscura.Obscura;
 import obscura.Utils;
 
 public class ImgProvider {
@@ -28,10 +29,14 @@ public class ImgProvider {
 		
 		System.err.println("reading img "+ imgF + " l:"+requestLevel+ " m:"+ minLevel);
 		
-		
-		String thumbPath= ".thumbs/"+imgF.hashCode()+".jpg";
+		String thumbsPath= ".thumbs/";
+		String imgPath= imgF.getParentFile().getAbsolutePath();
+		for (File o : Obscura.observeDirs)
+			if (imgPath.startsWith(o.getAbsolutePath()))
+				thumbsPath= o.getAbsolutePath()+"/.thumbs/";
+		String thumbPath= thumbsPath+imgF.hashCode()+".jpg";
 		File thumbFile= new File(thumbPath);
-		String miniPath= ".thumbs/mini/"+imgF.hashCode()+".jpg";
+		String miniPath= thumbsPath+ "mini/"+imgF.hashCode()+".jpg";
 		File miniFile= new File(miniPath);
 		BufferedImage orig= null, thumb=null, mini=null;
 		
@@ -57,8 +62,9 @@ public class ImgProvider {
 				Utils.aaOn(gg, true);
 				gg.drawImage(orig, 0, 0, thumb.getWidth(), thumb.getHeight(), null);
 				thumbFile.getParentFile().mkdirs();
-				if (genThumb)
-					ImageIO.write(thumb, "jpg", thumbFile);
+				if (genThumb) {
+					System.err.println("writing thumb "+ thumbFile); 
+					ImageIO.write(thumb, "jpg", thumbFile);}
 			}
 			System.err.println(imgF+ "("+ imgF.length()+ ")("+ (orig.getWidth()*orig.getHeight()*4)/1024+ "kb) creating thumb " + thumbFile+ "("+ thumbFile.length()+ ")("+ (thumb.getWidth()*thumb.getHeight()*4)/1024+ "kb)");
 			if (!genThumb && minLevel==1)
@@ -71,8 +77,9 @@ public class ImgProvider {
 				Graphics2D gg= (Graphics2D) mini.createGraphics();
 				Utils.aaOn(gg, true);
 				gg.drawImage(thumb, 0, 0, mini.getWidth(), mini.getHeight(), null);
-				if (genThumb) 
-					ImageIO.write(mini, "jpg", miniFile); }
+				if (genThumb) {
+					System.err.println("writing thumb "+ thumbFile);
+					ImageIO.write(mini, "jpg", miniFile); }}
 			if (minLevel==2)
 				return thumb; }
 

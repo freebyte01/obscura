@@ -19,7 +19,7 @@ public class Obscura {
 	static FileOutputStream lockStream;
 	static FileLock lock;
 	
-	static ArrayList<File> observeDirs= new ArrayList<File>();
+	public static ArrayList<File> observeDirs= new ArrayList<File>();
 	static ArrayList<File> currentImages= new ArrayList<File>();
 	public static void main(String[] args) {
 		System.err.println("starting Obscura");
