@@ -61,9 +61,9 @@ public class ImgProvider {
 				Graphics2D gg= (Graphics2D) thumb.createGraphics();
 				Utils.aaOn(gg, true);
 				gg.drawImage(orig, 0, 0, thumb.getWidth(), thumb.getHeight(), null);
-				thumbFile.getParentFile().mkdirs();
 				if (genThumb) {
 					System.err.println("writing thumb "+ thumbFile); 
+					thumbFile.getParentFile().mkdirs();
 					ImageIO.write(thumb, "jpg", thumbFile);}
 			}
 			System.err.println(imgF+ "("+ imgF.length()+ ")("+ (orig.getWidth()*orig.getHeight()*4)/1024+ "kb) creating thumb " + thumbFile+ "("+ thumbFile.length()+ ")("+ (thumb.getWidth()*thumb.getHeight()*4)/1024+ "kb)");
@@ -73,12 +73,14 @@ public class ImgProvider {
 		if ( minLevel==2 && genThumb && !miniFile.exists()){
 			if (thumb==null)
 				thumb= ImageIO.read( thumbFile );
-			mini= new BufferedImage(thumb.getWidth()/4, thumb.getHeight()/4, thumb.getType());{
+			mini= new BufferedImage(thumb.getWidth()/4, thumb.getHeight()/4, thumb.getType());
+			if (mini!=null){
 				Graphics2D gg= (Graphics2D) mini.createGraphics();
 				Utils.aaOn(gg, true);
 				gg.drawImage(thumb, 0, 0, mini.getWidth(), mini.getHeight(), null);
 				if (genThumb) {
 					System.err.println("writing thumb "+ thumbFile);
+					miniFile.getParentFile().mkdirs();
 					ImageIO.write(mini, "jpg", miniFile); }}
 			if (minLevel==2)
 				return thumb; }

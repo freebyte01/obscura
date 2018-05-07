@@ -583,6 +583,7 @@ public class Viewer extends JFrame implements KeyListener{
 			int rule = AlphaComposite.SRC_OVER;
 			Composite comp = AlphaComposite.getInstance(rule , .7f );
 			g.setComposite(comp );
+			Utils.aaOff(g);
 			g.drawImage(viewedImg, 0, 0, (int) Math.round( iw ), (int) Math.round( ih ), null);
 			comp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER , 1f );
 			g.setComposite(comp );
