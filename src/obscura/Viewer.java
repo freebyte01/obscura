@@ -697,7 +697,8 @@ public class Viewer extends JFrame implements KeyListener{
 
 				g.setTransform( ImgProvider.getAffineForOrientation(g.getTransform(), orientation, (int) Math.round(iw*z), (int) Math.round(ih*z)) );
 				
-				Utils.aaOn(g);
+				if (z<1) 
+					Utils.aaOn(g);
 
 				g.drawImage(viewedImg, 0, 0, (int) Math.round( iw*z ), (int) Math.round( ih*z  ), null);
 

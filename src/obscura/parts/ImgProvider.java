@@ -5,6 +5,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
@@ -19,6 +20,7 @@ import obscura.Utils;
 public class ImgProvider {
 	public static BufferedImage providerImgOrig; 
 	public static File providerImgOrigF;
+	public static HashMap<File, Integer> orientations= new HashMap<File, Integer>(); 
 	public static BufferedImage provideImage(File imgPath) throws IOException{ return provideImage(imgPath, true, 1, 0); }
 	public static BufferedImage provideImage(File imgPath, boolean genThumb) throws IOException{ return provideImage(imgPath, genThumb, 1, 0); }
 	public static BufferedImage provideImage(File imgPath, int level) throws IOException{ return provideImage(imgPath, true, level, 0); }
@@ -57,7 +59,8 @@ public class ImgProvider {
 			double z= iR > 1 ? maxW *1d / orig.getWidth() : maxH * 1d / orig.getHeight();
 			int w= (int) Math.round( orig.getWidth()*z );
 			int h= (int) Math.round( orig.getHeight()*z );
-			thumb= new BufferedImage(w, h, orig.getType());{
+			
+			thumb= new BufferedImage((int) w, (int) h, orig.getType());{
 				Graphics2D gg= (Graphics2D) thumb.createGraphics();
 				Utils.aaOn(gg, true);
 				gg.drawImage(orig, 0, 0, thumb.getWidth(), thumb.getHeight(), null);
@@ -73,32 +76,62 @@ public class ImgProvider {
 		if ( minLevel==2 && genThumb && !miniFile.exists()){
 			if (thumb==null)
 				thumb= ImageIO.read( thumbFile );
-			mini= new BufferedImage(thumb.getWidth()/4, thumb.getHeight()/4, thumb.getType());
+			
+			int w= (int) Math.round( thumb.getWidth()/4 );
+			int h= (int) Math.round( thumb.getHeight()/4 );
+			double rw= w, rh= h;
+			
+			int orientation = getOrientation(imgF);
+			switch (orientation) {
+			case 1:
+			case 2: // Flip X
+			case 3: // PI rotation
+			case 4: // Flip Y
+				break;
+			case 5: // - PI/2 and Flip X
+			case 6: // -PI/2 and -width
+			case 7: // PI/2 and Flip
+			case 8: // PI / 2
+				rw= h;
+				rh= w;
+				break;
+			default:
+				break;
+			}
+			
+			mini= new BufferedImage((int)rw, (int)rh, thumb.getType());
 			if (mini!=null){
 				Graphics2D gg= (Graphics2D) mini.createGraphics();
 				Utils.aaOn(gg, true);
-				gg.drawImage(thumb, 0, 0, mini.getWidth(), mini.getHeight(), null);
+				gg.translate( rw/2, rh/2 );
+
+				gg.setTransform( ImgProvider.getAffineForOrientation(gg.getTransform(), orientation, (int) Math.round(w), (int) Math.round(h)) );
+				gg.drawImage(thumb, 0, 0, (int)w, (int)h, null);
 				if (genThumb) {
 					System.err.println("writing thumb "+ thumbFile);
 					miniFile.getParentFile().mkdirs();
 					ImageIO.write(mini, "jpg", miniFile); }}
 			if (minLevel==2)
-				return thumb; }
+				return mini; }
 
 		if (minLevel==1)
 			return thumb;
 
 		return orig; }
 	
-	public static final int getOrientation(File img){
-		if ( img.getName().toLowerCase().matches(".*\\.jpeg|.*\\.jpg"))
+	public static final int getOrientation(File imgF){
+		if (orientations.containsKey(imgF))
+			return orientations.get(imgF);
+		if ( imgF.getName().toLowerCase().matches(".*\\.jpeg|.*\\.jpg"))
 			try {
-				Metadata metadata = JpegMetadataReader.readMetadata( img );
+				Metadata metadata = JpegMetadataReader.readMetadata( imgF );
 				ExifIFD0Directory exifIFD0Directory = metadata.getFirstDirectoryOfType( ExifIFD0Directory.class );
 				if ( exifIFD0Directory == null )
 					return 1;
 				try {
-					return exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)? exifIFD0Directory==null?1:exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION) : 1;
+					int orientation= exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)? exifIFD0Directory==null?1:exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION) : 1;
+					orientations.put(imgF, orientation);
+					return orientation;
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
