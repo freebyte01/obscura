@@ -487,6 +487,7 @@ public class Viewer extends JFrame implements KeyListener{
 	}
 	
 	boolean ctrl, shift, alt, drag, next, slideShow;
+	private Poly polyBuffer;
 	public void keyPressed(KeyEvent e) {
 		ctrl=e.isControlDown();
 		shift= e.isShiftDown();
@@ -501,6 +502,26 @@ public class Viewer extends JFrame implements KeyListener{
 		} else if (e.getKeyCode()=='m' || e.getKeyCode()=='M'){
 			mapEditMode= !mapEditMode;
 			view.repaint();
+		} else if (ctrl && ( e.getKeyCode()=='c' || e.getKeyCode()=='C' )){ // COPY
+			if (mapEditMode && selectedArea!=null && selectedArea.activePoly!=null){
+				polyBuffer= selectedArea.activePoly;
+				System.err.println("polygon copied to buffer "); }
+		} else if (ctrl && ( e.getKeyCode()=='x' || e.getKeyCode()=='X')){ // CUT
+			System.err.println("slide show mode "+ slideShow);
+			if (mapEditMode && selectedArea!=null && selectedArea.activePoly!=null){
+				polyBuffer= selectedArea.removePoly(selectedArea.activePoly);
+				System.err.println("polygon moved to buffer "); }
+		} else if (ctrl && ( e.getKeyCode()=='v' || e.getKeyCode()=='V')){ // PASTE
+			System.err.println("polygon copied to buffer ");
+			if (mapEditMode && selectedArea!=null && polyBuffer!=null){
+				Poly nPoly= selectedArea.addPoly();
+				Point diff= new Point(rX, rY).sub( Point.avg( polyBuffer.getPoints() ));
+				for (Point p : polyBuffer.points)
+					nPoly.addPoint(p.dup().add(diff), -1, false);
+				nPoly.update();
+				selectedArea.update(true);
+				System.err.println("polygon applied from buffer to selected area"); }
+
 		} else if (e.getKeyCode()=='s' || e.getKeyCode()=='S'){
 			lastSlideTime= System.currentTimeMillis();
 			slideShow= !slideShow;
@@ -742,8 +763,8 @@ public class Viewer extends JFrame implements KeyListener{
 		g.setColor(new Color(255,255,255,50));
 		g.fillRect(view.getWidth()- stripWidth, 0, 200, getHeight());
 		
-		int slideX= view.getWidth()- stripWidth+ 5, totalHeight=0;
-		int offY= lastThumbsHeight==0 ? 0 : lastThumbsHeight < view.getHeight() ? 0 : (int) Math.round( ( view.getHeight()+40- lastThumbsHeight) * ( mY* 1d/ view.getHeight() ) );
+		int slideX= view.getWidth()- stripWidth+ 5, totalHeight=40;
+		int offY= lastThumbsHeight==0 ? 40 : lastThumbsHeight < view.getHeight() ? 40 : (int) Math.round( ( view.getHeight()- lastThumbsHeight - 80 ) * ( mY* 1d/ view.getHeight() ) ) + 40;
 		
 		if ( nearLocs != null )
 			for (ImgDef def : nearLocs){
@@ -793,7 +814,7 @@ public class Viewer extends JFrame implements KeyListener{
 				totalHeight+= imgH+5;
 			}
 		
-		lastThumbsHeight= totalHeight+80;
+		lastThumbsHeight= totalHeight+40;
 	}
 	
 	Area selectedArea, overArea;

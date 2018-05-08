@@ -35,7 +35,7 @@ public class Area{
 		Database.areas.put(this.id, this);
 		System.err.println("adding area "+ label+ ":"+ this.id); }
 	
-	public String store(){
+	synchronized public String store(){
 		StringBuilder def= new StringBuilder("area;");
 		def.append( "id:"+ id+ ";");
 		if (label!=null) def.append( "label:"+ label+ ";");
@@ -48,14 +48,12 @@ public class Area{
 			def.append(p.store(id));
 		for(Poly p : polys)
 			def.append(p.store(id));
-		return def.toString()+"\n";
-	}
+		return def.toString()+"\n"; }
 	
-	public Poly addPoly(){
+	synchronized public Poly addPoly(){
 		Poly npl = new Poly(this);
 		polys.add( npl );
-		return activePoly= npl;
-	}
+		return activePoly= npl; }
 	
 	public Poly getPolyFor(Point[] p){ return p!=null && p.length>0 ? getPolyFor(p[0]) : activePoly; }
 	public Poly getPolyFor(Point p){
@@ -66,7 +64,16 @@ public class Area{
 				return pl;
 		return null; }
 	
-	public Point removePoint(Point p){
+	synchronized public Poly removePoly(Poly poly){
+		if (polys.contains(poly)){
+			polys.remove(poly);
+			if (activePoly== poly)
+				activePoly= null;
+			update(true);
+			return poly; }
+		return null; }
+	
+	synchronized public Point removePoint(Point p){
 		Poly pl= getPolyFor(p);
 		if (pl!=null)
 			if (pl.points.remove(p)){
@@ -77,13 +84,13 @@ public class Area{
 		return p; }
 	
 	public Poly activePoly;
-	public Point addPoint(Point p){ return addPoint(p, activePoly!=null?activePoly: polys.size()>0 ? polys.get(0) : addPoly() , -1); }
-	public Point addPoint(Point p, Point[] context){
+	synchronized public Point addPoint(Point p){ return addPoint(p, activePoly!=null?activePoly: polys.size()>0 ? polys.get(0) : addPoly() , -1); }
+	synchronized public Point addPoint(Point p, Point[] context){
 		if (context==null || context.length==0)
 			return addPoint(p);
 		Poly pl= getPolyFor(context[0]);
 		return 	addPoint(p, pl, pl.points.indexOf(context[0])+1); }
-	public Point addPoint(Point p, Poly poly, int pos){
+	synchronized public Point addPoint(Point p, Poly poly, int pos){
 		System.err.println(label+ " adding area point "+ p);
 		if (p==null) return null;
 		if (poly==null)	polys.add( poly= activePoly!=null?activePoly:new Poly(this) );
@@ -95,14 +102,14 @@ public class Area{
 	
 	
 	
-	public Point[] checkMouse(double rX, double rY, double rad2){
+	synchronized public Point[] checkMouse(double rX, double rY, double rad2){
 		Point[] res= null;
 		for (Poly pl : polys)
 			if ((res= pl.checkMouse(rX, rY, rad2))!=null )
 					return res;
 		return null; }
 	
-	public void update(boolean store){
+	synchronized public void update(boolean store){
 		for( Poly pl : polys )
 			pl.update();
 		if (store)

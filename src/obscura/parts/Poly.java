@@ -9,12 +9,9 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.util.LinkedList;
-
 import obscura.Database;
 import obscura.Obscura;
 import obscura.Utils;
-import obscura.Viewer;
-
 public class Poly{
 	
 	Area area;
@@ -22,11 +19,12 @@ public class Poly{
 	
 	static final Color defBgClr= new Color(255,255,255,50);
 	static final Color defLnClr= new Color(0,0,255,200);
-	boolean closed=true, fill=true;
-	Color clr= defLnClr;
-	Color bg= defBgClr;
-	Path2D path;
-	LinkedList<Point> points= new LinkedList<Point>();
+	public boolean closed=true, fill=true;
+	public Color clr= defLnClr;
+	public Color bg= defBgClr;
+	private Path2D path;
+	public LinkedList<Point> points= new LinkedList<Point>();
+	public Point[] getPoints(){ return points.toArray(new Point[0]); }
 
 	Poly(Area a){
 		area= a;
@@ -69,19 +67,21 @@ public class Poly{
 		return def.toString();
 	}
 	
-	Point addPoint(Point p, int pos){
+	synchronized public Point addPoint(Point p, int pos){ return addPoint(p, pos, true); }
+	synchronized public Point addPoint(Point p, int pos, boolean update){
 		if (p!=null)
 			points.add( pos<0 || pos > points.size() ? points.size() : pos, p );
-		update();
+		if (update)
+			update();
 		return p; }
 	
-	void update(){
+	public void update(){
 		path= new Path2D.Double();
 		boolean first= true;
 		for (Point p : points )
 			if (first) { path.moveTo(p.x, p.y); first= false; }
 			else path.lineTo(p.x, p.y);
-		if (points.size()>0 && closed){
+		if (closed && points.size()>0){
 			path.closePath(); }}
 	
 	public Point adjust(Point p, double x, double y){
@@ -96,9 +96,11 @@ public class Poly{
 			p.add( offX, offY); }
 
 	
-	public Point[] checkMouse(double rX, double rY, double rad2){
+	synchronized public Point[] checkMouse(double rX, double rY, double rad2){
 		double min= Double.MAX_VALUE;
 		Point[] nearest= null;
+		if (points.size()==0) 
+			return null;
 		Point prev= points.getLast();
 		for (Point p : points ){
 			double dX= p.x-rX;
@@ -123,7 +125,7 @@ public class Poly{
 		double z= g.getTransform().getScaleX();
 		if (path==null && points.size()>0)
 			update();
-		if (fill){
+		if (fill && path!=null){
 			g.setColor(bg);
 			g.fill(path); }
 		g.setColor(new Color(0,0,0,area.activePoly==this?150:80));
@@ -131,7 +133,8 @@ public class Poly{
 			g.setStroke(new BasicStroke((float)(5/z)));
 		else
 			g.setStroke(new BasicStroke((float)(3/z)));
-		g.draw(path);
+		if (path!=null)
+			g.draw(path);
 		g.setColor(Color.WHITE);
 		double r= (points.size()==1?5:2)/z;
 		if (area.activePoly==this && points.size()>1){

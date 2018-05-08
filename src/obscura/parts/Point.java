@@ -28,5 +28,5 @@ public class Point{
 		Point res= new Point();
 		for (Point p : points)
 			res.add(p.x, p.y);
-		return res.mul(1/points.length); }
+		return res.mul(points.length==0?1:1d/points.length); }
 }
