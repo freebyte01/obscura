@@ -24,18 +24,22 @@ public class ImgProvider {
 	public static BufferedImage provideImage(File imgPath) throws IOException{ return provideImage(imgPath, true, 1, 0); }
 	public static BufferedImage provideImage(File imgPath, boolean genThumb) throws IOException{ return provideImage(imgPath, genThumb, 1, 0); }
 	public static BufferedImage provideImage(File imgPath, int level) throws IOException{ return provideImage(imgPath, true, level, 0); }
+	public static String getThumbsPath(File imgF){
+		String res= ".thumbs/";
+		for (File o : Obscura.observeDirs)
+			if (imgF.getAbsolutePath().toLowerCase().startsWith(o.getAbsolutePath().toLowerCase()))
+				return o.getAbsolutePath()+"/.thumbs/";
+		return res; }
+	
 	public static synchronized BufferedImage provideImage(File imgF, boolean genThumb, int requestLevel, int minLevel) throws IOException{
 		
-		if (imgF==null)
+		if (imgF==null || !imgF.exists())
 			return null;
 		
 		System.err.println("reading img "+ imgF + " l:"+requestLevel+ " m:"+ minLevel);
 		
-		String thumbsPath= ".thumbs/";
-		String imgPath= imgF.getParentFile().getAbsolutePath();
-		for (File o : Obscura.observeDirs)
-			if (imgPath.startsWith(o.getAbsolutePath()))
-				thumbsPath= o.getAbsolutePath()+"/.thumbs/";
+		String thumbsPath= getThumbsPath(imgF);
+		
 		String thumbPath= thumbsPath+imgF.hashCode()+".jpg";
 		File thumbFile= new File(thumbPath);
 		String miniPath= thumbsPath+ "mini/"+imgF.hashCode()+".jpg";
@@ -108,7 +112,7 @@ public class ImgProvider {
 				gg.setTransform( ImgProvider.getAffineForOrientation(gg.getTransform(), orientation, (int) Math.round(w), (int) Math.round(h)) );
 				gg.drawImage(thumb, 0, 0, (int)w, (int)h, null);
 				if (genThumb) {
-					System.err.println("writing thumb "+ thumbFile);
+					System.err.println("writing mini thumb "+ thumbFile);
 					miniFile.getParentFile().mkdirs();
 					ImageIO.write(mini, "jpg", miniFile); }}
 			if (minLevel==2)

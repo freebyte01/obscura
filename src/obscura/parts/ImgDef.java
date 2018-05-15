@@ -27,7 +27,7 @@ public class ImgDef{
 	public String keywords;
 	public String map;
 	public File file;
-	public Point obs, targ;
+	public Point observer, target;
 	String assObs, assTarg;
 	
 	public ImgDef(int hash) {
@@ -49,8 +49,8 @@ public class ImgDef{
 		clone.path= path;
 		clone.map= map;
 		clone.keywords= keywords;
-		clone.obs= obs.dup();
-		clone.targ= targ.dup();
+		clone.observer= observer.dup();
+		clone.target= target.dup();
 		System.out.println("cloned "+ this.path+ " to "+ path);
 		return clone;
 	}
@@ -66,8 +66,8 @@ public class ImgDef{
 		if (assObs!=null) def.append( "assObs:"+ assObs+ ";");
 		if (assTarg!=null) def.append( "assTarg:"+ assTarg+ ";");
 		if (keywords!=null) def.append( "keys:"+ keywords+ ";");
-		if (obs!=null) def.append( "x:"+ Utils.shorter(obs.x)+ ";y:"+ Utils.shorter(obs.y)+ ";");
-		if (targ!=null) def.append( "tx:"+ Utils.shorter(targ.x)+ ";ty:"+ Utils.shorter(targ.y)+ ";");
+		if (observer!=null) def.append( "x:"+ Utils.shorter(observer.x)+ ";y:"+ Utils.shorter(observer.y)+ ";");
+		if (target!=null) def.append( "tx:"+ Utils.shorter(target.x)+ ";ty:"+ Utils.shorter(target.y)+ ";");
 		return def.toString()+"\n";
 	}
 	
@@ -86,29 +86,29 @@ public class ImgDef{
 		rot= Integer.parseInt(Database.getValue(definition,"rot", "0"));
 		double x= Double.parseDouble(Database.getValue(definition,"x", "0"));
 		double y= Double.parseDouble(Database.getValue(definition,"y", "0"));
-		if (x!=0 || y!=0) obs= new Point(x, y);
+		if (x!=0 || y!=0) observer= new Point(x, y);
 		x= Double.parseDouble(Database.getValue(definition,"tx", "0"));
 		y= Double.parseDouble(Database.getValue(definition,"ty", "0"));
-		if (x!=0 || y!=0) targ= new Point(x, y);
+		if (x!=0 || y!=0) target= new Point(x, y);
 		file= path==null || path=="" ? null : new File(path);
 	}
 
 	
-	public ImgDef[] sameLocation(double radius){ return obs==null ? Database.NO_IMG_DEFS : near(radius, obs.x, obs.y, false, this); }
-	public ImgDef[] sameTarget(double radius){ return targ==null ? Database.NO_IMG_DEFS : near(radius, targ.x, targ.y, true, this); }
+	public ImgDef[] sameLocation(double radius){ return observer==null ? Database.NO_IMG_DEFS : near(radius, observer.x, observer.y, false, this); }
+	public ImgDef[] sameTarget(double radius){ return target==null ? Database.NO_IMG_DEFS : near(radius, target.x, target.y, true, this); }
 
 	static ImgDef[] near(double radius, double x, double y, boolean target, ImgDef exclude){
 		LinkedList<ImgDef> res= new LinkedList<ImgDef>();
 		ImgDef nearest= null;
 		double min= Double.MAX_VALUE;
+		double radius2 = radius*radius;
 		for (ImgDef i : Database.images.values())
 			if (!target || exclude!=i){
-				Point p= target? i.targ: i.obs;
+				Point p= target? i.target: i.observer;
 				if ( p!= null ){
-					double radius2 = radius*radius;
 					double vx= p.x-x, vy= p.y-y;
 					double diff= vx*vx+vy*vy;
-					if (diff!=0 && diff<min){
+					if (diff!=0 && diff<min && diff<radius2){
 						nearest= i;
 						min= diff; }
 					if ( diff< radius2)
@@ -122,24 +122,24 @@ public class ImgDef{
 
 	public void paint(Graphics2D g, float opacity){
 		double zoom= g.getTransform().getScaleX();
-		if (obs!=null){
+		if (observer!=null){
 			g.setColor(new Color(0,0,0,opacity));
-			g.fill(new Ellipse2D.Double(obs.x-8/zoom, obs.y-8/zoom, 16/zoom, 16/zoom));
+			g.fill(new Ellipse2D.Double(observer.x-8/zoom, observer.y-8/zoom, 16/zoom, 16/zoom));
 			g.setColor(new Color(1,1,0,opacity));
-			g.fill(new Ellipse2D.Double(obs.x-6/zoom, obs.y-6/zoom, 12/zoom, 12/zoom));
+			g.fill(new Ellipse2D.Double(observer.x-6/zoom, observer.y-6/zoom, 12/zoom, 12/zoom));
 			g.setColor(new Color(0,0,1,opacity));
-			g.fill(new Ellipse2D.Double(obs.x-3/zoom, obs.y-3/zoom, 6/zoom, 6/zoom));
+			g.fill(new Ellipse2D.Double(observer.x-3/zoom, observer.y-3/zoom, 6/zoom, 6/zoom));
 		}
-		if (targ!=null){
+		if (target!=null){
 			g.setColor(new Color(0,0,1,opacity));
-			if (obs!=null){
+			if (observer!=null){
 				BasicStroke viewStroke = new BasicStroke((float) (1.5/zoom));
 				g.setStroke(viewStroke); 
-				g.draw(new Line2D.Double(obs.x, obs.y, targ.x, targ.y));
+				g.draw(new Line2D.Double(observer.x, observer.y, target.x, target.y));
 			}
-			g.fill(new Ellipse2D.Double(targ.x-5/zoom, targ.y-5/zoom, 10/zoom, 10/zoom));
+			g.fill(new Ellipse2D.Double(target.x-5/zoom, target.y-5/zoom, 10/zoom, 10/zoom));
 			g.setColor(new Color(1,1,0,opacity));
-			g.fill(new Ellipse2D.Double(targ.x-2/zoom, targ.y-2/zoom, 4/zoom, 4/zoom));
+			g.fill(new Ellipse2D.Double(target.x-2/zoom, target.y-2/zoom, 4/zoom, 4/zoom));
 		}
 	}
 }

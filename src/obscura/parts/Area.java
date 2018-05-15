@@ -2,14 +2,18 @@ package obscura.parts;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import obscura.Database;
+import obscura.Map;
 import obscura.Obscura;
 
 public class Area{
 	public Area assoc;
 	public ArrayList<Area> subs= new ArrayList<Area>();
 	public ArrayList<Place> places= new ArrayList<Place>();
+	public HashMap<Integer, Map> maps= new HashMap<Integer, Map>();
 	public ArrayList<Poly> polys= new ArrayList<Poly>();
 	double relX, relY;
 	public int level;
@@ -48,6 +52,11 @@ public class Area{
 			def.append(p.store(id));
 		for(Poly p : polys)
 			def.append(p.store(id));
+		for (Entry<Integer, Map> e: maps.entrySet()){
+			Map m= e.getValue();
+			def.append("\nmap;ass:"+ this.id+ ";lev:"+ e.getKey()+ ";x:"+ m.x+ ";y:"+ m.y+ ";rot:"+ m.rot+ ";sc:"+ m.scale+";" );
+		}
+
 		return def.toString()+"\n"; }
 	
 	synchronized public Poly addPoly(){

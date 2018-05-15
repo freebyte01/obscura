@@ -119,7 +119,7 @@ public class Poly{
 			prev= p; }
 		return nearest; }
 	
-	private double ratioMetric= 0.41;
+	
 	
 	void paint(Graphics2D g, double rX, double rY){
 		double z= g.getTransform().getScaleX();
@@ -128,8 +128,8 @@ public class Poly{
 		if (fill && path!=null){
 			g.setColor(bg);
 			g.fill(path); }
-		g.setColor(new Color(0,0,0,area.activePoly==this?150:80));
-		if (area.activePoly==this)
+		g.setColor(new Color(0,0,0,area.activePoly==this && Obscura.viewer.mapEditMode?150:40));
+		if (Obscura.viewer.mapEditMode && area.activePoly==this)
 			g.setStroke(new BasicStroke((float)(5/z)));
 		else
 			g.setStroke(new BasicStroke((float)(3/z)));
@@ -137,7 +137,7 @@ public class Poly{
 			g.draw(path);
 		g.setColor(Color.WHITE);
 		double r= (points.size()==1?5:2)/z;
-		if (area.activePoly==this && points.size()>1){
+		if (Obscura.viewer.mapEditMode && area.activePoly==this && points.size()>1){
 			System.err.println(g.getTransform().getScaleX());
 			g.setFont( new Font("Arial", Font.PLAIN, (int) 20));
 			AffineTransform t= g.getTransform();
@@ -167,7 +167,8 @@ public class Poly{
 				tt.rotate(  v.angle() );
 				tt.scale( us, us);
 				g.setTransform(tt);
-				g.drawString(""+(Math.round(v.length()*ratioMetric*100)/100.00), 0, 0);
+				if (Obscura.viewer.mapEditMode)
+					g.drawString(""+(Math.round(v.length()*Utils.ratioMetric*100)/100.00), 0, 0);
 					
 				last= p;
 				lv= v;
