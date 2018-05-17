@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.LinkedList;
 
 import obscura.Database;
+import obscura.Obscura;
 import obscura.Utils;
 
 public class ImgDef{
@@ -27,7 +28,7 @@ public class ImgDef{
 	public String keywords;
 	public String map;
 	public File file;
-	public Point observer, target;
+	public Point observer, target, vect;
 	String assObs, assTarg;
 	
 	public ImgDef(int hash) {
@@ -40,6 +41,9 @@ public class ImgDef{
 		System.out.println("red img def "+ hash+ " : "+ (path!=""?new File(path).getName():""));
 		if (hash!=0)
 			Database.images.put(hash, this);
+	}
+	public void update(){
+		vect= observer!=null && target!=null ? target.dup().sub(observer) : null; 
 	}
 	
 	public ImgDef cloneTo(int hash, String path) {
@@ -91,11 +95,12 @@ public class ImgDef{
 		y= Double.parseDouble(Database.getValue(definition,"ty", "0"));
 		if (x!=0 || y!=0) target= new Point(x, y);
 		file= path==null || path=="" ? null : new File(path);
+		update();
 	}
 
 	
-	public ImgDef[] sameLocation(double radius){ return observer==null ? Database.NO_IMG_DEFS : near(radius, observer.x, observer.y, false, this); }
-	public ImgDef[] sameTarget(double radius){ return target==null ? Database.NO_IMG_DEFS : near(radius, target.x, target.y, true, this); }
+	public ImgDef[] sameLocation(){ return observer==null ? Database.NO_IMG_DEFS : near( vect==null? 2 : vect.length()/4, observer.x, observer.y, false, this); }
+	public ImgDef[] sameTarget(){ return target==null ? Database.NO_IMG_DEFS : vect==null? Database.NO_IMG_DEFS : near( vect.length()/10, target.x, target.y, true, this); }
 
 	static ImgDef[] near(double radius, double x, double y, boolean target, ImgDef exclude){
 		LinkedList<ImgDef> res= new LinkedList<ImgDef>();
@@ -124,22 +129,27 @@ public class ImgDef{
 		double zoom= g.getTransform().getScaleX();
 		if (observer!=null){
 			g.setColor(new Color(0,0,0,opacity));
-			g.fill(new Ellipse2D.Double(observer.x-8/zoom, observer.y-8/zoom, 16/zoom, 16/zoom));
+			Utils.doEllipse(g, observer.x-8/zoom, observer.y-8/zoom, 16/zoom, 16/zoom, true);
 			g.setColor(new Color(1,1,0,opacity));
-			g.fill(new Ellipse2D.Double(observer.x-6/zoom, observer.y-6/zoom, 12/zoom, 12/zoom));
+			Utils.doEllipse(g, observer.x-6/zoom, observer.y-6/zoom, 12/zoom, 12/zoom, true);
 			g.setColor(new Color(0,0,1,opacity));
-			g.fill(new Ellipse2D.Double(observer.x-3/zoom, observer.y-3/zoom, 6/zoom, 6/zoom));
+			Utils.doEllipse(g, observer.x-3/zoom, observer.y-3/zoom, 6/zoom, 6/zoom, true);
 		}
 		if (target!=null){
 			g.setColor(new Color(0,0,1,opacity));
-			if (observer!=null){
-				BasicStroke viewStroke = new BasicStroke((float) (1.5/zoom));
-				g.setStroke(viewStroke); 
-				g.draw(new Line2D.Double(observer.x, observer.y, target.x, target.y));
+			BasicStroke viewStroke = new BasicStroke((float) (1.5/zoom));
+			g.setStroke(viewStroke); 
+			g.draw(new Line2D.Double(observer.x, observer.y, target.x, target.y));
+			Utils.doEllipse(g, target.x-5/zoom, target.y-5/zoom, 10/zoom, 10/zoom, true);
+			if (this==Obscura.viewer.currDef){
+				g.setColor(new Color(1f,1f,0,1f));
+				double r= vect.length()/4.0;
+				Utils.doEllipse(g, observer.x-r, observer.y-r, r*2, r*2, false);
+				r= vect.length()/10;
+				Utils.doEllipse(g, target.x-r, target.y-r, r*2, r*2, false);
 			}
-			g.fill(new Ellipse2D.Double(target.x-5/zoom, target.y-5/zoom, 10/zoom, 10/zoom));
 			g.setColor(new Color(1,1,0,opacity));
-			g.fill(new Ellipse2D.Double(target.x-2/zoom, target.y-2/zoom, 4/zoom, 4/zoom));
+			Utils.doEllipse(g, target.x-2/zoom, target.y-2/zoom, 4/zoom, 4/zoom, true);
 		}
 	}
 }

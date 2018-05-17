@@ -1,6 +1,7 @@
 package obscura;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,8 +27,12 @@ public class Watcher extends Thread{
 		super.run();
 		while (Obscura.running){
 			int s= images.size();
-			for (File d : toWatch)
+			for (File d : toWatch){
 				scanDir(d);
+				File tmp= new File(d,".t");
+				try{ FileWriter fw= new FileWriter(tmp); fw.write(System.currentTimeMillis()+""); fw.close(); tmp.delete(); } catch (Exception e) {}
+				System.err.print(".");
+			}
 			if (images.size()!=s){
 				System.out.println("added "+ (images.size()-s)+ " photos");
 				File[] sort= new File[images.size()];

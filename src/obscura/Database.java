@@ -1,6 +1,5 @@
 package obscura;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,7 +9,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-
 import obscura.parts.Area;
 import obscura.parts.ImgDef;
 import obscura.parts.Place;
@@ -58,7 +56,18 @@ public class Database {
 		    	else if (line.startsWith("area;")) new Area().read(line);
 		    	else if (line.startsWith("place;")) new Place(line);
 		    	else if (line.startsWith("poly;")) new Poly(line);
-		    }
+		    	else if (line.startsWith("map;")) {
+		    		String arId= getValue(line, "ass", "0");
+		    		Area a= areas.get(arId);
+		    		if (a==null) 
+		    			continue;
+		    		int lev= Integer.parseInt(getValue(line, "lev", "0"));
+		    		Map m= a.maps.get(lev)==null? new Map() : a.maps.get(lev);
+		    		m.x= Double.parseDouble(getValue(line, "x", "0"));
+		    		m.y= Double.parseDouble(getValue(line, "y", "0"));
+		    		m.rot= Double.parseDouble(getValue(line, "rot", "0"));
+		    		m.scale= Double.parseDouble(getValue(line, "sc", "1"));
+		    		a.maps.put(lev, m); }}
 		    ImgDef[] sort= new ImgDef[images.size()];
 		    images.values().toArray(sort);
 		    Arrays.sort(sort, new Comparator<ImgDef>() {@Override

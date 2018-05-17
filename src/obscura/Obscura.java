@@ -1,20 +1,14 @@
 package obscura;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.Reader;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 
 public class Obscura {
 	static boolean running= true;
 	static Watcher watcher;
-	static Viewer viewer;
+	public static Viewer viewer;
 	public static Database data;
 	static FileOutputStream lockStream;
 	static FileLock lock;
@@ -44,8 +38,8 @@ public class Obscura {
 		Thread t = new Thread() {
             public void run() {
             	//data.writeDatabase("imageDefs.dat");
-            	try{ lockStream.close(); } catch(Exception e){ e.printStackTrace(); }
             	try{ lock.release(); } catch (Exception e){ e.printStackTrace(); }
+            	try{ lockStream.close(); } catch(Exception e){ e.printStackTrace(); }
             	System.out.println("closing Obscura");
                 Obscura.running= false;
             }

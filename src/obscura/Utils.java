@@ -10,8 +10,12 @@ import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 
 public class Utils {
+	
+	public static final double ratioMetric= 0.41;
 	
 	public static double shorter(double num){ return (double) Math.round(num*1000)/1000.000; }
 
@@ -74,5 +78,15 @@ public class Utils {
 		g.fill(outline);
 
 	}
-	
+	public static Shape doEllipse(Graphics2D g, double x, double y, double w, double h, boolean fill){ return doEllipse(g, x, y, w, h, null, fill); }
+	public static Shape doEllipse(Graphics2D g, double x, double y, double w, double h, Shape sh, boolean fill){
+		return doShape(g, sh==null ? new Ellipse2D.Double(x,y,w,h) : sh, fill); }
+	public static Shape doRectangle(Graphics2D g, double x, double y, double w, double h, boolean fill){ return doRectangle(g, x, y, w, h, null, fill); }
+	public static Shape doRectangle(Graphics2D g, double x, double y, double w, double h, Shape sh, boolean fill){
+		return doShape(g, sh==null ? new Rectangle2D.Double(x,y,w,h) : sh, fill); }
+	public static Shape doShape(Graphics2D g, Shape sh, boolean fill){
+		if (sh==null) return null;
+		if (fill) g.fill(sh);
+		else g.draw(sh);
+		return sh; }
 }
