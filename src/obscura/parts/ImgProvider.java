@@ -14,6 +14,7 @@ import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 
+import obscura.Database;
 import obscura.Obscura;
 import obscura.Utils;
 
@@ -40,9 +41,9 @@ public class ImgProvider {
 		
 		String thumbsPath= getThumbsPath(imgF);
 		
-		String thumbPath= thumbsPath+imgF.hashCode()+".jpg";
+		String thumbPath= thumbsPath+ Database.getHashCode(imgF)+".jpg";
 		File thumbFile= new File(thumbPath);
-		String miniPath= thumbsPath+ "mini/"+imgF.hashCode()+".jpg";
+		String miniPath= thumbsPath+ "mini/"+Database.getHashCode(imgF)+".jpg";
 		File miniFile= new File(miniPath);
 		BufferedImage orig= null, thumb=null, mini=null;
 		

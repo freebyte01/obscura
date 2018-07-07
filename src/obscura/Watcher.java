@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
-import javax.swing.DefaultListModel;
-
 public class Watcher extends Thread{
 	HashSet<File> knownFiles= new HashSet<File>();
 	HashSet<File> rejectedFiles= new HashSet<File>();
@@ -69,8 +67,8 @@ public class Watcher extends Thread{
 			if (f.isDirectory())
 				changed+= scanDir(f);
 			else {
-				if (f.getName().toLowerCase().equals("DSC00015.jpg".toLowerCase()))
-					System.err.println("><>>");
+				//if (f.getName().toLowerCase().equals("DSC00015.jpg".toLowerCase()))
+				//	System.err.println("><>>");
 				if (knownFiles.contains(f))
 					continue;
 				if (notAllowedFiles.matcher(f.getPath().toLowerCase()).matches() || !allowedFiles.matcher(f.getName().toLowerCase()).matches())
@@ -78,7 +76,7 @@ public class Watcher extends Thread{
 				if (rejectedFiles.contains(f) || f.length()==0)
 					continue;
 				knownFiles.add(f);
-				images.put(f.hashCode(), f);
+				images.put(Database.getHashCode(f), f);
 				changed++;
 				//System.err.println("added img "+ f);
 			}

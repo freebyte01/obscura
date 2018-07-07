@@ -54,6 +54,10 @@ public class Utils {
 	
 	public static final BasicStroke textStroke = new BasicStroke(4);
 	public static final void drawOutlinedString(Graphics2D g, String str, int x, int y){
+		
+		if (str==null || str.length()==0)
+			return;
+		
 		g.setRenderingHint(
 				RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);

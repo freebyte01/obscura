@@ -36,6 +36,7 @@ public class Database {
 		else 
 			return force ? new ImgDef(hash) : null;
 	}
+	public static int getHashCode(File f){ return f==null?0:(f.length()+"_"+f.getName().toLowerCase()).hashCode(); }
 	
 	void readDatabase(String path){
 		imgInfos.clear();
@@ -77,7 +78,7 @@ public class Database {
 			});
 		    imgInfos.clear();
 		    for (ImgDef id : sort)
-		    	imgInfos.put(id.hash, id);
+		    	imgInfos.put(id.xhash, id);
 		}catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -94,7 +95,8 @@ public class Database {
 		dataFile= path;
 		StringBuilder sb= new StringBuilder();
 		for ( ImgDef id : imgInfos.values() )
-			sb.append( id.store() );
+			if (id.file!=null)
+				sb.append( id.store() );
 		for ( Area a : areas.values() )
 			sb.append( a.store() );
 		BufferedWriter bw= null;

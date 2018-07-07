@@ -3,9 +3,10 @@ package obscura.parts;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import obscura.Database;
@@ -33,14 +34,15 @@ public class ImgDef{
 	
 	public ImgDef(int hash) {
 		this.hash= hash;
+		this.xhash= hash;
 		if (hash!=0)
 			Database.imgInfos.put(hash, this);
 	}
 	public ImgDef(String def) {
 		read(def);
 		System.out.println("red img def "+ hash+ " : "+ (path!=""?new File(path).getName():""));
-		if (hash!=0)
-			Database.imgInfos.put(hash, this);
+		if (xhash!=0 && !Database.imgInfos.containsKey(xhash))
+			Database.imgInfos.put(xhash, this);
 	}
 	public void update(){
 		vect= observer!=null && target!=null ? target.dup().sub(observer) : null; 
@@ -61,8 +63,8 @@ public class ImgDef{
 	public String store(){
 		StringBuilder def= new StringBuilder("img;");
 		def.append( "hash:"+ hash+ ";");
-		if (xhash!=0) def.append( "xhash:"+ xhash+ ";");
-		if (path!=null) def.append( "path:"+ path+ ";");
+		def.append( "xhash:"+ Database.getHashCode(file)+ ";");
+		if (path!=null) def.append( "path:"+ file.getName()+ ";");
 		if (rot!=0) def.append( "rot:"+ rot+ ";");
 		if (compo!=0) def.append( "compo:"+ compo+ ";");
 		if (map!=null) def.append( "map:"+ map+ ";");
@@ -119,10 +121,15 @@ public class ImgDef{
 						min= diff; }
 					if ( diff< radius2)
 						res.add(i); }}
-		ImgDef[] resA= new ImgDef[res.size()];
-		res.toArray( resA );
 		if (res.size()==0 && nearest!=null)
 			res.add(nearest);
+		ImgDef[] resA= new ImgDef[res.size()];
+		res.toArray( resA );
+		  Arrays.sort(resA, new Comparator<ImgDef>() {@Override
+		    	public int compare(ImgDef o1, ImgDef o2) {
+		    		return o1.file == null ? o2.file == null ? 0 : -1 : o2.file==null ? 1 : o1.file.lastModified() >= o2.file.lastModified() ? 1 : -1;
+		    }
+			});
 		return resA; }
 	
 
@@ -142,7 +149,7 @@ public class ImgDef{
 			g.setStroke(viewStroke); 
 			g.draw(new Line2D.Double(observer.x, observer.y, target.x, target.y));
 			Utils.doEllipse(g, target.x-5/zoom, target.y-5/zoom, 10/zoom, 10/zoom, true);
-			if (this==Obscura.viewer.currDef){
+			if (this==Obscura.viewer.currDef && vect!=null){
 				g.setColor(new Color(1f,1f,0,1f));
 				double r= vect.length()/4.0;
 				r=r>3/Utils.ratioMetric?3:r;

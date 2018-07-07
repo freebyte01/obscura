@@ -80,6 +80,7 @@ public class Viewer extends JFrame implements KeyListener {
 		}
 		init();
 		setVisible(true);
+		updateList();
 	}
 
 	private JSplitPane split;
@@ -89,7 +90,8 @@ public class Viewer extends JFrame implements KeyListener {
 	public JTextField field;
 	private JPanel view;
 	private Container editor;
-	static SimpleDateFormat sdf = new SimpleDateFormat("YY.MM.dd HH:mm ");
+	static SimpleDateFormat sdfs = new SimpleDateFormat("dd.MM.YY");
+	static SimpleDateFormat sdfl = new SimpleDateFormat("dd MMMM YYYY   HH:mm ");
 
 	static String shortName(String name) {
 		for (File d : Obscura.observeDirs)
@@ -118,12 +120,20 @@ public class Viewer extends JFrame implements KeyListener {
         public void changedUpdate(DocumentEvent e) {}
         private void filter() {
             String filter = field.getText();
-            filterModel((DefaultListModel<File>) list.getModel(), filter);
+            //filterModel((DefaultListModel<File>) list.getModel(), filter);
         }
         
 	};
-	public void updateList(){ filterModel((DefaultListModel<File>) list.getModel(), field.getText()); }
+	public void updateList(){ 
+		DefaultListModel<File> lm= (DefaultListModel<File>) list.getModel();
+		lm.clear();
+		for (File f : Obscura.watcher.sorted) 
+			lm.addElement(f);
+		//filterModel((DefaultListModel<File>) list.getModel(), field.getText()); 
+		}
+	
 	public void filterModel(DefaultListModel<File> model, String filter) {
+		if (true) return;
         for (File f : Obscura.watcher.sorted) {
             if (!f.getName().toLowerCase().contains(filter.toLowerCase())) {
                 if (model.contains(f)) {
@@ -152,9 +162,9 @@ public class Viewer extends JFrame implements KeyListener {
 		list.setCellRenderer(new ListCellRenderer<File>() {
 			public Component getListCellRendererComponent(JList<? extends File> list, File value, int index,
 					boolean isSelected, boolean cellHasFocus) {
-				int hash = value.hashCode();
+				int hash = Database.getHashCode(value);
 				boolean hasThumb = new File(ImgProvider.getThumbsPath(value), hash + ".jpg").exists();
-				JLabel c = new JLabel(sdf.format(new Date(value.lastModified())) + (hasThumb ? "[] " : "   ")
+				JLabel c = new JLabel(sdfs.format(new Date(value.lastModified())) + (hasThumb ? "[] " : "   ")
 						+ shortName(value.getPath()));
 				c.setFont(isSelected ? listFontB : listFont);
 				c.setForeground(isSelected ? Color.black : Color.gray);
@@ -398,7 +408,7 @@ public class Viewer extends JFrame implements KeyListener {
 						if (e.getClickCount() > 1) {
 							clickSelect = null;
 							if (selectedImgF != null) {
-								currDef = Obscura.data.getImgDef(selectedImgF.hashCode(), true);
+								currDef = Obscura.data.getImgDef(Database.getHashCode(selectedImgF), true);
 								if (next) {
 									if (currDef.target != null)
 										currDef.target.set(rX, rY);
@@ -416,13 +426,15 @@ public class Viewer extends JFrame implements KeyListener {
 							}
 						} else {
 							clickSelect = nearest;
+							System.err.println("clicked "+ nearest);
 							new Thread() {
 								public void run() {
 									try {
 										sleep(500);
+										System.err.println("clicked only once"+ clickSelect+ " : "+ nearest);
 										if (clickSelect != null) {
-											for (int i=0; i<list.getModel().getSize(); i++) 
-												System.out.println(list.getModel().getElementAt(i));
+											//for (int i=0; i<list.getModel().getSize(); i++) 
+												//System.out.println(list.getModel().getElementAt(i));
 											list.setSelectedValue(clickSelect.file, true);
 											list.ensureIndexIsVisible(list.getSelectedIndex());
 										}
@@ -438,7 +450,7 @@ public class Viewer extends JFrame implements KeyListener {
 							case TARGET_INDICATOR: sx= currDef.target == null ? sx : currDef.target.x; sy= currDef.target == null ? sy : currDef.target.y; break;
 							default:
 								if (nearImgF != null) {
-									list.setSelectedValue(Watcher.images.get(nearImgF.hashCode()), true);
+									list.setSelectedValue(Watcher.images.get(Database.getHashCode(nearImgF)), true);
 									list.ensureIndexIsVisible(list.getSelectedIndex()); }
 						}
 						
@@ -503,7 +515,7 @@ public class Viewer extends JFrame implements KeyListener {
 		} else if (mapEditMode) {
 
 		} else if (selectedImgF != null) {
-			ImgDef def = Database.imgInfos.get(selectedImgF.hashCode());
+			ImgDef def = Database.imgInfos.get(Database.getHashCode(selectedImgF));
 			if (def != null && def.observer != null) {
 				double vx = rXo - def.observer.x, vy = rYo - def.observer.y;
 				double radius = 10 / zoom;
@@ -564,12 +576,12 @@ public class Viewer extends JFrame implements KeyListener {
 		selectedImg = null;
 		lastDef = currDef;
 		if (selectedImgF != null && selectedImgF.exists()) {
-			currDef = Obscura.data.getImgDef(selectedImgF.hashCode());
+			currDef = Obscura.data.getImgDef(Database.getHashCode(selectedImgF));
 		}
 		next = false;
 		nearLocs = currDef == null ? null : currDef.sameLocation();
 		nearTargs = currDef == null ? null : currDef.sameTarget();
-		System.out.println("pic changed to " + selectedImgF.getName() + " : " + selectedImgF.hashCode());
+		System.out.println("pic changed to " + selectedImgF.getName() + " : " + Database.getHashCode(selectedImgF));
 		lastSlideTime = System.currentTimeMillis();
 		selectedImgTime = lastSlideTime;
 		lastThumbsHeight = 0;
@@ -603,6 +615,7 @@ public class Viewer extends JFrame implements KeyListener {
 	private Poly polyBuffer;
 
 	public void keyPressed(KeyEvent e) {
+		System.err.println("key pressed");
 		ctrl = e.isControlDown();
 		shift = e.isShiftDown();
 		alt = e.isAltDown();
@@ -646,7 +659,7 @@ public class Viewer extends JFrame implements KeyListener {
 		} else if (e.getKeyCode() == ' ') {
 			System.err.println("space pressed");
 			if (lastDef != null)
-				currDef = lastDef.cloneTo(selectedImgF.hashCode(), selectedImgF.getAbsolutePath());
+				currDef = lastDef.cloneTo(Database.getHashCode(selectedImgF), selectedImgF.getAbsolutePath());
 			view.repaint();
 			list.repaint();
 		}
@@ -948,11 +961,16 @@ public class Viewer extends JFrame implements KeyListener {
 
 		g.setTransform(old);
 
-		if (viewedImg != null)
+		if (viewedImg != null){
+			String dateLabel="";
 			if (viewedImg == selectedImg)
-				Utils.drawOutlinedString(g, sdf.format(new Date(selectedImgF.lastModified())), 20, 30);
+				dateLabel= sdfl.format(new Date(selectedImgF.lastModified()));
 			else if (nearImgF != null && nearImg == viewedImg)
-				Utils.drawOutlinedString(g, sdf.format(new Date(nearImgF.lastModified())), 20, 30);
+				dateLabel= sdfl.format(new Date(nearImgF.lastModified()));
+			int w= g.getFontMetrics().stringWidth(dateLabel);
+			Utils.drawOutlinedString(g, dateLabel, getWidth()/2- w/2 , 30);
+		}
+
 	}
 
 	private int lastThumbsHeight;
