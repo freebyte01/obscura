@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.Pattern;
@@ -17,6 +16,7 @@ public class Watcher extends Thread{
 	HashSet<File> knownFiles= new HashSet<File>();
 	HashSet<File> rejectedFiles= new HashSet<File>();
 	public static HashMap<Integer, File> images= new HashMap<Integer, File>();
+	public static File[] sorted= new File[0];
 	
 	ArrayList<File> toWatch= null;
 	public Watcher(ArrayList<File> watch) {
@@ -35,9 +35,9 @@ public class Watcher extends Thread{
 			}
 			if (images.size()!=s){
 				System.out.println("added "+ (images.size()-s)+ " photos");
-				File[] sort= new File[images.size()];
-				images.values().toArray(sort);
-				Arrays.sort( sort, new Comparator<File>() {
+				sorted= new File[images.size()];
+				images.values().toArray(sorted);
+				Arrays.sort( sorted, new Comparator<File>() {
 					public int compare(File o1, File o2) { 
 						//return (int) o1.lastModified()>=o2.lastModified()?1:-1;
 						boolean o1Comp= o1.getName().indexOf('-')>-1;
@@ -48,28 +48,29 @@ public class Watcher extends Thread{
 										: o1.getName().compareTo(o2.getName());
 					}
 				});
-				Obscura.viewer.list.setListData(sort);
-				Obscura.viewer.listModel= Obscura.viewer.list.getModel();
+				Obscura.viewer.updateList();
+				
 			}
-			try{ Thread.currentThread().sleep(10000);				
-			}catch(InterruptedException e){}
+			try{ Thread.sleep(10000); } catch(InterruptedException e){}
 		}
 	}
 	static final Pattern allowedFiles= Pattern.compile(".*\\.jpg|.*\\.png");
-	static final Pattern notAllowedFiles= Pattern.compile(".*zdroje.*|.*nakup.*|.*krajina.*");
+	static final Pattern notAllowedFiles= Pattern.compile(".*nakup.*|.*krajina.*"); // .*zdroje.*|
 	private int scanDir(File d){
 		int changed=0;
 		if (d==null || !d.isDirectory() || !d.exists())
 			return changed;
 		// System.out.println("scanning "+ d);
 		for (File f : d.listFiles()){
-			int hash= f.hashCode();
+			
 			String name= f.getName();
 			if (name.startsWith("."))
 				continue;
 			if (f.isDirectory())
 				changed+= scanDir(f);
 			else {
+				if (f.getName().toLowerCase().equals("DSC00015.jpg".toLowerCase()))
+					System.err.println("><>>");
 				if (knownFiles.contains(f))
 					continue;
 				if (notAllowedFiles.matcher(f.getPath().toLowerCase()).matches() || !allowedFiles.matcher(f.getName().toLowerCase()).matches())
@@ -77,7 +78,7 @@ public class Watcher extends Thread{
 				if (rejectedFiles.contains(f) || f.length()==0)
 					continue;
 				knownFiles.add(f);
-				images.put(hash, f);
+				images.put(f.hashCode(), f);
 				changed++;
 				//System.err.println("added img "+ f);
 			}

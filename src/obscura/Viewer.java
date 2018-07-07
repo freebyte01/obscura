@@ -2,6 +2,7 @@ package obscura;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Composite;
@@ -46,9 +47,11 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import obscura.parts.Area;
@@ -81,9 +84,10 @@ public class Viewer extends JFrame implements KeyListener {
 
 	private JSplitPane split;
 	private JSplitPane splitViewer;
+	public DefaultListModel<File> listModel = new DefaultListModel<File>();
 	public JList<File> list;
-	public ListModel<File> listModel = new DefaultListModel<File>();
-	private JPanel view, map;
+	public JTextField field;
+	private JPanel view;
 	private Container editor;
 	static SimpleDateFormat sdf = new SimpleDateFormat("YY.MM.dd HH:mm ");
 
@@ -98,6 +102,8 @@ public class Viewer extends JFrame implements KeyListener {
 		return ctrl || mapEditMode;
 	}
 
+	
+	
 	double zoom = 1;
 	double sx = 0, sy = 0;
 	int splitPos = 200;
@@ -106,13 +112,41 @@ public class Viewer extends JFrame implements KeyListener {
 	Color definedCT = new Color(225, 225, 230);
 	Font listFont = new Font("Courier New", Font.PLAIN, 12);
 	Font listFontB = new Font("Courier New", Font.BOLD, 12);
+	DocumentListener dl= new DocumentListener() {
+        public void insertUpdate(DocumentEvent e) { filter(); }
+        public void removeUpdate(DocumentEvent e) { filter(); }
+        public void changedUpdate(DocumentEvent e) {}
+        private void filter() {
+            String filter = field.getText();
+            filterModel((DefaultListModel<File>) list.getModel(), filter);
+        }
+        
+	};
+	public void updateList(){ filterModel((DefaultListModel<File>) list.getModel(), field.getText()); }
+	public void filterModel(DefaultListModel<File> model, String filter) {
+        for (File f : Obscura.watcher.sorted) {
+            if (!f.getName().toLowerCase().contains(filter.toLowerCase())) {
+                if (model.contains(f)) {
+                    model.removeElement(f);
+                }
+            } else {
+                if (!model.contains(f)) {
+                    model.addElement(f);
+                }
+            }
+        }
+    }
 
 	void init() {
 
 		getContentPane().add(split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT));
-		split.setLeftComponent(new JScrollPane(list = new JList<File>()) {
-
-		});
+		JPanel jp= new JPanel();
+		jp.setLayout(new BorderLayout());
+		jp.add(new JScrollPane(list = new JList<File>()), BorderLayout.CENTER);
+		field= new JTextField(15);
+        field.getDocument().addDocumentListener(dl);
+		jp.add(field, BorderLayout.NORTH);
+		split.setLeftComponent(jp);
 		list.setModel(listModel);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.setCellRenderer(new ListCellRenderer<File>() {
@@ -125,7 +159,7 @@ public class Viewer extends JFrame implements KeyListener {
 				c.setFont(isSelected ? listFontB : listFont);
 				c.setForeground(isSelected ? Color.black : Color.gray);
 
-				if (Database.images.containsKey(hash)) {
+				if (Database.imgInfos.containsKey(hash)) {
 					c.setOpaque(true);
 					c.setBackground(hasThumb ? definedCT : definedC);
 				}
@@ -387,7 +421,9 @@ public class Viewer extends JFrame implements KeyListener {
 									try {
 										sleep(500);
 										if (clickSelect != null) {
-											list.setSelectedValue(Watcher.images.get(clickSelect.hash), true);
+											for (int i=0; i<list.getModel().getSize(); i++) 
+												System.out.println(list.getModel().getElementAt(i));
+											list.setSelectedValue(clickSelect.file, true);
 											list.ensureIndexIsVisible(list.getSelectedIndex());
 										}
 									} catch (InterruptedException e) {
@@ -467,7 +503,7 @@ public class Viewer extends JFrame implements KeyListener {
 		} else if (mapEditMode) {
 
 		} else if (selectedImgF != null) {
-			ImgDef def = Database.images.get(selectedImgF.hashCode());
+			ImgDef def = Database.imgInfos.get(selectedImgF.hashCode());
 			if (def != null && def.observer != null) {
 				double vx = rXo - def.observer.x, vy = rYo - def.observer.y;
 				double radius = 10 / zoom;
@@ -770,7 +806,7 @@ public class Viewer extends JFrame implements KeyListener {
 			Color cPos = new Color(1f, 1f, 0f, .5f);
 			double posR = 2 / zoom, posD = posR * 2;
 
-			for (ImgDef id : Database.images.values())
+			for (ImgDef id : Database.imgInfos.values())
 
 				if (id.observer != null) {
 					double vx = rX - id.observer.x, vy = rY - id.observer.y;
@@ -1004,7 +1040,6 @@ public class Viewer extends JFrame implements KeyListener {
 			else
 				selectedArea = Database.areas.values().iterator().next();
 
-		int offX = view.getWidth() - 40, offY = 20;
 		int starLev = -1, levs = 4;
 		int maxW = view.getWidth() - 60;
 		for (int lev = -1; lev < levs; lev++) {

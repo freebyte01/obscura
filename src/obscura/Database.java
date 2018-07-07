@@ -16,7 +16,7 @@ import obscura.parts.Poly;
 
 public class Database {
 
-	public static HashMap<Integer, ImgDef> images= new HashMap<Integer, ImgDef>();
+	public static HashMap<Integer, ImgDef> imgInfos= new HashMap<Integer, ImgDef>();
 	public static HashMap<String, Area> areas= new HashMap<String, Area>();
 
 	public static final ImgDef[] NO_IMG_DEFS = new ImgDef[0]; 
@@ -31,14 +31,14 @@ public class Database {
 	
 	ImgDef getImgDef(int hash){ return getImgDef(hash, false); }
 	ImgDef getImgDef(int hash, boolean force){
-		if (images.containsKey(hash))
-			return images.get(hash);
+		if (imgInfos.containsKey(hash))
+			return imgInfos.get(hash);
 		else 
 			return force ? new ImgDef(hash) : null;
 	}
 	
 	void readDatabase(String path){
-		images.clear();
+		imgInfos.clear();
 		File file= new File(path);
 		if (file.isDirectory())
 			throw new RuntimeException("database filename "+ path +" is ocuppied!");
@@ -68,16 +68,16 @@ public class Database {
 		    		m.rot= Double.parseDouble(getValue(line, "rot", "0"));
 		    		m.scale= Double.parseDouble(getValue(line, "sc", "1"));
 		    		a.maps.put(lev, m); }}
-		    ImgDef[] sort= new ImgDef[images.size()];
-		    images.values().toArray(sort);
+		    ImgDef[] sort= new ImgDef[imgInfos.size()];
+		    imgInfos.values().toArray(sort);
 		    Arrays.sort(sort, new Comparator<ImgDef>() {@Override
 		    	public int compare(ImgDef o1, ImgDef o2) {
 		    		return o1.file == null ? o2.file == null ? 0 : -1 : o2.file==null ? 1 : o1.file.lastModified() >= o2.file.lastModified() ? 1 : -1;
 		    }
 			});
-		    images.clear();
+		    imgInfos.clear();
 		    for (ImgDef id : sort)
-		    	images.put(id.hash, id);
+		    	imgInfos.put(id.hash, id);
 		}catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -93,7 +93,7 @@ public class Database {
 		}
 		dataFile= path;
 		StringBuilder sb= new StringBuilder();
-		for ( ImgDef id : images.values() )
+		for ( ImgDef id : imgInfos.values() )
 			sb.append( id.store() );
 		for ( Area a : areas.values() )
 			sb.append( a.store() );

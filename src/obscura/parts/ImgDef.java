@@ -34,20 +34,20 @@ public class ImgDef{
 	public ImgDef(int hash) {
 		this.hash= hash;
 		if (hash!=0)
-			Database.images.put(hash, this);
+			Database.imgInfos.put(hash, this);
 	}
 	public ImgDef(String def) {
 		read(def);
 		System.out.println("red img def "+ hash+ " : "+ (path!=""?new File(path).getName():""));
 		if (hash!=0)
-			Database.images.put(hash, this);
+			Database.imgInfos.put(hash, this);
 	}
 	public void update(){
 		vect= observer!=null && target!=null ? target.dup().sub(observer) : null; 
 	}
 	
 	public ImgDef cloneTo(int hash, String path) {
-		ImgDef clone= Database.images.get(hash);
+		ImgDef clone= Database.imgInfos.get(hash);
 		if (clone==null)
 			clone= new ImgDef(hash);
 		clone.path= path;
@@ -103,11 +103,12 @@ public class ImgDef{
 	public ImgDef[] sameTarget(){ return target==null ? Database.NO_IMG_DEFS : vect==null? Database.NO_IMG_DEFS : near( vect.length()/10, target.x, target.y, true, this); }
 
 	static ImgDef[] near(double radius, double x, double y, boolean target, ImgDef exclude){
+		radius= radius>3*Utils.ratioMetric?3:radius;
 		LinkedList<ImgDef> res= new LinkedList<ImgDef>();
 		ImgDef nearest= null;
 		double min= Double.MAX_VALUE;
 		double radius2 = radius*radius;
-		for (ImgDef i : Database.images.values())
+		for (ImgDef i : Database.imgInfos.values())
 			if (!target || exclude!=i){
 				Point p= target? i.target: i.observer;
 				if ( p!= null ){
@@ -144,8 +145,9 @@ public class ImgDef{
 			if (this==Obscura.viewer.currDef){
 				g.setColor(new Color(1f,1f,0,1f));
 				double r= vect.length()/4.0;
+				r=r>3/Utils.ratioMetric?3:r;
 				Utils.doEllipse(g, observer.x-r, observer.y-r, r*2, r*2, false);
-				r= vect.length()/10;
+				r= vect.length()/10; r=r>3/Utils.ratioMetric?3:r;
 				Utils.doEllipse(g, target.x-r, target.y-r, r*2, r*2, false);
 			}
 			g.setColor(new Color(1,1,0,opacity));
