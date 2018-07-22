@@ -416,15 +416,18 @@ public class Viewer extends JFrame implements KeyListener {
 										selectedDef.targ.set(rX, rY);
 									else
 										selectedDef.targ = new Point(rX, rY);
+									nearTargets = selectedDef == null ? null : selectedDef.sameTarget();
 								} else {
 									if (selectedDef.pos != null)
 										selectedDef.pos.set(rX, rY);
 									else
 										selectedDef.pos = new Point(rX, rY);
+									nearPositions = selectedDef == null ? null : selectedDef.samePosition();
 								}
 								next = !next;
 								selectedDef.path = selectedImgF.getAbsolutePath();
 								Obscura.data.writeDatabase();
+
 							}
 						} else {
 							clickSelect = nearest;
@@ -748,6 +751,9 @@ public class Viewer extends JFrame implements KeyListener {
 	public static final int MOVE_INDICATOR= 30; 
 	public static final int ROTATE_INDICATOR= 40; 
 	public static final int SCALE_INDICATOR= 50; 
+	
+	BufferedImage lastNearestImg;
+	File lastNearest;
 
 	synchronized void paintView(Graphics2D g) {
 
@@ -855,24 +861,28 @@ public class Viewer extends JFrame implements KeyListener {
 			Color cPos = new Color(1f, 1f, 0f, .5f);
 			double posR = 2 / zoom, posD = posR * 2;
 
-			for (ImgDef id : Database.imgInfos.values())
+			for (ImgDef def : Database.imgInfos.values())
 
-				if (id.pos != null) {
-					double vx = rX - id.pos.x, vy = rY - id.pos.y;
+				if (def.pos != null) {
+					double vx = rX - def.pos.x, vy = rY - def.pos.y;
 					double diff = vx * vx + vy * vy;
 					if (min > diff) {
 						min = diff;
-						nearest = id;
+						nearest = def;
 					}
 					if (diff < radius2) {
 						Utils.aaOn(g, true);
-						id.paint(g, (float) (1 - diff / radius2));
+						def.paint(g, (float) (1 - diff / radius2));
 					} else {
 						Utils.aaOff(g);
 						g.setColor(cPos);
-						g.fill(new Rectangle2D.Double(id.pos.x - posR, id.pos.y - posR, posD, posD));
+						g.fill(new Rectangle2D.Double(def.pos.x - posR, def.pos.y - posR, posD, posD));
 					}
 				}
+			
+			
+			
+			
 
 			for (Area a : Database.areas.values())
 				a.paint(g, rX, rY);
@@ -917,90 +927,119 @@ public class Viewer extends JFrame implements KeyListener {
 
 			g.setTransform(old);
 			paintMap(g);
+			
+			if (nearest!=null && shift){
+				try{ 
+					//System.err.println(nearest.file);
+					BufferedImage nearestImg= lastNearest!=null && lastNearest== nearest.file ? lastNearestImg 
+							: ImgProvider.provideImage( nearest.file, 1);
+					lastNearest= nearest.file;
+					lastNearestImg= nearestImg;
+					if (nearestImg!=null){
+						int ww= view.getWidth()/2;
+						int hh= (int) Math.round(1d*ww/nearestImg.getWidth()*nearestImg.getHeight());
+						if (hh>view.getHeight()/2){
+							ww*= 1d*view.getHeight()/2/hh;
+							hh= view.getHeight()/2;
+						}
+						g.setColor(new Color(255, 255, 255, 50));
+						g.fill(new Rectangle2D.Double(
+								(mX < ww/2 + 20 ? 20 : mX > view.getWidth() - ww/2 -20 ? view.getWidth()- ww -40 : mX- ww/2)-10, 
+										(mY > view.getHeight() - 100 - hh ? mY -100 - hh: mY + 100)-10, ww+20, hh+20));
+						g.drawImage(nearestImg, 
+								mX < ww/2 + 20 ? 20 : mX > view.getWidth() - ww/2 -20 ? view.getWidth()- ww -40 : mX- ww/2, 
+								mY > view.getHeight() - 100 - hh ? mY -100 - hh: mY + 100, 
+								ww, hh, null);
+						//System.err.println(nearest.file+ " : "+ nearestImg.getWidth()+ ":"+ + nearestImg.getHeight());
+					}
+					
+					
+				} catch (IOException e) {}
+			}
 
 		} else
 
-		if (viewedImg != null) {
-			double iw = viewedImg.getWidth(null);
-			double ih = viewedImg.getHeight(null);
-
-			int orientation = 1;
-			try {
-				orientation = ImgProvider.getOrientation(alternativeImgF == null ? selectedImgF : alternativeImgF);
-			} catch (Exception e) {
-			}
-			double rw = vw, rh = vh;
-
-			switch (orientation) {
-			case 1:
-			case 2: // Flip X
-			case 3: // PI rotation
-			case 4: // Flip Y
-				break;
-			case 5: // - PI/2 and Flip X
-			case 6: // -PI/2 and -width
-			case 7: // PI/2 and Flip
-			case 8: // PI / 2
-				rw = vh;
-				rh = vw;
-				break;
-			default:
-				break;
-			}
-
-			double zw = rw / iw * imgZoom;
-			double zh = rh / ih * imgZoom;
-			double z = zw > zh ? zh : zw;
-
-			g.setTransform(old);
-
-			g.translate(view.getWidth() / 2 + imgOff.x, view.getHeight() / 2 + imgOff.y);
-
-			g.setTransform(ImgProvider.getAffineForOrientation(g.getTransform(), orientation, (int) Math.round(iw * z),
-					(int) Math.round(ih * z)));
-
-			if (z < 1)
-				Utils.aaOn(g);
-
-			g.drawImage(viewedImg, 0, 0, (int) Math.round(iw * z), (int) Math.round(ih * z), null);
-
-			g.setTransform(old);
-
-			if (mX > view.getWidth() - 200) { // && mX<view.getWidth() && mY>=0
-												// && mY<view.getHeight()){
+			if (viewedImg != null) {
+				double iw = viewedImg.getWidth(null);
+				double ih = viewedImg.getHeight(null);
+	
+				int orientation = 1;
 				try {
-					paintNearThumbs(g, 200);
-				} catch (IOException e) {
+					orientation = ImgProvider.getOrientation(alternativeImgF == null ? selectedImgF : alternativeImgF);
+				} catch (Exception e) {
 				}
-			} else {
-				alternativeImgF = null;
-			}
-
-			if (selectedDef != null) {
-				if (selectedDef.pos != null) {
-					g.setColor(Color.blue);
-					g.fillOval(20, (int) (vh - 40), 20, 20);
-					if (mX>20 && mX<40 && mY>vh-40 && mY<vh-20){
-						System.err.println("TARGET");
-						overButton= TARGET_INDICATOR;
+				double rw = vw, rh = vh;
+	
+				switch (orientation) {
+				case 1:
+				case 2: // Flip X
+				case 3: // PI rotation
+				case 4: // Flip Y
+					break;
+				case 5: // - PI/2 and Flip X
+				case 6: // -PI/2 and -width
+				case 7: // PI/2 and Flip
+				case 8: // PI / 2
+					rw = vh;
+					rh = vw;
+					break;
+				default:
+					break;
+				}
+	
+				double zw = rw / iw * imgZoom;
+				double zh = rh / ih * imgZoom;
+				double z = zw > zh ? zh : zw;
+	
+				g.setTransform(old);
+	
+				g.translate(view.getWidth() / 2 + imgOff.x, view.getHeight() / 2 + imgOff.y);
+	
+				g.setTransform(ImgProvider.getAffineForOrientation(g.getTransform(), orientation, (int) Math.round(iw * z),
+						(int) Math.round(ih * z)));
+	
+				if (z < 1)
+					Utils.aaOn(g);
+	
+				g.drawImage(viewedImg, 0, 0, (int) Math.round(iw * z), (int) Math.round(ih * z), null);
+	
+				g.setTransform(old);
+	
+				if (mX > view.getWidth() - 200) { // && mX<view.getWidth() && mY>=0
+													// && mY<view.getHeight()){
+					try {
+						paintNearThumbs(g, 200);
+					} catch (IOException e) {
+					}
+				} else {
+					alternativeImgF = null;
+				}
+	
+				if (selectedDef != null) {
+					if (selectedDef.pos != null) {
+						g.setColor(Color.blue);
+						g.fillOval(20, (int) (vh - 40), 20, 20);
+						if (mX>20 && mX<40 && mY>vh-40 && mY<vh-20){
+							System.err.println("TARGET");
+							overButton= TARGET_INDICATOR;
+						}
+					}
+					if (selectedDef.targ != null) {
+						g.setColor(Color.yellow);
+						g.fillOval(20, (int) (vh - 70), 20, 20);
+						if (mX>20 && mX<40 && mY>vh-70 && mY<vh-50){
+							System.err.println("OBSERVER");
+							overButton= OBSERVER_INDICATOR; }
+					}
+					if (alternativeImgF==null && selectedDef.similar!=null  || alternativeImgF!=null && selectedDef.isSimilarTo(alternativeImgF.getName().toLowerCase())) {
+						g.setColor(Color.green);
+						g.fillOval(20, (int) (vh - 100), 20, 20);
+						if (mX>20 && mX<40 && mY>vh-100 && mY<vh-70){
+							System.err.println("SIMILAR");
+							overButton= SIMILAR_INDICATOR; }
 					}
 				}
-				if (selectedDef.targ != null) {
-					g.setColor(Color.yellow);
-					g.fillOval(20, (int) (vh - 70), 20, 20);
-					if (mX>20 && mX<40 && mY>vh-70 && mY<vh-50){
-						System.err.println("OBSERVER");
-						overButton= OBSERVER_INDICATOR; }
-				}
-				if (alternativeImgF==null && selectedDef.similar!=null  || alternativeImgF!=null && selectedDef.isSimilarTo(alternativeImgF.getName().toLowerCase())) {
-					g.setColor(Color.green);
-					g.fillOval(20, (int) (vh - 100), 20, 20);
-					if (mX>20 && mX<40 && mY>vh-100 && mY<vh-70){
-						System.err.println("SIMILAR");
-						overButton= SIMILAR_INDICATOR; }
-				}
 			}
-		}
 
 		g.setTransform(old);
 

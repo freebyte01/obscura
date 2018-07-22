@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
@@ -138,9 +139,15 @@ public class ImgProvider {
 				try {
 					int orientation= exifIFD0Directory==null? 1 : exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)? exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION) : 1;
 					Date dateTime= exifIFD0Directory==null? new Date(imgF.lastModified()) : exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_DATETIME) ? exifIFD0Directory.getDate(ExifIFD0Directory.TAG_DATETIME) : new Date(imgF.lastModified());
+					System.err.println("!!! *** "+imgF.getName()+ " date "+ dateTime + " mod "+ new Date(imgF.lastModified()));
 					if (dateTime.getTime()!=0 && dateTime.getTime()< imgF.lastModified()){
-						System.err.println("!!! *** "+imgF.getName()+ " found disproportion on image date "+ dateTime + " vs mod "+ new Date(imgF.lastModified())); 
-						// imgF.setLastModified(dateTime.getTime());						
+						/*int dialogResult = JOptionPane.showConfirmDialog (null, 
+							"!!! *** "+imgF.getName()+ " found disproportion on image date "+ dateTime + " vs mod "+ new Date(imgF.lastModified())+
+							"\nDo you want to correct the modification date?",
+							"Warning",
+							JOptionPane.YES_NO_OPTION);
+						if(dialogResult == JOptionPane.YES_OPTION)
+							imgF.setLastModified(dateTime.getTime());*/						
 					}
 					orientations.put(imgF, orientation);
 					return orientation;
