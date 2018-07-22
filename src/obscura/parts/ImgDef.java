@@ -119,8 +119,8 @@ public class ImgDef{
 	public boolean isSimilarTo(String key){
 		return Database.isSimilar(getKey(), key); }
 	
-	public ImgDef[] samePosition(){ return pos==null ? Database.NO_IMG_DEFS : near( vect==null? 2 : vect.length()/4, pos.x, pos.y, false, this); }
-	public ImgDef[] sameTarget(){ return targ==null ? Database.NO_IMG_DEFS : vect==null? Database.NO_IMG_DEFS : near( vect.length()/10, targ.x, targ.y, true, this); }
+	public ImgDef[] samePosition(){ return pos==null ? Database.NO_IMG_DEFS : near( vect==null? 2 : vect.length()/10, pos.x, pos.y, false, this); }
+	public ImgDef[] sameTarget(){ return targ==null ? Database.NO_IMG_DEFS : vect==null? Database.NO_IMG_DEFS : near( vect.length()/15, targ.x, targ.y, true, this); }
 
 	static ImgDef[] near(double radius, double x, double y, boolean target, ImgDef exclude){
 		radius= radius>3*Utils.ratioMetric?3:radius;
@@ -152,28 +152,29 @@ public class ImgDef{
 	
 
 	public void paint(Graphics2D g, float opacity){
-		double zoom= g.getTransform().getScaleX();
+		boolean special= opacity==2;
+		double zoom= g.getTransform().getScaleX() * (special?2:1);
+		opacity= opacity>1?opacity-1:opacity;
+		BasicStroke viewStroke = new BasicStroke((float)((special?5:1.5)/zoom));
 		if (pos!=null){
-			g.setColor(new Color(0,0,0,opacity));
-			Utils.doEllipse(g, pos.x-8/zoom, pos.y-8/zoom, 16/zoom, 16/zoom, true);
 			g.setColor(new Color(1,1,0,opacity));
 			Utils.doEllipse(g, pos.x-6/zoom, pos.y-6/zoom, 12/zoom, 12/zoom, true);
 			g.setColor(new Color(0,0,1,opacity));
 			Utils.doEllipse(g, pos.x-3/zoom, pos.y-3/zoom, 6/zoom, 6/zoom, true);
+			g.setColor( new Color(0,0,0,opacity) );
+			Utils.doEllipse(g, pos.x-8/zoom, pos.y-8/zoom, 16/zoom, 16/zoom, false);
 		}
 		if (targ!=null){
 			g.setColor(new Color(0,0,1,opacity));
-			BasicStroke viewStroke = new BasicStroke((float) (1.5/zoom));
 			g.setStroke(viewStroke); 
 			g.draw(new Line2D.Double(pos.x, pos.y, targ.x, targ.y));
 			Utils.doEllipse(g, targ.x-5/zoom, targ.y-5/zoom, 10/zoom, 10/zoom, true);
 			if (this==Obscura.viewer.selectedDef && vect!=null){
 				g.setColor(new Color(1f,1f,0,1f));
-				double r= vect.length()/4.0;
-				r=r>3/Utils.ratioMetric?3:r;
-				Utils.doEllipse(g, pos.x-r, pos.y-r, r*2, r*2, false);
-				r= vect.length()/10; r=r>3/Utils.ratioMetric?3:r;
-				Utils.doEllipse(g, targ.x-r, targ.y-r, r*2, r*2, false);
+				double r= vect.length();
+				r=r>20/Utils.ratioMetric?20/Utils.ratioMetric:r;
+				Utils.doEllipse(g, pos.x-r/10, pos.y-r/10, r/5, r/5, false);
+				Utils.doEllipse(g, targ.x-r/15, targ.y-r/15, r/7.5, r/7.5, false);
 			}
 			g.setColor(new Color(1,1,0,opacity));
 			Utils.doEllipse(g, targ.x-2/zoom, targ.y-2/zoom, 4/zoom, 4/zoom, true);

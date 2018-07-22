@@ -1,0 +1,9 @@
+22.06.18
++ in near views first should go look at and then look around
+- zoom and pan does not reset on picture change
++ would be nice may be to remember zoom/pan for each pic separately
+! the keys for imagedef should be based on more unique key than lowercase filename
+? may be the thumbs for navigation should be possible also in a row and with relation to angle for look around and look at
++ similarities should have possible to define POIs 0-n for better tracking the targets an possible stabilisation (pan/scaling/rotation) of pictures for better experience when playing sequence
++ would be nice to place POIs on any photos and assign them from the growing POI list
++! display map pos pic preview so that it's not covering either pos or target

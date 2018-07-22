@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
+
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -50,10 +51,12 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 import obscura.parts.Area;
 import obscura.parts.ImgDef;
 import obscura.parts.ImgProvider;
@@ -162,7 +165,6 @@ public class Viewer extends JFrame implements KeyListener {
 			}
 			
 			public void keyPressed(KeyEvent e) {
-				System.err.println(e.getKeyCode());
 				if (e.getKeyCode()==27){
 					System.err.println("es pressed in text field");
 					split.requestFocus();
@@ -313,7 +315,8 @@ public class Viewer extends JFrame implements KeyListener {
 			}
 		});
 
-		splitViewer.setBottomComponent( stateLabel= new JLabel("hallo") );
+		splitViewer.setBottomComponent( stateLabel= new JLabel("status") );
+		stateLabel.setBorder(new EmptyBorder(5, 20, 5, 20));
 		//splitViewer.setBottomComponent(editor = new Container());
 		splitViewer.setContinuousLayout(true);
 		splitViewer.setDividerLocation(getHeight()- (splitPos=100));
@@ -753,7 +756,7 @@ public class Viewer extends JFrame implements KeyListener {
 	public static final int SCALE_INDICATOR= 50; 
 	
 	BufferedImage lastNearestImg;
-	File lastNearest;
+	File lastNearestF;
 
 	synchronized void paintView(Graphics2D g) {
 
@@ -861,6 +864,8 @@ public class Viewer extends JFrame implements KeyListener {
 			Color cPos = new Color(1f, 1f, 0f, .5f);
 			double posR = 2 / zoom, posD = posR * 2;
 
+			ImgDef lastNearest= nearest;
+			
 			for (ImgDef def : Database.imgInfos.values())
 
 				if (def.pos != null) {
@@ -872,17 +877,13 @@ public class Viewer extends JFrame implements KeyListener {
 					}
 					if (diff < radius2) {
 						Utils.aaOn(g, true);
-						def.paint(g, (float) (1 - diff / radius2));
+						def.paint(g, (float) (1 - diff / radius2 + (lastNearest==def ? 1:0)));
 					} else {
 						Utils.aaOff(g);
 						g.setColor(cPos);
 						g.fill(new Rectangle2D.Double(def.pos.x - posR, def.pos.y - posR, posD, posD));
 					}
 				}
-			
-			
-			
-			
 
 			for (Area a : Database.areas.values())
 				a.paint(g, rX, rY);
@@ -928,12 +929,12 @@ public class Viewer extends JFrame implements KeyListener {
 			g.setTransform(old);
 			paintMap(g);
 			
-			if (nearest!=null && shift){
+			if (nearest!=null && shift && !mapEditMode){
 				try{ 
 					//System.err.println(nearest.file);
-					BufferedImage nearestImg= lastNearest!=null && lastNearest== nearest.file ? lastNearestImg 
+					BufferedImage nearestImg= lastNearestF!=null && lastNearestF== nearest.file ? lastNearestImg 
 							: ImgProvider.provideImage( nearest.file, 1);
-					lastNearest= nearest.file;
+					lastNearestF= nearest.file;
 					lastNearestImg= nearestImg;
 					if (nearestImg!=null){
 						int ww= view.getWidth()/2;
@@ -1107,77 +1108,64 @@ public class Viewer extends JFrame implements KeyListener {
 				}
 			}
 		} else {
+
+			if (nearTargets!=null)
+				totalHeight= paintThumbs(g, nearTargets, stripWidth, slideX, offY, totalHeight);
+			
+			totalHeight= paintThumbsDelimiter(g, stripWidth, slideX, offY, totalHeight);
+
 			if (nearPositions != null)
-				for (ImgDef def : nearPositions) {
-					if (def.file == null)
-						if (def.path != null)
-							def.file = new File(def.path);
-						else
-							continue;
-					BufferedImage thumb = thumbs.containsKey(def.file) ? thumbs.get(def.file)
-							: ImgProvider.provideImage(def.file, true, 2, 2);
-					if (thumb == null) {
-						System.err.println(def + " loc null!");
-						continue;
-					}
-					thumbs.put(def.file, thumb);
-					int imgH = (int) Math.round(thumb.getHeight() * ((stripWidth - 10) * 1d / thumb.getWidth()));
-					if (offY < view.getHeight() && offY + totalHeight + imgH > 0)
-						g.drawImage(thumb, slideX, offY + totalHeight, stripWidth - 10, imgH, null);
-					if (mY > offY + totalHeight && mY < offY + imgH + totalHeight) {
-						alternativeImgF = def.file;
-						selectNearPic();
-					}
-					if (selectedDef.isSimilarTo(def.file.getName().toLowerCase())) {
-						g.setColor(Color.green);
-						g.fillRect(slideX+1, offY + totalHeight+ 1, 5, imgH-2);
-					}
-					totalHeight += imgH + 5;
-				}
-			g.setColor(Color.black);
-			g.setStroke(new BasicStroke(30));
-			g.drawLine(slideX, offY + totalHeight + 15, view.getWidth(), offY + totalHeight + 15);
-			g.drawOval(slideX - 35, offY + totalHeight, 30, 30);
-			g.setColor(Color.white);
-			g.setStroke(new BasicStroke(10));
-			g.drawLine(slideX - 20, offY + totalHeight + 15, view.getWidth(), offY + totalHeight + 15);
-			g.drawOval(slideX - 35, offY + totalHeight, 30, 30);
-			g.fillOval(slideX - 35, offY + totalHeight, 30, 30);
-			totalHeight += 35;
-	
-			if (nearTargets != null)
-				for (ImgDef def : nearTargets) {
-					if (shift && !def.isSimilarTo(selectedDef))
-						continue;
-					if (def.file == null)
-						if (def.path != null)
-							def.file = new File(def.path);
-						else
-							continue;
-					BufferedImage thumb = thumbs.containsKey(def.file) ? thumbs.get(def.file)
-							: ImgProvider.provideImage(def.file, true, 2, 2);
-					if (thumb == null) {
-						System.err.println(def + "targ null!");
-						continue;
-					}
-					thumbs.put(def.file, thumb);
-					int imgH = (int) Math.round(thumb.getHeight() * ((stripWidth - 10) * 1d / thumb.getWidth()));
-					if (offY < view.getHeight() && offY + totalHeight + imgH > 0)
-						g.drawImage(thumb, slideX, offY + totalHeight, stripWidth - 10, imgH, null);
-					if (selectedDef.isSimilarTo(def.file.getName().toLowerCase())) {
-						g.setColor(Color.green);
-						g.fillRect(slideX+1, offY + totalHeight+ 1, 5, imgH-2);
-					}
-					if (mY > offY + totalHeight && mY < offY + imgH + totalHeight) {
-						alternativeImgF = def.file;
-						selectNearPic();
-					}
-					totalHeight += imgH + 5;
-				}
+				totalHeight= paintThumbs(g, nearPositions, stripWidth, slideX, offY, totalHeight);
+			
 			}
 		lastThumbsHeight = totalHeight + 40;
 	}
 
+	int paintThumbs(Graphics2D g, ImgDef[] thumbsSet, int stripWidth, int slideX, int offY, int totalHeight) throws IOException{
+		if (thumbsSet != null)
+			for (ImgDef def : thumbsSet) {
+				if (shift && !def.isSimilarTo(selectedDef))
+					continue;
+				if (def.file == null)
+					if (def.path != null)
+						def.file = new File(def.path);
+					else
+						continue;
+				BufferedImage thumb = thumbs.containsKey(def.file) ? thumbs.get(def.file)
+						: ImgProvider.provideImage(def.file, true, 2, 2);
+				if (thumb == null) {
+					System.err.println(def + "targ null!");
+					continue;
+				}
+				thumbs.put(def.file, thumb);
+				int imgH = (int) Math.round(thumb.getHeight() * ((stripWidth - 10) * 1d / thumb.getWidth()));
+				if (offY < view.getHeight() && offY + totalHeight + imgH > 0)
+					g.drawImage(thumb, slideX, offY + totalHeight, stripWidth - 10, imgH, null);
+				if (selectedDef.isSimilarTo(def.file.getName().toLowerCase())) {
+					g.setColor(Color.green);
+					g.fillRect(slideX+1, offY + totalHeight+ 1, 5, imgH-2);
+				}
+				if (mY > offY + totalHeight && mY < offY + imgH + totalHeight) {
+					alternativeImgF = def.file;
+					selectNearPic();
+				}
+				totalHeight += imgH + 5;
+			}
+		return totalHeight; }
+	
+	int paintThumbsDelimiter(Graphics2D g, int stripWidth, int slideX, int offY, int totalHeight){
+		g.setColor(Color.black);
+		g.setStroke(new BasicStroke(30));
+		g.drawLine(slideX, offY + totalHeight + 15, view.getWidth(), offY + totalHeight + 15);
+		g.drawOval(slideX - 35, offY + totalHeight, 30, 30);
+		g.setColor(Color.white);
+		g.setStroke(new BasicStroke(10));
+		g.drawLine(slideX - 20, offY + totalHeight + 15, view.getWidth(), offY + totalHeight + 15);
+		g.drawOval(slideX - 35, offY + totalHeight, 30, 30);
+		g.fillOval(slideX - 35, offY + totalHeight, 30, 30);
+		return totalHeight += 35;
+	}
+	
 	Area selectedArea, overArea;
 	int selectedLevel = 0; // ground level
 
