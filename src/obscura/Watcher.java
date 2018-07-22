@@ -10,10 +10,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
+import obscura.parts.ImgDef;
+import obscura.parts.Similarity;
+
 public class Watcher extends Thread{
 	HashSet<File> knownFiles= new HashSet<File>();
 	HashSet<File> rejectedFiles= new HashSet<File>();
-	public static HashMap<Integer, File> images= new HashMap<Integer, File>();
+	public static HashMap<String, File> images= new HashMap<String, File>();
 	public static File[] sorted= new File[0];
 	
 	ArrayList<File> toWatch= null;
@@ -29,7 +32,7 @@ public class Watcher extends Thread{
 				scanDir(d);
 				File tmp= new File(d,".t");
 				try{ FileWriter fw= new FileWriter(tmp); fw.write(System.currentTimeMillis()+""); fw.close(); tmp.delete(); } catch (Exception e) {}
-				System.err.print(".");
+				//System.err.print(".");
 			}
 			if (images.size()!=s){
 				System.out.println("added "+ (images.size()-s)+ " photos");
@@ -46,12 +49,27 @@ public class Watcher extends Thread{
 										: o1.getName().compareTo(o2.getName());
 					}
 				});
+				updateImgDefsByFiles();
+				for (Similarity sim : Database.similarities.values())
+					sim.sort();
 				Obscura.viewer.updateList();
 				
 			}
 			try{ Thread.sleep(10000); } catch(InterruptedException e){}
 		}
 	}
+	
+	static final void updateImgDefsByFiles(){
+		long time= System.currentTimeMillis();
+		for (String c : images.keySet()) {
+			ImgDef def= Database.imgInfos.get(c);
+			if (def!=null){ 
+				def.file= images.get(c);
+				if (def.similar!=null)
+					def.similar.lastModificationTime= time;
+				//System.err.println("updated def "+ c+ " : "+ def.file ); 
+				}}}
+	
 	static final Pattern allowedFiles= Pattern.compile(".*\\.jpg|.*\\.png");
 	static final Pattern notAllowedFiles= Pattern.compile(".*nakup.*|.*krajina.*"); // .*zdroje.*|
 	private int scanDir(File d){
@@ -76,7 +94,9 @@ public class Watcher extends Thread{
 				if (rejectedFiles.contains(f) || f.length()==0)
 					continue;
 				knownFiles.add(f);
-				images.put(Database.getHashCode(f), f);
+				int code= Database.getHashCode(f);
+				//System.err.println("added img "+ f.getName()+ " : "+ code);
+				images.put(f.getName().toLowerCase(), f);
 				changed++;
 				//System.err.println("added img "+ f);
 			}

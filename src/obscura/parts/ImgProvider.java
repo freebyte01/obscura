@@ -5,6 +5,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -37,7 +38,7 @@ public class ImgProvider {
 		if (imgF==null || !imgF.exists())
 			return null;
 		
-		System.err.println("reading img "+ imgF + " l:"+requestLevel+ " m:"+ minLevel);
+		// System.err.println("reading img "+ imgF + " req:"+requestLevel+ " min:"+ minLevel);
 		
 		String thumbsPath= getThumbsPath(imgF);
 		
@@ -51,6 +52,7 @@ public class ImgProvider {
 			 return thumb= ImageIO.read( thumbFile );
 		if (requestLevel==2  && miniFile.exists())
 			 return mini= ImageIO.read( miniFile );
+
 
 		// read original
 		if ( requestLevel==0 || requestLevel==1 && !thumbFile.exists() || requestLevel==2 && !thumbFile.exists() && !miniFile.exists()){
@@ -134,7 +136,12 @@ public class ImgProvider {
 				if ( exifIFD0Directory == null )
 					return 1;
 				try {
-					int orientation= exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)? exifIFD0Directory==null?1:exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION) : 1;
+					int orientation= exifIFD0Directory==null? 1 : exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)? exifIFD0Directory.getInt(ExifIFD0Directory.TAG_ORIENTATION) : 1;
+					Date dateTime= exifIFD0Directory==null? new Date(imgF.lastModified()) : exifIFD0Directory.containsTag(ExifIFD0Directory.TAG_DATETIME) ? exifIFD0Directory.getDate(ExifIFD0Directory.TAG_DATETIME) : new Date(imgF.lastModified());
+					if (dateTime.getTime()!=0 && dateTime.getTime()< imgF.lastModified()){
+						System.err.println("!!! *** "+imgF.getName()+ " found disproportion on image date "+ dateTime + " vs mod "+ new Date(imgF.lastModified())); 
+						// imgF.setLastModified(dateTime.getTime());						
+					}
 					orientations.put(imgF, orientation);
 					return orientation;
 				} catch (Exception ex) {

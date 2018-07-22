@@ -12,6 +12,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.util.List;
 
 public class Utils {
 	
@@ -19,6 +20,20 @@ public class Utils {
 	
 	public static double shorter(double num){ return (double) Math.round(num*1000)/1000.000; }
 
+
+	public static String join(List<String> arr, String joint){
+		return join( arr.toArray(new String[arr.size()]), joint);
+	}
+	public static String join(String[] arr, String joint){
+		if (arr.length > 0) {
+		    StringBuilder sb = new StringBuilder();
+		    for (String n : arr) 
+		        sb.append(n).append(joint);
+		    sb.deleteCharAt(sb.length() - 1);
+		    return sb.toString();
+		} else 
+		    return ""; }
+		
 	public static String encodeColor(Color c){ return c.getRed()+","+c.getGreen()+","+c.getBlue()+","+c.getAlpha(); }
 	public static Color decodeColor(String s){ return decodeColor( s, null ); } 
 	public static Color decodeColor(String s, Color def){ 
