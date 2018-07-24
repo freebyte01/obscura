@@ -19,6 +19,8 @@ public class Similarity {
 	static final int TARGET= 10;
 	static final int ORIGIN= 20;
 	static final int VIEW= 30;
+	
+	public LinkedList<String> POIs= new LinkedList<String>();
 
 	public Similarity() {}
 
@@ -43,12 +45,21 @@ public class Similarity {
 		StringBuilder def= new StringBuilder("simil;");
 		def.append( "id:"+ id+ ";");
 		def.append( "register:"+ Utils.join(register, ",")+ ";");
+		if (POIs.size()>0){
+			StringBuilder sb= new StringBuilder("pois:");
+			for (String poi : POIs)
+				sb.append( poi+",");
+			def.append(sb.toString().substring(0, sb.length()-1)+";"); }
 		return def.toString()+"\n"; }
 	
 	public void read(String definition){
 		if (!definition.startsWith("simil;"))
 			return;
 		this.id= Database.getValue(definition, "id", System.currentTimeMillis()+"");
+		String pois= Database.getValue(definition,"pois", "");
+		if (pois.length()>0)
+			POIs.addAll( Arrays.asList(pois.split(",")));
+		
 		register.clear();
 		register.addAll(Arrays.asList(Database.getValue(definition, "register", "").split(",")));
 		
@@ -57,6 +68,8 @@ public class Similarity {
 			if (def!=null)
 				def.similar= this; }
 
+		
+		
 		Database.similarities.put( this.id, this); }
 	
 	long lastSort=-1; 

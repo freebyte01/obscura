@@ -7,7 +7,10 @@ import java.awt.geom.Line2D;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
+
 import obscura.Database;
 import obscura.Obscura;
 import obscura.Utils;
@@ -33,6 +36,7 @@ public class ImgDef{
 	public Similarity similar;
 	public File file;
 	public Point pos, targ, vect;
+	public HashMap<String, Point> POIs= new HashMap<String, Point>();
 	String assObs, assTarg;
 	
 	public String getKey(){
@@ -85,6 +89,11 @@ public class ImgDef{
 		if (keywords!=null) def.append( "keys:"+ keywords+ ";");
 		if (pos!=null) def.append( "x:"+ Utils.shorter(pos.x)+ ";y:"+ Utils.shorter(pos.y)+ ";");
 		if (targ!=null) def.append( "tx:"+ Utils.shorter(targ.x)+ ";ty:"+ Utils.shorter(targ.y)+ ";");
+		if (POIs.size()>0){
+			StringBuilder sb= new StringBuilder("pois:");
+			for (Entry<String, Point> e : POIs.entrySet())
+				sb.append( e.getKey()).append("@").append(e.getValue().serialize()+",");
+			def.append(sb.toString().substring(0, sb.length()-1)+";"); }
 		return def.toString()+"\n";
 	}
 	
@@ -109,6 +118,12 @@ public class ImgDef{
 		if (x!=0 || y!=0) pos= new Point(x, y);
 		x= Double.parseDouble(Database.getValue(definition,"tx", "0"));
 		y= Double.parseDouble(Database.getValue(definition,"ty", "0"));
+		String pois= Database.getValue(definition,"pois", "");
+		if (pois.length()>0)
+			for (String poi : pois.split(","))
+				if (poi.contains("@")){
+					String[] def= poi.split("@");
+					POIs.put( def[0], new Point(def[1])); }
 		if (x!=0 || y!=0) targ= new Point(x, y);
 		// file= path==null || path=="" ? null : new File(path);
 		update();

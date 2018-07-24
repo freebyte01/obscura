@@ -97,6 +97,7 @@ public class Utils {
 		g.fill(outline);
 
 	}
+	public static void drawString(Graphics2D g, double x, double y, String txt){  g.drawString( txt, (float) x, (float) y ); }
 	public static Shape doEllipse(Graphics2D g, double x, double y, double w, double h, boolean fill){ return doEllipse(g, x, y, w, h, null, fill); }
 	public static Shape doEllipse(Graphics2D g, double x, double y, double w, double h, Shape sh, boolean fill){
 		return doShape(g, sh==null ? new Ellipse2D.Double(x,y,w,h) : sh, fill); }

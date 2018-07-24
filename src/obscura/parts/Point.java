@@ -5,6 +5,15 @@ public class Point{
 	private double a=Double.MIN_VALUE, l= Double.MIN_VALUE;
 	private Point u;
 	public Point() {}
+	public Point(String def) {
+		if (def!=null && def.contains("/")){
+			String[] defA= def.split("/");
+			try{
+				x= Double.parseDouble(defA[0]);
+				y= Double.parseDouble(defA[1]);
+			} catch (NumberFormatException e){ System.err.println("cant read point "+ def);}
+		}}
+	public String serialize() { return Math.round( x*10000 )/10000.00+ "/"+ Math.round( y*10000 )/10000.00; }
 	public Point(double x, double y) { this.x= x; this.y= y; }
 	public Point set(double x, double y) { this.x= x; this.y= y; a= l=Double.MIN_VALUE; u=null; return this; }
 	public Point add(double x, double y) { this.x+= x; this.y+= y; return this; }

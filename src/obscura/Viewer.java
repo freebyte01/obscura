@@ -33,6 +33,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.channels.FileChannel.MapMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -62,6 +64,7 @@ import obscura.parts.ImgDef;
 import obscura.parts.ImgProvider;
 import obscura.parts.Point;
 import obscura.parts.Poly;
+import obscura.parts.Similarity;
 
 public class Viewer extends JFrame implements KeyListener {
 	public boolean mapEditMode;
@@ -279,7 +282,20 @@ public class Viewer extends JFrame implements KeyListener {
 				mouseMoved(e);
 
 				if (!isMapMode()) {
-					imgOff.add(mX - mXo, mY - mYo);
+					if (selButton>-1){
+					 	if (selButton>=POI_POS){
+					 		int poiPos= selButton- POI_POS;
+					 		if (selectedDef!=null && selectedDef.similar!=null && poiPos<selectedDef.similar.POIs.size()){
+					 			String poi= selectedDef.similar.POIs.get(poiPos);
+					 			if (!selectedDef.POIs.containsKey(poi))
+					 				selectedDef.POIs.put(poi, new Point(mX,mY));
+					 			else
+					 				selectedDef.POIs.get(poi).add(mX-mXo, mY-mYo);
+					 		}
+					 	}
+					 	
+					} else 
+						imgOff.add(mX - mXo, mY - mYo);
 				} else if (mapEditMode){
 					if (selectedArea != null && pickedPoint != null && pickedPoint.length > 0) {
 						if (shift)
@@ -386,13 +402,14 @@ public class Viewer extends JFrame implements KeyListener {
 			public void mousePressed(MouseEvent e) {
 
 				selRangeP1 = selRangeP2 = null;
-
+				
 				if (mapEditMode) {
 					pickedPoint = overPoint;
 					if (selectedArea != null)
 						selectedArea.activePoly = selectedArea.getPolyFor(pickedPoint);
 				}
-				selMap= overMap; selButton= overButton;
+				selMap= overMap; 
+				selButton= overButton;
 			}
 
 			public void mouseExited(MouseEvent e) {
@@ -434,7 +451,8 @@ public class Viewer extends JFrame implements KeyListener {
 							}
 						} else {
 							clickSelect = nearest;
-							System.err.println("clicked on "+ clickSelect);
+							
+							System.err.println("clicked on "+ clickSelect+ ":"+ clickedButton);
 							new Thread() {
 								public void run() {
 									try {
@@ -453,9 +471,19 @@ public class Viewer extends JFrame implements KeyListener {
 						
 					} else {
 						System.err.println(overButton);
+						clickedButton= overButton;
 						switch (overButton){
 							case OBSERVER_INDICATOR: sx= selectedDef.pos == null ? sx : selectedDef.pos.x; sy= selectedDef.pos == null ? sx : selectedDef.pos.y; break;
 							case TARGET_INDICATOR: sx= selectedDef.targ == null ? sx : selectedDef.targ.x; sy= selectedDef.targ == null ? sy : selectedDef.targ.y; break;
+							case POI_ADD_BUTTON: 
+								String poi= JOptionPane.showInputDialog("new POI name");
+								if (poi!=null) 
+									if (poi.length()<3)
+										JOptionPane.showMessageDialog(view, "wrong name, should be longer min 3 chars");
+									else
+										if (selectedDef!=null && selectedDef.similar!=null)
+											selectedDef.similar.POIs.add(poi);
+								break;
 							default:
 								if (alternativeImgF != null) {
 									System.err.println("clicked on near imag thumb "+ alternativeImgF + " "+ Database.imgInfos.get(alternativeImgF.getName().toLowerCase()));
@@ -743,22 +771,27 @@ public class Viewer extends JFrame implements KeyListener {
 	}
 
 	public File viewedOrigF, selectedImgF, viewedImgF, alternativeImgF, lastNear;
-	public ImgDef selectedDef, lastDef;
+	public ImgDef selectedDef, lastDef, alternativeDef, lastAlternativeDef;
 	BufferedImage selectedImg, viewedImg, alternativeImg;
 	Map overMap, selMap;
 	Point overCenter, selCenter;
-	int overButton= -1, selButton= -1;
+	int overButton= -1, selButton= -1, lastOverButton=-1, clickedButton=-1;
 	public static final int OBSERVER_INDICATOR= 10; 
 	public static final int SIMILAR_INDICATOR= 15; 
 	public static final int TARGET_INDICATOR= 20; 
 	public static final int MOVE_INDICATOR= 30; 
 	public static final int ROTATE_INDICATOR= 40; 
 	public static final int SCALE_INDICATOR= 50; 
+
+	public static final int POI_ADD_BUTTON= 1000; 
+	public static final int POI_POS= 1100; 
+
 	
 	BufferedImage lastNearestImg;
 	File lastNearestF;
 
 	synchronized void paintView(Graphics2D g) {
+		
 
 		if ( alternativeImgF == null && selectedImgF != null && selectedImg == null)
 			if (viewedImgF != selectedImgF)
@@ -772,6 +805,11 @@ public class Viewer extends JFrame implements KeyListener {
 					e.printStackTrace();
 				}
 
+		lastAlternativeDef= alternativeDef;
+		alternativeDef= null;
+
+		
+		lastOverButton= overButton;
 		overButton= selButton>-1?selButton:-1;
 
 		viewedImg = alternativeImgF != null && alternativeImgF != selectedImgF ? alternativeImg : selectedImg;
@@ -925,8 +963,10 @@ public class Viewer extends JFrame implements KeyListener {
 							selRangeP2.y - selRangeP1.y));
 				}
 			}
+			
 
 			g.setTransform(old);
+			
 			paintMap(g);
 			
 			if (nearest!=null && shift && !mapEditMode){
@@ -1005,7 +1045,8 @@ public class Viewer extends JFrame implements KeyListener {
 				g.drawImage(viewedImg, 0, 0, (int) Math.round(iw * z), (int) Math.round(ih * z), null);
 	
 				g.setTransform(old);
-	
+
+				
 				if (mX > view.getWidth() - 200) { // && mX<view.getWidth() && mY>=0
 													// && mY<view.getHeight()){
 					try {
@@ -1014,6 +1055,37 @@ public class Viewer extends JFrame implements KeyListener {
 					}
 				} else {
 					alternativeImgF = null;
+				}
+				
+				if (shift){ // show/edit similarity POIs
+					ImgDef poiDef= lastAlternativeDef==null ? selectedDef : lastAlternativeDef;
+					if (poiDef!=null && poiDef.similar!=null){
+						System.err.println(poiDef + ":" + alternativeDef);
+						Point p;
+						Similarity sim= poiDef.similar;
+						g.setColor(lastOverButton==POI_ADD_BUTTON?Color.YELLOW:Color.BLUE);
+						p= new Point(30, 30);
+						Utils.doEllipse(g, p.x-10, p.y-10, 20, 20, true);
+						if (Math.abs(mX-p.x)<10 && Math.abs(mY-p.y)<10){
+							System.err.println("POI ADD BUTTON");
+							overButton= POI_ADD_BUTTON; }
+						int vp= 0;
+						for (String poi : sim.POIs){
+							boolean active= false;
+							if ( ( active= poiDef.POIs.containsKey(poi) ) )
+								p= poiDef.POIs.get(poi);
+							else
+								p= new Point(30, 70+50*vp); 
+							g.setColor(lastOverButton==POI_POS+vp?Color.YELLOW:active?Color.GREEN:Color.BLUE);
+							int r= active ? 6 : 10;
+							Utils.doEllipse(g, p.x- r, p.y-r, r*2, r*2, !active);
+							Utils.drawString(g, p.x+r*2, p.y+ 5, poi);
+							if (Math.abs(mX-p.x)<r && Math.abs(mY-p.y)<r){
+								System.err.println("POI POS "+vp);
+								overButton= POI_POS+ vp; }
+							vp++;
+						}
+					}
 				}
 	
 				if (selectedDef != null) {
@@ -1061,6 +1133,7 @@ public class Viewer extends JFrame implements KeyListener {
 
 	void paintNearThumbs(Graphics2D g, int stripWidth) throws IOException {
 		
+
 		view.requestFocus();
 		g.setColor(new Color(255, 255, 255, 50));
 		g.fillRect(view.getWidth() - stripWidth, 0, 200, getHeight());
@@ -1072,7 +1145,7 @@ public class Viewer extends JFrame implements KeyListener {
 								+ 40;
 		
 		if ( shift ){
-			System.err.println( "paint similar .. "+ (selectedDef!=null && selectedDef.similar != null) + selectedDef + selectedDef.similar );
+			//System.err.println( "paint similar .. "+ (selectedDef!=null && selectedDef.similar != null) + selectedDef + selectedDef.similar );
 			if ( selectedDef!=null && selectedDef.similar != null ){				
 				
 				selectedDef.similar.sort();
@@ -1100,6 +1173,7 @@ public class Viewer extends JFrame implements KeyListener {
 						g.drawImage(thumb, slideX, offY + totalHeight, stripWidth - 10, imgH, null);
 					if (mY > offY + totalHeight && mY < offY + imgH + totalHeight) {
 						alternativeImgF = def.file;
+						alternativeDef= def;
 						selectNearPic();
 					}
 					g.setColor(Color.green);
@@ -1147,7 +1221,9 @@ public class Viewer extends JFrame implements KeyListener {
 				}
 				if (mY > offY + totalHeight && mY < offY + imgH + totalHeight) {
 					alternativeImgF = def.file;
+					alternativeDef= def;
 					selectNearPic();
+					System.err.println("alternative pic "+ def);
 				}
 				totalHeight += imgH + 5;
 			}
