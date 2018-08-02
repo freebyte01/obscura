@@ -9,11 +9,16 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map.Entry;
+
 import javax.swing.JOptionPane;
+
 import obscura.parts.Area;
 import obscura.parts.ImgDef;
 import obscura.parts.Place;
 import obscura.parts.Point;
+import obscura.parts.PointStat;
 import obscura.parts.Poly;
 import obscura.parts.Similarity;
 
@@ -22,6 +27,16 @@ public class Database {
 	public static HashMap<String, ImgDef> imgInfos= new HashMap<String, ImgDef>();
 	public static HashMap<String, Area> areas= new HashMap<String, Area>();
 	public static HashMap<String, Similarity> similarities= new HashMap<String, Similarity>();
+	public static LinkedList<String> POIs= new LinkedList<String>();
+	public static void addPOI(String poi){
+		if (!POIs.contains(poi))
+			POIs.add(poi);
+		sortPOIs(); }
+	public static void sortPOIs(){
+		String[] pois= POIs.toArray(new String[POIs.size()]);
+		Arrays.sort(pois);
+		POIs.clear();
+		POIs.addAll(Arrays.asList(pois)); }
 	
 	public static boolean isSimilar(String defKey1, String defKey2){
 		Similarity sim1= getSimilarityContaining(defKey1);
@@ -116,6 +131,9 @@ public class Database {
 						return sim1; }
 				for (String key : sim2.register)
 					sim1.registerKey(key, false);
+				for (String poi : sim2.POIs)
+					if (!sim1.POIs.contains(poi))
+						sim1.POIs.add(poi);
 				similarities.remove(sim2.id);
 				Obscura.data.writeDatabase();
 				return sim1; }}
@@ -202,6 +220,8 @@ public class Database {
 		    
 		    Watcher.updateImgDefsByFiles();
 		    
+		    updateRelations();
+		    
 		}catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -248,6 +268,31 @@ public class Database {
 		val= "null".equals(val)?def:val;
 		return val;
 	}
-	
 
+	public static HashMap<String, PointStat> avgs= new HashMap<String, PointStat>();
+	public static void updateRelations(){
+		//if (true) return ;
+		long stopWatch= System.currentTimeMillis();
+		int defCnt=0, relCnt= 0;
+		System.err.println("updating relations ");
+		for (ImgDef def : imgInfos.values()){
+			defCnt++;
+			for (Entry<String, Point> e: def.POIs.entrySet()){
+				String baseId= e.getKey();
+				PointStat base= avgs.get( baseId ); 
+				if (base==null)
+					avgs.put( baseId, base= new PointStat( baseId ));
+				for (Entry<String, Point> ee: def.POIs.entrySet()){
+					String relId= ee.getKey();
+					if ( !baseId.equals(relId) ){
+						Point baseRel= base.distances.get( relId );
+						relCnt++;
+						Point vect= ee.getValue().dup().sub(e.getValue());
+						if (baseRel==null){
+							base.distances.put( relId, vect);
+							base.counts.put( relId, 1 );
+						} else {
+							baseRel.add( vect );
+							base.counts.put( relId, base.counts.get(relId)+1 ); }}}}}
+		System.err.println("done updating relations - total rel : "+ relCnt+" def : "+ defCnt+" , done in "+ (System.currentTimeMillis()-stopWatch)/1000.00); }
 }

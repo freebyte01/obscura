@@ -33,12 +33,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.channels.FileChannel.MapMode;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
@@ -63,6 +65,7 @@ import obscura.parts.Area;
 import obscura.parts.ImgDef;
 import obscura.parts.ImgProvider;
 import obscura.parts.Point;
+import obscura.parts.PointStat;
 import obscura.parts.Poly;
 import obscura.parts.Similarity;
 
@@ -110,7 +113,7 @@ public class Viewer extends JFrame implements KeyListener {
 	boolean isMapMode() {
 		return ctrl || mapEditMode;
 	}
-	
+
 	double zoom = 1;
 	double sx = 0, sy = 0;
 	int splitPos = 200;
@@ -120,14 +123,14 @@ public class Viewer extends JFrame implements KeyListener {
 	Font listFont = new Font("Courier New", Font.PLAIN, 12);
 	Font listFontB = new Font("Courier New", Font.BOLD, 12);
 	DocumentListener dl= new DocumentListener() {
-        public void insertUpdate(DocumentEvent e) { filter(); }
-        public void removeUpdate(DocumentEvent e) { filter(); }
-        public void changedUpdate(DocumentEvent e) {}
-        private void filter() {
-            String filter = field.getText();
-            //filterModel((DefaultListModel<File>) list.getModel(), filter);
-        }
-        
+		public void insertUpdate(DocumentEvent e) { filter(); }
+		public void removeUpdate(DocumentEvent e) { filter(); }
+		public void changedUpdate(DocumentEvent e) {}
+		private void filter() {
+			String filter = field.getText();
+			//filterModel((DefaultListModel<File>) list.getModel(), filter);
+		}
+
 	};
 	public void updateList(){ 
 		DefaultListModel<File> lm= new DefaultListModel<File>();
@@ -135,38 +138,38 @@ public class Viewer extends JFrame implements KeyListener {
 			lm.addElement(f);
 		//filterModel((DefaultListModel<File>) list.getModel(), field.getText());
 		list.setModel(lm);
-		}
-	
+	}
+
 	public void filterModel(DefaultListModel<File> model, String filter) {
 		if (true) return;
-        for (File f : Obscura.watcher.sorted) {
-            if (!f.getName().toLowerCase().contains(filter.toLowerCase())) {
-                if (model.contains(f)) {
-                    model.removeElement(f);
-                }
-            } else {
-                if (!model.contains(f)) {
-                    model.addElement(f);
-                }
-            }
-        }
-    }
+		for (File f : Obscura.watcher.sorted) {
+			if (!f.getName().toLowerCase().contains(filter.toLowerCase())) {
+				if (model.contains(f)) {
+					model.removeElement(f);
+				}
+			} else {
+				if (!model.contains(f)) {
+					model.addElement(f);
+				}
+			}
+		}
+	}
 
 	void init() {
-		
+
 		getContentPane().add(split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT));
 		JPanel jp= new JPanel();
 		jp.setLayout(new BorderLayout());
 		jp.add(new JScrollPane(list = new JList<File>()), BorderLayout.CENTER);
 		field= new JTextField(15);
-        field.getDocument().addDocumentListener(dl);
-        field.addKeyListener(new KeyListener() {
+		field.getDocument().addDocumentListener(dl);
+		field.addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {
 			}
-			
+
 			public void keyReleased(KeyEvent e) {
 			}
-			
+
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode()==27){
 					System.err.println("es pressed in text field");
@@ -182,15 +185,16 @@ public class Viewer extends JFrame implements KeyListener {
 			public Component getListCellRendererComponent(JList<? extends File> list, File file, int index,
 					boolean isSelected, boolean cellHasFocus) {
 				int hash = Database.getHashCode(file);
+				ImgDef def= Database.imgInfos.get(file.getName().toLowerCase());
 				boolean hasThumb = new File(ImgProvider.getThumbsPath(file), hash + ".jpg").exists();
-				JLabel c = new JLabel(sdfs.format(new Date(file.lastModified())) + (hasThumb ? "[] " : "   ")
+				JLabel c = new JLabel(sdfs.format(new Date(file.lastModified())) + (hasThumb ? "[] " : "   ")+ (def!=null?(def.POIs.size()+100+" ").substring(2):"   ")
 						+ shortName(file.getPath()));
 				c.setFont(isSelected ? listFontB : listFont);
 				c.setForeground(isSelected ? Color.black : Color.gray);
-				
+
 				//System.err.println(file.getName().toLowerCase() + ":"+ Database.imgInfos.containsKey(file.getName().toLowerCase()));
 
-				if (Database.imgInfos.containsKey(file.getName().toLowerCase())) {
+				if (def!=null) {
 					c.setOpaque(true);
 					c.setBackground(hasThumb ? definedCT : definedC);
 				}
@@ -233,7 +237,7 @@ public class Viewer extends JFrame implements KeyListener {
 				paintView((Graphics2D) g);
 			}
 		});
-		
+
 
 		view.setMinimumSize(new Dimension(200, 200));
 		view.setBackground(Color.black);
@@ -260,10 +264,30 @@ public class Viewer extends JFrame implements KeyListener {
 						//
 					} else {
 						alternativeImgF = null;
-						int newIndex = list.getSelectedIndex() + e.getWheelRotation();
-						list.setSelectedIndex(newIndex < 0 ? 0
-								: newIndex > list.getModel().getSize() - 1 ? list.getModel().getSize() - 1 : newIndex);
-						list.ensureIndexIsVisible(list.getSelectedIndex());
+						ImgDef viewedDef= Database.imgInfos.get( viewedImgF.getName().toLowerCase() );
+						if (shift && viewedDef!=null && viewedDef.similar!=null ){
+							int newIndex = (viewedDef.similar.register.indexOf(viewedDef.file.getName().toLowerCase()) + e.getWheelRotation()) % viewedDef.similar.register.size();
+							newIndex+= newIndex<0? viewedDef.similar.register.size() : 0;
+							int listPos= Arrays.binarySearch( Watcher.sorted, Database.imgInfos.get(viewedDef.similar.register.get(newIndex)).file, new Comparator<File>() {
+								public int compare(File o1, File o2) { 
+									//return (int) o1.lastModified()>=o2.lastModified()?1:-1;
+									boolean o1Comp= o1.getName().indexOf('-')>-1;
+									boolean o2Comp= o2.getName().indexOf('-')>-1;
+									return o1Comp ? o2Comp ? o1.getName().compareTo(o2.getName()) 
+											:1
+											:o2Comp ? -1 
+													: o1.getName().compareTo(o2.getName());
+								}
+							});
+							if (listPos>0){
+								list.setSelectedIndex(listPos);
+								list.ensureIndexIsVisible(list.getSelectedIndex());
+							}
+						} else {
+							int newIndex = list.getSelectedIndex() + e.getWheelRotation();
+							list.setSelectedIndex( newIndex  % list.getModel().getSize() );
+							list.ensureIndexIsVisible(list.getSelectedIndex());
+						}
 					}
 				}
 			}
@@ -283,17 +307,20 @@ public class Viewer extends JFrame implements KeyListener {
 
 				if (!isMapMode()) {
 					if (selButton>-1){
-					 	if (selButton>=POI_POS){
-					 		int poiPos= selButton- POI_POS;
-					 		if (selectedDef!=null && selectedDef.similar!=null && poiPos<selectedDef.similar.POIs.size()){
-					 			String poi= selectedDef.similar.POIs.get(poiPos);
-					 			if (!selectedDef.POIs.containsKey(poi))
-					 				selectedDef.POIs.put(poi, new Point(mX,mY));
-					 			else
-					 				selectedDef.POIs.get(poi).add(mX-mXo, mY-mYo);
-					 		}
-					 	}
-					 	
+						if (selButton>=POI_POS){
+							int poiPos= selButton- POI_POS;
+							if (!Database.imgInfos.containsKey(viewedImgF.getName().toLowerCase())){ // add definition for image if missing
+								selectedDef= new ImgDef(viewedImgF);
+								selectedDef.oldPOI= false; }
+							if (selectedDef!=null && poiPos<Database.POIs.size()){
+								String poi= Database.POIs.get(poiPos);
+								if (!selectedDef.POIs.containsKey(poi))
+									selectedDef.POIs.put(poi, new Point((mX-view.getWidth()/2-imgOff.x)/currRelScale,(mY-view.getHeight()/2-imgOff.y)/currRelScale));
+								else
+									selectedDef.POIs.get(poi).add((mX-mXo)/currRelScale, (mY-mYo)/currRelScale);
+							}
+						}
+
 					} else 
 						imgOff.add(mX - mXo, mY - mYo);
 				} else if (mapEditMode){
@@ -311,15 +338,15 @@ public class Viewer extends JFrame implements KeyListener {
 						sy += (rY - rYo); }
 				} else if (selMap!=null)
 					switch(selButton){
-						case MOVE_INDICATOR: selMap.x+= rX - rXo; selMap.y+= rY - rYo; break;
-						case SCALE_INDICATOR: { 
-							Point vo= new Point(rXo, rYo).sub(overCenter);
-							Point v= new Point(rX, rY).sub(overCenter);
-							selMap.scale/= vo.length()/v.length(); } break;
-						case ROTATE_INDICATOR: {
-							Point vo= new Point(rXo, rYo).sub(overCenter);
-							Point v= new Point(rX, rY).sub(overCenter);
-							selMap.rot+= v.angle()- vo.angle(); } break;
+					case MOVE_INDICATOR: selMap.x+= rX - rXo; selMap.y+= rY - rYo; break;
+					case SCALE_INDICATOR: { 
+						Point vo= new Point(rXo, rYo).sub(overCenter);
+						Point v= new Point(rX, rY).sub(overCenter);
+						selMap.scale/= vo.length()/v.length(); } break;
+					case ROTATE_INDICATOR: {
+						Point vo= new Point(rXo, rYo).sub(overCenter);
+						Point v= new Point(rX, rY).sub(overCenter);
+						selMap.rot+= v.angle()- vo.angle(); } break;
 					}
 				else {
 					sx += (rX - rXo);
@@ -360,12 +387,12 @@ public class Viewer extends JFrame implements KeyListener {
 			public void run() {
 				while (true) {
 					try { sleep(200); } catch (InterruptedException e) {}
-/*					stateLabel.setText(
+					/*					stateLabel.setText(
 							" viewedImgF != null : "+(viewedImgF != null)+
 							"    viewedOrigF != viewedImgF : "+ (viewedOrigF != viewedImgF)+
 							"    System.currentTimeMillis() > (imgSelectedTime + 500) : "+(System.currentTimeMillis() > (imgSelectedTime + 500)));
-*/
-						if ( viewedImgF != null 
+					 */
+					if ( viewedImgF != null 
 							&& viewedOrigF != viewedImgF
 							&& System.currentTimeMillis() > (imgSelectedTime + 500)) { 
 						// if still on the same pic, show it in it's original resolution (refine) if not already orig
@@ -391,18 +418,19 @@ public class Viewer extends JFrame implements KeyListener {
 				if (mapEditMode && shift) {
 					selRangeP2 = new Point(rX, rY);
 				}
+				if (selMap!=null && selButton>-1 || drag && overButton>=POI_POS ){
+					selMap= null; selButton= -1;
+					Database.updateRelations();
+					Obscura.data.writeDatabase(); }
 				drag = false;
 				pickedPoint = null;
-				if (selMap!=null && selButton>-1){
-					selMap= null; selButton= -1;
-					Obscura.data.writeDatabase(); }
 				view.repaint();
 			}
 
 			public void mousePressed(MouseEvent e) {
 
 				selRangeP1 = selRangeP2 = null;
-				
+
 				if (mapEditMode) {
 					pickedPoint = overPoint;
 					if (selectedArea != null)
@@ -410,6 +438,10 @@ public class Viewer extends JFrame implements KeyListener {
 				}
 				selMap= overMap; 
 				selButton= overButton;
+				if (selButton>=POI_POS){
+					if (lastPOIs.indexOf(selButton)<0)
+						lastPOIs.set(lastPOIpos++ % lastPOIs.size(), selButton);
+				}
 			}
 
 			public void mouseExited(MouseEvent e) {
@@ -451,7 +483,7 @@ public class Viewer extends JFrame implements KeyListener {
 							}
 						} else {
 							clickSelect = nearest;
-							
+
 							System.err.println("clicked on "+ clickSelect+ ":"+ clickedButton);
 							new Thread() {
 								public void run() {
@@ -460,7 +492,7 @@ public class Viewer extends JFrame implements KeyListener {
 										System.err.println("clicked only once : csl: "+ ( clickSelect == null ? "" : clickSelect.file.getAbsolutePath() )+ "   nea: "+ ( nearest == null ? "" : nearest.file.getAbsolutePath() ));
 										if (clickSelect != null) {
 											//for (int i=0; i<list.getModel().getSize(); i++) 
-												//System.out.println(list.getModel().getElementAt(i));
+											//System.out.println(list.getModel().getElementAt(i));
 											list.setSelectedValue( clickSelect.file, true);
 											list.ensureIndexIsVisible( list.getSelectedIndex() );
 										}
@@ -468,32 +500,60 @@ public class Viewer extends JFrame implements KeyListener {
 									}
 								}
 							}.start(); }
-						
+
 					} else {
 						System.err.println(overButton);
 						clickedButton= overButton;
 						switch (overButton){
-							case OBSERVER_INDICATOR: sx= selectedDef.pos == null ? sx : selectedDef.pos.x; sy= selectedDef.pos == null ? sx : selectedDef.pos.y; break;
-							case TARGET_INDICATOR: sx= selectedDef.targ == null ? sx : selectedDef.targ.x; sy= selectedDef.targ == null ? sy : selectedDef.targ.y; break;
-							case POI_ADD_BUTTON: 
-								String poi= JOptionPane.showInputDialog("new POI name");
-								if (poi!=null) 
-									if (poi.length()<3)
-										JOptionPane.showMessageDialog(view, "wrong name, should be longer min 3 chars");
-									else
-										if (selectedDef!=null && selectedDef.similar!=null)
+						case OBSERVER_INDICATOR: sx= selectedDef.pos == null ? sx : selectedDef.pos.x; sy= selectedDef.pos == null ? sx : selectedDef.pos.y; break;
+						case TARGET_INDICATOR: sx= selectedDef.targ == null ? sx : selectedDef.targ.x; sy= selectedDef.targ == null ? sy : selectedDef.targ.y; break;
+						case POI_ADD_BUTTON: 
+							String poi= JOptionPane.showInputDialog("new POI name");
+							if (poi!=null) 
+								if (poi.length()<3)
+									JOptionPane.showMessageDialog(view, "wrong name, should be longer min 3 chars");
+								else {
+									if (selectedDef!=null)
+										if (selectedDef.similar!=null && selectedDef.similar.POIs.indexOf(poi)<0)
 											selectedDef.similar.POIs.add(poi);
-								break;
-							default:
+									Database.addPOI(poi); }
+							break;
+						default:
+							if ( overButton >= POI_POS ){
+								if (e.getClickCount()>1){
+									int poiPos= overButton-POI_POS;
+									if ( poiPos < Database.POIs.size()){
+										String oldName= Database.POIs.get(poiPos);
+										if (e.getButton()==MouseEvent.BUTTON3){
+											if (JOptionPane.showConfirmDialog(view, "do you want to delete POI "+ oldName+ " from definition?")==JOptionPane.OK_OPTION)
+												selectedDef.POIs.remove(oldName);
+										}else { 
+											String newName= JOptionPane.showInputDialog("new POI name", oldName);
+											if (newName!=null && newName.trim().length()>3){
+												if (Database.POIs.indexOf(newName)>=0)
+													if ( JOptionPane.showConfirmDialog(view, "Do you really want to rename "+ oldName+ " POI to "+ newName + " which already exist?") != JOptionPane.OK_OPTION )
+														return;
+												Database.POIs.remove(oldName);
+												for (ImgDef def : Database.imgInfos.values()){
+													Point poiP= def.POIs.remove(oldName);
+													if (poiP!=null)
+														def.POIs.put(newName, poiP); }
+												for (Similarity sim : Database.similarities.values())
+													if (sim.POIs.contains(oldName)){
+														if (!sim.POIs.contains(newName))
+															sim.POIs.add(newName);
+														sim.POIs.remove(oldName); }														
+												Database.POIs.remove(oldName);
+												Database.addPOI(newName);
+												Obscura.data.writeDatabase(); }}}
+								}
+							} else 
 								if (alternativeImgF != null) {
 									System.err.println("clicked on near imag thumb "+ alternativeImgF + " "+ Database.imgInfos.get(alternativeImgF.getName().toLowerCase()));
 									list.setSelectedValue(
 											Database.imgInfos.get(alternativeImgF.getName().toLowerCase())==null ? alternativeImgF: Database.imgInfos.get(alternativeImgF.getName().toLowerCase()).file
-											, true);
-									list.ensureIndexIsVisible(list.getSelectedIndex()); }
-						}
-						
-					}
+													, true);
+									list.ensureIndexIsVisible(list.getSelectedIndex()); }}}
 				} else { // MAP EDIT
 
 					if (e.getClickCount() > 1) {
@@ -653,23 +713,23 @@ public class Viewer extends JFrame implements KeyListener {
 
 	boolean ctrl, shift, alt, drag, next, slideShow;
 	private Poly polyBuffer;
-	
+
 	int lastKey=0;
 
 	public void keyPressed(KeyEvent e) {
 		ctrl = e.isControlDown();
 		shift = e.isShiftDown();
 		alt = e.isAltDown();
-		
+
 		int keyCode= e.getKeyCode()+(ctrl?1000:0)+(shift?10000:0)+(alt?100000:0);
-		
+
 		if (lastKey==keyCode)
 			return;
 
 		lastKey= keyCode;
-		
+
 		System.err.println("key pressed "+ lastKey + " : "+ e.getKeyCode()+ ":"+ e.getKeyChar() );
-		
+
 		if (e.getKeyCode() == '\27'){
 			System.err.println("escape pressed");
 		}else if (e.getKeyCode() == '=') {
@@ -778,6 +838,7 @@ public class Viewer extends JFrame implements KeyListener {
 	int overButton= -1, selButton= -1, lastOverButton=-1, clickedButton=-1;
 	public static final int OBSERVER_INDICATOR= 10; 
 	public static final int SIMILAR_INDICATOR= 15; 
+	public static final int POIS_INDICATOR= 17; 
 	public static final int TARGET_INDICATOR= 20; 
 	public static final int MOVE_INDICATOR= 30; 
 	public static final int ROTATE_INDICATOR= 40; 
@@ -786,12 +847,17 @@ public class Viewer extends JFrame implements KeyListener {
 	public static final int POI_ADD_BUTTON= 1000; 
 	public static final int POI_POS= 1100; 
 
-	
+
 	BufferedImage lastNearestImg;
 	File lastNearestF;
 
+	double currRelScale= 1;
+	boolean showPOImenu;
+	LinkedList<Integer> lastPOIs= new LinkedList<Integer>( Arrays.asList(new Integer[10]) );
+	int lastPOIpos= 0;
+
 	synchronized void paintView(Graphics2D g) {
-		
+
 
 		if ( alternativeImgF == null && selectedImgF != null && selectedImg == null)
 			if (viewedImgF != selectedImgF)
@@ -808,7 +874,7 @@ public class Viewer extends JFrame implements KeyListener {
 		lastAlternativeDef= alternativeDef;
 		alternativeDef= null;
 
-		
+
 		lastOverButton= overButton;
 		overButton= selButton>-1?selButton:-1;
 
@@ -821,12 +887,12 @@ public class Viewer extends JFrame implements KeyListener {
 
 		AffineTransform old = g.getTransform();
 		if (isMapMode()) {
-			
+
 			g.translate(vw / 2, vh / 2);
 
 			g.scale(zoom, zoom);
 			g.translate(sx, sy);
-			
+
 
 			// g.drawLine(0, 0, (int) rX, (int) rY);
 			int rule = AlphaComposite.SRC_OVER;
@@ -834,12 +900,12 @@ public class Viewer extends JFrame implements KeyListener {
 			Composite compAO = AlphaComposite.getInstance(rule, .8f);
 			Composite compS = AlphaComposite.getInstance(rule, 1f);
 			Utils.aaOff(g);
-			
-			
+
+
 			g.setStroke(new BasicStroke((float)(3/zoom)));
 			Map lastMap= selMap==null?overMap:selMap;
 			overMap= selMap;
-			
+
 			for (int lev=1; lev<3; lev++)
 				if (selectedArea!=null)
 					try{
@@ -880,7 +946,7 @@ public class Viewer extends JFrame implements KeyListener {
 							g.setTransform(o);
 						}
 					} catch (Exception e) { e.printStackTrace();}			
-			
+
 			if (mapEditMode){
 				g.setStroke(new BasicStroke(1f));
 				g.setColor( new Color(200,200,100, 30) );
@@ -889,7 +955,7 @@ public class Viewer extends JFrame implements KeyListener {
 				for (int j=-10; j<=10; j++) 
 					g.draw(new Line2D.Double(-300/Utils.ratioMetric, j*30/Utils.ratioMetric, 300/Utils.ratioMetric, j*30/Utils.ratioMetric ));
 			}
-				
+
 			g.setComposite(compS);
 			// drawDef(g, lastDef, 0.3f);
 			// g.fill(new Ellipse2D.Double(currDef.x-8/zoom, currDef.y-8/zoom,
@@ -903,7 +969,7 @@ public class Viewer extends JFrame implements KeyListener {
 			double posR = 2 / zoom, posD = posR * 2;
 
 			ImgDef lastNearest= nearest;
-			
+
 			for (ImgDef def : Database.imgInfos.values())
 
 				if (def.pos != null) {
@@ -963,12 +1029,12 @@ public class Viewer extends JFrame implements KeyListener {
 							selRangeP2.y - selRangeP1.y));
 				}
 			}
-			
+
 
 			g.setTransform(old);
-			
+
 			paintMap(g);
-			
+
 			if (nearest!=null && shift && !mapEditMode){
 				try{ 
 					//System.err.println(nearest.file);
@@ -986,15 +1052,15 @@ public class Viewer extends JFrame implements KeyListener {
 						g.setColor(new Color(255, 255, 255, 50));
 						g.fill(new Rectangle2D.Double(
 								(mX < ww/2 + 20 ? 20 : mX > view.getWidth() - ww/2 -20 ? view.getWidth()- ww -40 : mX- ww/2)-10, 
-										(mY > view.getHeight() - 100 - hh ? mY -100 - hh: mY + 100)-10, ww+20, hh+20));
+								(mY > view.getHeight() - 100 - hh ? mY -100 - hh: mY + 100)-10, ww+20, hh+20));
 						g.drawImage(nearestImg, 
 								mX < ww/2 + 20 ? 20 : mX > view.getWidth() - ww/2 -20 ? view.getWidth()- ww -40 : mX- ww/2, 
-								mY > view.getHeight() - 100 - hh ? mY -100 - hh: mY + 100, 
-								ww, hh, null);
+										mY > view.getHeight() - 100 - hh ? mY -100 - hh: mY + 100, 
+												ww, hh, null);
 						//System.err.println(nearest.file+ " : "+ nearestImg.getWidth()+ ":"+ + nearestImg.getHeight());
 					}
-					
-					
+
+
 				} catch (IOException e) {}
 			}
 
@@ -1003,14 +1069,14 @@ public class Viewer extends JFrame implements KeyListener {
 			if (viewedImg != null) {
 				double iw = viewedImg.getWidth(null);
 				double ih = viewedImg.getHeight(null);
-	
+
 				int orientation = 1;
 				try {
 					orientation = ImgProvider.getOrientation(alternativeImgF == null ? selectedImgF : alternativeImgF);
 				} catch (Exception e) {
 				}
-				double rw = vw, rh = vh;
-	
+				double rw = vw, rh = vh, rmX= mX, rmY= mY;
+
 				switch (orientation) {
 				case 1:
 				case 2: // Flip X
@@ -1023,96 +1089,170 @@ public class Viewer extends JFrame implements KeyListener {
 				case 8: // PI / 2
 					rw = vh;
 					rh = vw;
+					
+					rmY = mX;
 					break;
 				default:
 					break;
 				}
-	
+
 				double zw = rw / iw * imgZoom;
 				double zh = rh / ih * imgZoom;
-				double z = zw > zh ? zh : zw;
-	
-				g.setTransform(old);
-	
-				g.translate(view.getWidth() / 2 + imgOff.x, view.getHeight() / 2 + imgOff.y);
-	
-				g.setTransform(ImgProvider.getAffineForOrientation(g.getTransform(), orientation, (int) Math.round(iw * z),
-						(int) Math.round(ih * z)));
-	
-				if (z < 1)
-					Utils.aaOn(g);
-	
-				g.drawImage(viewedImg, 0, 0, (int) Math.round(iw * z), (int) Math.round(ih * z), null);
-	
+				double currImgScale = zw > zh ? zh : zw;
+
+				currRelScale= iw * currImgScale;
+
 				g.setTransform(old);
 
+				g.translate(vw/2 + imgOff.x, vh/2 + imgOff.y); // center to screen
+
+				g.setTransform(ImgProvider.getAffineForOrientation(g.getTransform(), orientation, (int) Math.round(currRelScale),
+						(int) Math.round(ih * currImgScale)));
+
+				if (currImgScale < 1)
+					Utils.aaOn(g);
+
+				g.drawImage(viewedImg, 0, 0, (int) Math.round(iw * currImgScale), (int) Math.round(ih * currImgScale), null);
+
+				if (shift && drag){
+					g.setTransform(old);
+					//Utils.doLine(g, vw/2, 0,  vw/2, vh );
+					//Utils.doLine(g, 0, vh/2, vw,  vh/2 );
+					//g.setClip(null);
+					//g.scale(1/currImgScale,1/currImgScale);
+					g.setClip(new Ellipse2D.Double(-100+mX, -100+mY, 200, 200));
+					
+					g.translate(vw/2 + imgOff.x+ (vw/2-mX+ imgOff.x), vh/2 + imgOff.y+ (vh/2-mY+imgOff.y)); // center to screen
+
+					g.setTransform(ImgProvider.getAffineForOrientation(g.getTransform(), orientation, (int) Math.round( currRelScale*2),
+							(int) Math.round(ih * currImgScale*2)));
+
+					if (currImgScale < 1)
+						Utils.aaOn(g);
+
+					g.drawImage(viewedImg, 0, 0, (int) Math.round(iw * currImgScale*2), (int) Math.round(ih * currImgScale*2), null);
+					//g.drawImage(viewedImg, 0, 0, (int)vw, (int)vh, null);
+					g.setClip(null);
+				}
+
 				
-				if (mX > view.getWidth() - 200) { // && mX<view.getWidth() && mY>=0
-													// && mY<view.getHeight()){
-					try {
-						paintNearThumbs(g, 200);
-					} catch (IOException e) {
-					}
-				} else {
+				g.setTransform(old);
+				
+
+				if (!drag && mX > view.getWidth() - 200) { 
+					try { paintNearThumbs(g, 200);
+					} catch (IOException e) {}
+				} else 
 					alternativeImgF = null;
-				}
-				
+
 				if (shift){ // show/edit similarity POIs
-					ImgDef poiDef= lastAlternativeDef==null ? selectedDef : lastAlternativeDef;
-					if (poiDef!=null && poiDef.similar!=null){
-						System.err.println(poiDef + ":" + alternativeDef);
-						Point p;
-						Similarity sim= poiDef.similar;
-						g.setColor(lastOverButton==POI_ADD_BUTTON?Color.YELLOW:Color.BLUE);
-						p= new Point(30, 30);
-						Utils.doEllipse(g, p.x-10, p.y-10, 20, 20, true);
-						if (Math.abs(mX-p.x)<10 && Math.abs(mY-p.y)<10){
-							System.err.println("POI ADD BUTTON");
-							overButton= POI_ADD_BUTTON; }
-						int vp= 0;
-						for (String poi : sim.POIs){
-							boolean active= false;
-							if ( ( active= poiDef.POIs.containsKey(poi) ) )
-								p= poiDef.POIs.get(poi);
-							else
-								p= new Point(30, 70+50*vp); 
-							g.setColor(lastOverButton==POI_POS+vp?Color.YELLOW:active?Color.GREEN:Color.BLUE);
-							int r= active ? 6 : 10;
-							Utils.doEllipse(g, p.x- r, p.y-r, r*2, r*2, !active);
-							Utils.drawString(g, p.x+r*2, p.y+ 5, poi);
-							if (Math.abs(mX-p.x)<r && Math.abs(mY-p.y)<r){
-								System.err.println("POI POS "+vp);
-								overButton= POI_POS+ vp; }
-							vp++;
+					if (mX<50) 
+						showPOImenu= true;
+					
+					ImgDef poiDef= Database.imgInfos.get(viewedImgF.getName().toLowerCase()); //lastAlternativeDef==null ? selectedDef : lastAlternativeDef;
+					System.err.println(poiDef + ":" + alternativeDef);
+					Point p;
+					g.setColor(lastOverButton==POI_ADD_BUTTON?Color.YELLOW:Color.BLUE);
+					p= new Point(30, 30);
+					Utils.doEllipse(g, p.x-10, p.y-10, 20, 20, true);
+					if (Math.abs(mX-p.x)<10 && Math.abs(mY-p.y)<10){
+						System.err.println("POI ADD BUTTON");
+						overButton= POI_ADD_BUTTON; }
+					int poiPos= 0, offX=0, offY=0;
+					
+					int maxListHeight= view.getHeight() - 140;
+					String[] tree= new String[10];
+					for (String poi : Database.POIs){
+
+						boolean active= poiDef!=null && poiDef.POIs.containsKey(poi) ;
+						
+						String[] parts= poi.split(" ");
+						if (!parts[0].equals(tree[0])){
+							tree[0]=parts[0];
+							offX=0;
+							if (!drag && (active || showPOImenu)){
+								offY+= poiPos>0?5:0;
+								int column= (int) Math.floor(  (25*poiPos+ offY) / maxListHeight );
+								p= new Point( 20+ column* 240, ((25*poiPos+ offY) % maxListHeight) + 70 );
+								g.setColor( Color.white );
+								Utils.doRectangle(g, p.x-5, p.y-15, 240, 20, true);
+								g.setColor( Color.black );
+								Utils.doRectangle(g, p.x-5, p.y-15, 240, 20, false);
+								Utils.drawString( g, p.x, p.y, tree[0] );
+							}
+							offY+=20;
 						}
+						if (!drag || lastOverButton == POI_POS +poiPos){
+							double ppx, ppy;
+							if ( active ) {
+								p= poiDef.POIs.get(poi);
+								if (poiDef.oldPOI){ // recalc to relative pois from old absolute pois
+									p.x= (p.x - view.getWidth()/2- imgOff.x)/currRelScale;
+									p.y= (p.y - view.getHeight()/2- imgOff.y)/currRelScale; }
+								ppx= view.getWidth()/2+ imgOff.x+ p.x*currRelScale;
+								ppy= view.getHeight()/2+ imgOff.y+ p.y*currRelScale;
+							} else {
+								int column= (int) Math.floor(  (25*poiPos+ offY) / maxListHeight );
+								p= new Point( 30+ column* 240, ((25*poiPos+ offY) % maxListHeight) + 70 );
+								ppx= p.x;
+								ppy= p.y; }
+							int r= active ? 6 : 10;
+							if (active || showPOImenu){
+
+							g.setColor( lastOverButton == POI_POS +poiPos ? Color.YELLOW : active ? new Color(0,0,200,100) : new Color(0,0,150,50));
+							Utils.doEllipse( g, ppx- r, ppy-r, r* 2, r* 2, true);
+							if (!drag && (!active || lastOverButton==POI_POS+ poiPos)){
+								g.setColor( lastOverButton == POI_POS + poiPos || active ? Color.yellow : lastPOIs.indexOf(POI_POS+poiPos)>=0 ? Color.yellow : new Color(0,0,0,200));
+								if (Utils.doRoundRectangle(g, ppx+ r+ 5, ppy-10, g.getFontMetrics().stringWidth(poi)+10, 20, 5, true).contains(rX, rY))
+									overButton= POI_POS + poiPos;
+							}
+								g.setColor( lastOverButton == POI_POS +poiPos ?  Color.BLUE : active ? new Color(150,150,255) : lastPOIs.indexOf(POI_POS+poiPos)>=0 ? Color.blue : new Color(200,200,255));
+								Utils.doEllipse( g, ppx- r, ppy-r, r* 2, r* 2, false);
+								if (lastOverButton==POI_POS+ poiPos && active){
+									PointStat ps= Database.avgs.get(poi);
+									if (ps!=null)
+										for (Entry<String, Point> d : ps.distances.entrySet())
+											if (poiDef.POIs.containsKey(d.getKey())){
+												int cnt= ps.counts.get(d.getKey());
+												double l= d.getValue().length()*currRelScale/cnt;
+												//Utils.doEllipse( g, ppx- l/2, ppy- l/2, l, l, false);
+												Utils.doLine(g, ppx, ppy, ppx+d.getValue().x*currRelScale/cnt, ppy+d.getValue().y*currRelScale/cnt); }}
+								if (!drag && (!active || lastOverButton==POI_POS+ poiPos))
+									Utils.drawString( g, ppx+ r+ 10, ppy+ 5, poi); }
+							if ( Math.abs( mX- ppx ) < r && Math.abs( mY- ppy ) < r ){
+								System.err.println( "POI POS "+ poiPos );
+								overButton= POI_POS+ poiPos; }
+						} else if (lastOverButton == POI_POS +poiPos)
+							overButton= lastOverButton; 
+						poiPos++; }
+						if (poiDef!=null) 
+							poiDef.oldPOI= false; 
+						}
+					else {
+						showPOImenu= false;
 					}
-				}
-	
+
 				if (selectedDef != null) {
+					
+
+					
 					if (selectedDef.pos != null) {
 						g.setColor(Color.blue);
-						g.fillOval(20, (int) (vh - 40), 20, 20);
-						if (mX>20 && mX<40 && mY>vh-40 && mY<vh-20){
-							System.err.println("TARGET");
-							overButton= TARGET_INDICATOR;
-						}
-					}
+						paintButton(g, 20, vh - 20, 10, OBSERVER_INDICATOR );
+
 					if (selectedDef.targ != null) {
-						g.setColor(Color.yellow);
-						g.fillOval(20, (int) (vh - 70), 20, 20);
-						if (mX>20 && mX<40 && mY>vh-70 && mY<vh-50){
-							System.err.println("OBSERVER");
-							overButton= OBSERVER_INDICATOR; }
-					}
+						g.setColor(Color.yellow); 					}
+						paintButton(g, 50, vh - 20, 10, TARGET_INDICATOR ); }
+
 					if (alternativeImgF==null && selectedDef.similar!=null  || alternativeImgF!=null && selectedDef.isSimilarTo(alternativeImgF.getName().toLowerCase())) {
 						g.setColor(Color.green);
-						g.fillOval(20, (int) (vh - 100), 20, 20);
-						if (mX>20 && mX<40 && mY>vh-100 && mY<vh-70){
-							System.err.println("SIMILAR");
-							overButton= SIMILAR_INDICATOR; }
-					}
-				}
-			}
+						paintButton(g, 80, vh - 20, 10, SIMILAR_INDICATOR ); }
+					
+					if (selectedDef.POIs.size() > 0) {
+						g.setColor(Color.yellow);
+						paintButton(g, 110, vh - 20, 10, POIS_INDICATOR, selectedDef.POIs.size()+"" ); }
+
+				}}
 
 		g.setTransform(old);
 
@@ -1128,11 +1268,17 @@ public class Viewer extends JFrame implements KeyListener {
 
 	}
 
+	public void paintButton(Graphics2D g, double x, double y,double rad, int overValue){ paintButton(g, x, y, rad, overValue, null); }
+	public void paintButton(Graphics2D g, double x, double y,double rad, int overValue, String txt){
+		if (txt!=null) Utils.drawString(g, x+rad, y+4, txt);
+		if (Utils.doEllipse( g, x-rad/2, y-rad/2, rad, rad, true).contains(mX, mY)){
+			overButton= TARGET_INDICATOR; } }
+	
 	private int lastThumbsHeight;
 	private LinkedHashMap<File, BufferedImage> thumbs = new LinkedHashMap<File, BufferedImage>();
 
 	void paintNearThumbs(Graphics2D g, int stripWidth) throws IOException {
-		
+
 
 		view.requestFocus();
 		g.setColor(new Color(255, 255, 255, 50));
@@ -1142,18 +1288,18 @@ public class Viewer extends JFrame implements KeyListener {
 		int offY = lastThumbsHeight == 0 ? 40
 				: lastThumbsHeight < view.getHeight() ? 40
 						: (int) Math.round((view.getHeight() - lastThumbsHeight - 80) * (mY * 1d / view.getHeight()))
-								+ 40;
-		
+						+ 40;
+
 		if ( shift ){
 			//System.err.println( "paint similar .. "+ (selectedDef!=null && selectedDef.similar != null) + selectedDef + selectedDef.similar );
 			if ( selectedDef!=null && selectedDef.similar != null ){				
-				
+
 				selectedDef.similar.sort();
-				
+
 				for (String sim : selectedDef.similar.register) {
-					
+
 					ImgDef def= Database.imgInfos.get( sim );
-					
+
 					if (def==null)
 						continue;
 					if (def.file == null)
@@ -1171,27 +1317,27 @@ public class Viewer extends JFrame implements KeyListener {
 					int imgH = (int) Math.round(thumb.getHeight() * ((stripWidth - 10) * 1d / thumb.getWidth()));
 					if (offY < view.getHeight() && offY + totalHeight + imgH > 0)
 						g.drawImage(thumb, slideX, offY + totalHeight, stripWidth - 10, imgH, null);
-					if (mY > offY + totalHeight && mY < offY + imgH + totalHeight) {
+					if (mY > offY + totalHeight -2 && mY < offY + imgH + totalHeight + 2 ) {
 						alternativeImgF = def.file;
 						alternativeDef= def;
 						selectNearPic();
 					}
 					g.setColor(Color.green);
 					g.fillRect(slideX+1, offY + totalHeight+ 1, 5, imgH-2);
-					totalHeight += imgH + 5;
+					totalHeight += imgH + 4;
 				}
 			}
 		} else {
 
 			if (nearTargets!=null)
 				totalHeight= paintThumbs(g, nearTargets, stripWidth, slideX, offY, totalHeight);
-			
+
 			totalHeight= paintThumbsDelimiter(g, stripWidth, slideX, offY, totalHeight);
 
 			if (nearPositions != null)
 				totalHeight= paintThumbs(g, nearPositions, stripWidth, slideX, offY, totalHeight);
-			
-			}
+
+		}
 		lastThumbsHeight = totalHeight + 40;
 	}
 
@@ -1219,16 +1365,16 @@ public class Viewer extends JFrame implements KeyListener {
 					g.setColor(Color.green);
 					g.fillRect(slideX+1, offY + totalHeight+ 1, 5, imgH-2);
 				}
-				if (mY > offY + totalHeight && mY < offY + imgH + totalHeight) {
+				if (mY > offY + totalHeight - 2 && mY < offY + imgH + totalHeight+ 2) {
 					alternativeImgF = def.file;
 					alternativeDef= def;
 					selectNearPic();
 					System.err.println("alternative pic "+ def);
 				}
-				totalHeight += imgH + 5;
+				totalHeight += imgH + 4;
 			}
 		return totalHeight; }
-	
+
 	int paintThumbsDelimiter(Graphics2D g, int stripWidth, int slideX, int offY, int totalHeight){
 		g.setColor(Color.black);
 		g.setStroke(new BasicStroke(30));
@@ -1241,7 +1387,7 @@ public class Viewer extends JFrame implements KeyListener {
 		g.fillOval(slideX - 35, offY + totalHeight, 30, 30);
 		return totalHeight += 35;
 	}
-	
+
 	Area selectedArea, overArea;
 	int selectedLevel = 0; // ground level
 
@@ -1261,7 +1407,7 @@ public class Viewer extends JFrame implements KeyListener {
 			LinkedList<Area> levAreas = new LinkedList<Area>();
 			for (Area a : Database.areas.values())
 				if (a.level == lev && a.assoc == null) // self standing areas of
-														// current level
+					// current level
 					levAreas.add(a);
 			if (levAreas.size() > 0) {
 				Utils.aaOn(g);

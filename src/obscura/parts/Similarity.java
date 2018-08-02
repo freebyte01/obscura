@@ -58,7 +58,10 @@ public class Similarity {
 		this.id= Database.getValue(definition, "id", System.currentTimeMillis()+"");
 		String pois= Database.getValue(definition,"pois", "");
 		if (pois.length()>0)
-			POIs.addAll( Arrays.asList(pois.split(",")));
+			for (String poi : pois.split(",")){
+				Database.addPOI(poi); 
+				POIs.add( poi ); }
+
 		
 		register.clear();
 		register.addAll(Arrays.asList(Database.getValue(definition, "register", "").split(",")));

@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ public class ImgDef{
 	public Point pos, targ, vect;
 	public HashMap<String, Point> POIs= new HashMap<String, Point>();
 	String assObs, assTarg;
+	public boolean oldPOI= true;
 	
 	public String getKey(){
 		return fName.toLowerCase(); }
@@ -59,8 +61,9 @@ public class ImgDef{
 			//Database.imgInfos.put( this.path, this);
 		Database.imgInfos.put( this.fName.toLowerCase(), this);
 	}
-	public void update(){
-		vect= pos!=null && targ!=null ? targ.dup().sub(pos) : null; 
+	
+	public Point vect(){
+		return vect= pos==null || targ==null ? null : targ.sub(pos); 
 	}
 	
 	public ImgDef cloneTo(File f) {
@@ -89,11 +92,20 @@ public class ImgDef{
 		if (keywords!=null) def.append( "keys:"+ keywords+ ";");
 		if (pos!=null) def.append( "x:"+ Utils.shorter(pos.x)+ ";y:"+ Utils.shorter(pos.y)+ ";");
 		if (targ!=null) def.append( "tx:"+ Utils.shorter(targ.x)+ ";ty:"+ Utils.shorter(targ.y)+ ";");
+		ArrayList<String> toRemove= new ArrayList<String>();
 		if (POIs.size()>0){
 			StringBuilder sb= new StringBuilder("pois:");
 			for (Entry<String, Point> e : POIs.entrySet())
-				sb.append( e.getKey()).append("@").append(e.getValue().serialize()+",");
-			def.append(sb.toString().substring(0, sb.length()-1)+";"); }
+				if (e.getValue()!=null)
+					sb.append( e.getKey()).append("@").append(e.getValue().serialize()+",");
+				else {
+					System.err.println(e.getKey()+" is null!!!");
+					toRemove.add(e.getKey());
+				}
+			for (String rem : toRemove)
+				POIs.remove(rem);
+			def.append(sb.toString().substring(0, sb.length()-1)+";");
+			if (!oldPOI) def.append( "oldpoi:false;"); }
 		return def.toString()+"\n";
 	}
 	
@@ -119,14 +131,16 @@ public class ImgDef{
 		x= Double.parseDouble(Database.getValue(definition,"tx", "0"));
 		y= Double.parseDouble(Database.getValue(definition,"ty", "0"));
 		String pois= Database.getValue(definition,"pois", "");
-		if (pois.length()>0)
+		if (pois.length()>0){
 			for (String poi : pois.split(","))
 				if (poi.contains("@")){
 					String[] def= poi.split("@");
-					POIs.put( def[0], new Point(def[1])); }
+					POIs.put( def[0], new Point(def[1])); 
+					Database.addPOI(def[0]); }}
+		oldPOI= Boolean.parseBoolean(Database.getValue(definition,"oldpoi", "true"));
+		
 		if (x!=0 || y!=0) targ= new Point(x, y);
 		// file= path==null || path=="" ? null : new File(path);
-		update();
 	}
 
 	public boolean isSimilarTo(ImgDef def){
@@ -136,6 +150,15 @@ public class ImgDef{
 	
 	public ImgDef[] samePosition(){ return pos==null ? Database.NO_IMG_DEFS : near( vect==null? 2 : vect.length()/10, pos.x, pos.y, false, this); }
 	public ImgDef[] sameTarget(){ return targ==null ? Database.NO_IMG_DEFS : vect==null? Database.NO_IMG_DEFS : near( vect.length()/15, targ.x, targ.y, true, this); }
+	
+	double allowedTargetCos= Math.cos(Math.PI/180*30);
+	public ImgDef[] sameDirection(){ 
+		if ( vect()==null ) return Database.NO_IMG_DEFS;
+		ArrayList<ImgDef> res= new ArrayList<ImgDef>();
+		for (ImgDef def : Database.imgInfos.values())
+			if (def!=this && def.vect()!=null && (vect.x*def.vect.x + vect.y*def.vect.y) >= allowedTargetCos )
+				res.add(def);
+		return res.toArray(new ImgDef[res.size()]); }
 
 	static ImgDef[] near(double radius, double x, double y, boolean target, ImgDef exclude){
 		radius= radius>3*Utils.ratioMetric?3:radius;

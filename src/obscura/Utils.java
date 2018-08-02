@@ -11,7 +11,9 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 
 public class Utils {
@@ -98,12 +100,16 @@ public class Utils {
 
 	}
 	public static void drawString(Graphics2D g, double x, double y, String txt){  g.drawString( txt, (float) x, (float) y ); }
+	public static void doLine(Graphics2D g, double x1, double y1, double x2, double y2){ g.draw(new Line2D.Double(x1,y1,x2,y2)); }
 	public static Shape doEllipse(Graphics2D g, double x, double y, double w, double h, boolean fill){ return doEllipse(g, x, y, w, h, null, fill); }
 	public static Shape doEllipse(Graphics2D g, double x, double y, double w, double h, Shape sh, boolean fill){
 		return doShape(g, sh==null ? new Ellipse2D.Double(x,y,w,h) : sh, fill); }
 	public static Shape doRectangle(Graphics2D g, double x, double y, double w, double h, boolean fill){ return doRectangle(g, x, y, w, h, null, fill); }
 	public static Shape doRectangle(Graphics2D g, double x, double y, double w, double h, Shape sh, boolean fill){
 		return doShape(g, sh==null ? new Rectangle2D.Double(x,y,w,h) : sh, fill); }
+	public static Shape doRoundRectangle(Graphics2D g, double x, double y, double w, double h, double r, boolean fill){ return doRoundRectangle(g, x, y, w, h, r, null, fill); }
+	public static Shape doRoundRectangle(Graphics2D g, double x, double y, double w, double h, double r, Shape sh, boolean fill){
+		return doShape(g, sh==null ? new RoundRectangle2D.Double(x,y,w,h,r,r) : sh, fill); }
 	public static Shape doShape(Graphics2D g, Shape sh, boolean fill){
 		if (sh==null) return null;
 		if (fill) g.fill(sh);
