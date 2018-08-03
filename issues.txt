@@ -25,3 +25,10 @@ OK + add deletion of defined POIs - via rmb double click 1.8
 
 OK + make magnifying glass for POIS placement
 + make magnify depending on speed - for precision
+
+
+OK + improved latest used hotpoints, unused get forgotten as first
+OK + improved chapters menu, 2 level system + hotpoints shown afterwards 
+OK + improved magnifying align system to not be in the way of putting the point
+
+++ would be nice to have associative hotpoints, which are very often shown together, even if not in hotpoints yet

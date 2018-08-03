@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Composite;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -14,7 +15,10 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
@@ -243,11 +247,16 @@ public class Viewer extends JFrame implements KeyListener {
 		view.setBackground(Color.black);
 		view.addMouseWheelListener(new MouseWheelListener() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				if (isMapMode()) {
+				if (isMapMode() || shift && (alt || overButton>=POI_POS)) {
 					System.err.println(zoom);
-					zoom -= e.getWheelRotation() * zoom / 10d;
-					sx = (mX - view.getWidth() / 2) / zoom - rX;
-					sy = (mY - view.getHeight() / 2) / zoom - rY;
+					if (isMapMode()){
+						zoom -= e.getWheelRotation() * zoom / 10d;
+						sx = (mX - view.getWidth() / 2) / zoom - rX;
+						sy = (mY - view.getHeight() / 2) / zoom - rY;
+					} else { 
+						imgZoom -= e.getWheelRotation() * imgZoom / 10d;
+						sx = (mX - view.getWidth() / 2) / zoom - rX;
+						sy = (mY - view.getHeight() / 2) / zoom - rY; }
 					repaint();
 				} else {
 					if (e.getX() > view.getWidth() - 200) {
@@ -294,6 +303,9 @@ public class Viewer extends JFrame implements KeyListener {
 		});
 		view.addMouseMotionListener(new MouseMotionListener() {
 			public void mouseMoved(MouseEvent e) {
+				if (shift && drag && overButton>=POI_POS) view.setCursor(blankCursor);
+				else view.setCursor(Cursor.getDefaultCursor());
+
 				onMouseMove(e);
 			}
 
@@ -304,7 +316,7 @@ public class Viewer extends JFrame implements KeyListener {
 				// return;
 				System.err.println(">>>"+overButton);
 				mouseMoved(e);
-
+				
 				if (!isMapMode()) {
 					if (selButton>-1){
 						if (selButton>=POI_POS){
@@ -427,7 +439,7 @@ public class Viewer extends JFrame implements KeyListener {
 				view.repaint();
 			}
 
-			public void mousePressed(MouseEvent e) {
+			synchronized public void mousePressed(MouseEvent e) {
 
 				selRangeP1 = selRangeP2 = null;
 
@@ -439,9 +451,11 @@ public class Viewer extends JFrame implements KeyListener {
 				selMap= overMap; 
 				selButton= overButton;
 				if (selButton>=POI_POS){
-					if (lastPOIs.indexOf(selButton)<0)
-						lastPOIs.set(lastPOIpos++ % lastPOIs.size(), selButton);
-				}
+					if (lastPOIs.contains(selButton))
+						lastPOIs.remove(lastPOIs.indexOf(selButton));
+					lastPOIs.push(selButton);
+					while (lastPOIs.size()>20)
+						lastPOIs.removeLast(); }
 			}
 
 			public void mouseExited(MouseEvent e) {
@@ -853,9 +867,13 @@ public class Viewer extends JFrame implements KeyListener {
 
 	double currRelScale= 1;
 	boolean showPOImenu;
-	LinkedList<Integer> lastPOIs= new LinkedList<Integer>( Arrays.asList(new Integer[10]) );
+	LinkedList<Integer> lastPOIs= new LinkedList<Integer>();
 	int lastPOIpos= 0;
 
+	String selChapter=null;
+	Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor( new BufferedImage( 1, 1, BufferedImage.TYPE_INT_ARGB ), new java.awt.Point(0, 0), "blank cursor");
+
+	
 	synchronized void paintView(Graphics2D g) {
 
 
@@ -1120,19 +1138,24 @@ public class Viewer extends JFrame implements KeyListener {
 					//Utils.doLine(g, 0, vh/2, vw,  vh/2 );
 					//g.setClip(null);
 					//g.scale(1/currImgScale,1/currImgScale);
-					g.setClip(new Ellipse2D.Double(-100+mX, -100+mY, 200, 200));
 					
-					g.translate(vw/2 + imgOff.x+ (vw/2-mX+ imgOff.x), vh/2 + imgOff.y+ (vh/2-mY+imgOff.y)); // center to screen
+					g.setClip(new Ellipse2D.Double(-200+mX, -200+mY, 400, 400));
 
-					g.setTransform(ImgProvider.getAffineForOrientation(g.getTransform(), orientation, (int) Math.round( currRelScale*2),
-							(int) Math.round(ih * currImgScale*2)));
+					double magnify= 2;
+					
+					g.translate(vw/2 + imgOff.x+ (vw/2-mX*magnify/2+ imgOff.x), vh/2 + imgOff.y+ (vh/2-mY*magnify/2+imgOff.y)); // center to screen
+
+					g.setTransform(ImgProvider.getAffineForOrientation(g.getTransform(), orientation, (int) Math.round( currRelScale*magnify),
+							(int) Math.round(ih * currImgScale*magnify)));
 
 					if (currImgScale < 1)
 						Utils.aaOn(g);
 
-					g.drawImage(viewedImg, 0, 0, (int) Math.round(iw * currImgScale*2), (int) Math.round(ih * currImgScale*2), null);
+					g.drawImage(viewedImg, 0, 0, (int) Math.round(iw * currImgScale*magnify), (int) Math.round(ih * currImgScale*magnify), null);
 					//g.drawImage(viewedImg, 0, 0, (int)vw, (int)vh, null);
 					g.setClip(null);
+					g.setTransform(old);
+					Utils.doEllipse(g, mX-200, mY-200, 400, 400, false);
 				}
 
 				
@@ -1146,44 +1169,97 @@ public class Viewer extends JFrame implements KeyListener {
 					alternativeImgF = null;
 
 				if (shift){ // show/edit similarity POIs
+					
 					if (mX<50) 
 						showPOImenu= true;
 					
 					ImgDef poiDef= Database.imgInfos.get(viewedImgF.getName().toLowerCase()); //lastAlternativeDef==null ? selectedDef : lastAlternativeDef;
+					
 					System.err.println(poiDef + ":" + alternativeDef);
+					
 					Point p;
+					
 					g.setColor(lastOverButton==POI_ADD_BUTTON?Color.YELLOW:Color.BLUE);
+					
 					p= new Point(30, 30);
+					
 					Utils.doEllipse(g, p.x-10, p.y-10, 20, 20, true);
-					if (Math.abs(mX-p.x)<10 && Math.abs(mY-p.y)<10){
+					
+					if ( Math.abs(mX-p.x)<10 && Math.abs(mY-p.y) < 10 ){
 						System.err.println("POI ADD BUTTON");
 						overButton= POI_ADD_BUTTON; }
+					
 					int poiPos= 0, offX=0, offY=0;
 					
-					int maxListHeight= view.getHeight() - 140;
 					String[] tree= new String[10];
-					for (String poi : Database.POIs){
 
-						boolean active= poiDef!=null && poiDef.POIs.containsKey(poi) ;
+					Color dragPoint= new Color( 255, 255, 0, 200);
+					Color dragPointDark= new Color( 50, 50, 50, 200);
+					
+					Color overPoint= Color.yellow;
+					Color overPointBack= Color.yellow;
+					
+					Color normalPoint= new Color(250,250,255);
+					Color normalPointBack= Color.black;
+
+					Color menuChapterFront= Color.BLACK;
+					Color menuChapterBack= Color.WHITE;
+					
+					Color overMenu= Color.BLACK;
+					Color overMenuBack= Color.YELLOW;
+					
+					Color hintMenu= new Color(0,0,0);
+					Color hintMenuBack= new Color(255,255,200);
+
+					Color normalMenu= new Color(200,200,255);
+					Color normalMenuBack= new Color(30,30,30, 200);
+
+					Color disabledMenu= new Color(200,200,255, 150);
+					Color disabledMenuBack= new Color(30,30,30, 100);
+
+					
+					Font normal= g.getFont();
+					Font bold= new Font(normal.getName(), Font.BOLD, normal.getSize());
+					
+					double[] maxWidths= new double[20];
+					double[] colPos= new double[20];
+					
+					int menuCounter=0;
+					int menuBoxHeight= 20;
+					int menuRowHeight= 25;
+
+					int maxListHeight= view.getHeight() - 140;
+					
+					int menuItemsPerColumn= maxListHeight / menuRowHeight;
+					
+					LinkedList<String> chapters= new LinkedList<String>();
+					
+					for (String poi : Database.POIs){
 						
-						String[] parts= poi.split(" ");
-						if (!parts[0].equals(tree[0])){
-							tree[0]=parts[0];
-							offX=0;
-							if (!drag && (active || showPOImenu)){
-								offY+= poiPos>0?5:0;
-								int column= (int) Math.floor(  (25*poiPos+ offY) / maxListHeight );
-								p= new Point( 20+ column* 240, ((25*poiPos+ offY) % maxListHeight) + 70 );
-								g.setColor( Color.white );
-								Utils.doRectangle(g, p.x-5, p.y-15, 240, 20, true);
-								g.setColor( Color.black );
-								Utils.doRectangle(g, p.x-5, p.y-15, 240, 20, false);
-								Utils.drawString( g, p.x, p.y, tree[0] );
-							}
-							offY+=20;
-						}
-						if (!drag || lastOverButton == POI_POS +poiPos){
+						int currPoiPos= POI_POS+ poiPos++;
+						
+						int column= menuCounter / menuItemsPerColumn;
+						
+						if (column>10)
+							continue;
+						
+						boolean over= lastOverButton == currPoiPos;
+
+						boolean active= poiDef!=null && poiDef.POIs.containsKey( poi ) ;
+						
+						boolean hinted= lastPOIs.indexOf( currPoiPos )>=0;
+						
+						String[] parts= poi.split(" "); // chapters
+						if (!parts[0].equals(tree[0]))
+							chapters.add(menuCounter + "/"+ (tree[0]=parts[0]));
+						
+						boolean inChapter= selChapter==null || parts[0].equals(selChapter);
+						String poiName= parts.length==1 || active || selChapter==null ? poi : poi.substring(parts[0].length()+1);
+						
+						if (!drag || over){
+							
 							double ppx, ppy;
+							
 							if ( active ) {
 								p= poiDef.POIs.get(poi);
 								if (poiDef.oldPOI){ // recalc to relative pois from old absolute pois
@@ -1192,50 +1268,155 @@ public class Viewer extends JFrame implements KeyListener {
 								ppx= view.getWidth()/2+ imgOff.x+ p.x*currRelScale;
 								ppy= view.getHeight()/2+ imgOff.y+ p.y*currRelScale;
 							} else {
-								int column= (int) Math.floor(  (25*poiPos+ offY) / maxListHeight );
-								p= new Point( 30+ column* 240, ((25*poiPos+ offY) % maxListHeight) + 70 );
+								p= new Point( 150+30+ colPos[column], ( menuCounter % menuItemsPerColumn) * menuRowHeight + 70 );
 								ppx= p.x;
 								ppy= p.y; }
-							int r= active ? 6 : 10;
-							if (active || showPOImenu){
 
-							g.setColor( lastOverButton == POI_POS +poiPos ? Color.YELLOW : active ? new Color(0,0,200,100) : new Color(0,0,150,50));
-							Utils.doEllipse( g, ppx- r, ppy-r, r* 2, r* 2, true);
-							if (!drag && (!active || lastOverButton==POI_POS+ poiPos)){
-								g.setColor( lastOverButton == POI_POS + poiPos || active ? Color.yellow : lastPOIs.indexOf(POI_POS+poiPos)>=0 ? Color.yellow : new Color(0,0,0,200));
-								if (Utils.doRoundRectangle(g, ppx+ r+ 5, ppy-10, g.getFontMetrics().stringWidth(poi)+10, 20, 5, true).contains(rX, rY))
-									overButton= POI_POS + poiPos;
-							}
-								g.setColor( lastOverButton == POI_POS +poiPos ?  Color.BLUE : active ? new Color(150,150,255) : lastPOIs.indexOf(POI_POS+poiPos)>=0 ? Color.blue : new Color(200,200,255));
-								Utils.doEllipse( g, ppx- r, ppy-r, r* 2, r* 2, false);
-								if (lastOverButton==POI_POS+ poiPos && active){
-									PointStat ps= Database.avgs.get(poi);
-									if (ps!=null)
-										for (Entry<String, Point> d : ps.distances.entrySet())
-											if (poiDef.POIs.containsKey(d.getKey())){
-												int cnt= ps.counts.get(d.getKey());
-												double l= d.getValue().length()*currRelScale/cnt;
-												//Utils.doEllipse( g, ppx- l/2, ppy- l/2, l, l, false);
-												Utils.doLine(g, ppx, ppy, ppx+d.getValue().x*currRelScale/cnt, ppy+d.getValue().y*currRelScale/cnt); }}
-								if (!drag && (!active || lastOverButton==POI_POS+ poiPos))
-									Utils.drawString( g, ppx+ r+ 10, ppy+ 5, poi); }
-							if ( Math.abs( mX- ppx ) < r && Math.abs( mY- ppy ) < r ){
-								System.err.println( "POI POS "+ poiPos );
-								overButton= POI_POS+ poiPos; }
-						} else if (lastOverButton == POI_POS +poiPos)
-							overButton= lastOverButton; 
-						poiPos++; }
-						if (poiDef!=null) 
-							poiDef.oldPOI= false; 
+							int r= active ? 6 : 10;
+							
+							Shape txtBack;
+							if ( !drag && ( !active && showPOImenu && inChapter || active && over )){
+								double w= g.getFontMetrics().stringWidth(poiName)+10;
+								if( maxWidths[column] < w ){
+									maxWidths[column]= w;
+									for (int i=1; i<colPos.length; i++)
+										colPos[i]= colPos[i-1]+ maxWidths[i-1]+ menuRowHeight; }
+								txtBack = Utils.getRoundRectangle(ppx+ (active?15:0), ppy-menuBoxHeight/2+ (active?menuBoxHeight:0), w, menuBoxHeight, 5);
+								Rectangle2D rr= txtBack.getBounds2D();
+								if ( mX>rr.getX() && mX<rr.getMaxX() && mY>rr.getY() && mY<rr.getMaxY() ){
+									lastOverButton= overButton= currPoiPos; 
+									over= true; }
+								g.setColor( over ? overMenuBack : hinted ? hintMenuBack : normalMenuBack );
+								g.fill(txtBack); }
+
+								
+							Shape pointBack=null;
+							if (active){
+								pointBack= Utils.getEllipse( ppx- r, ppy-r, r* 2, r* 2);
+								Rectangle2D rr= pointBack.getBounds2D();
+								if ( mX>rr.getX() && mX<rr.getMaxX() && mY>rr.getY() && mY<rr.getMaxY()){
+									lastOverButton= overButton= currPoiPos;
+									over= true; }
+								 
+								
+								if (drag){
+									g.setColor(dragPointDark);
+									g.setStroke(new BasicStroke(3));
+									Utils.doLine(g, ppx, ppy-100, ppx, ppy-20);
+									Utils.doLine(g, ppx, ppy+100, ppx, ppy+20);
+									Utils.doLine(g, ppx-100, ppy, ppx-20, ppy);
+									Utils.doLine(g, ppx+100, ppy, ppx+20, ppy);
+									Utils.doEllipse(g, ppx-2, ppy-2, 4, 4, true);
+									g.setColor(dragPoint);
+									g.setStroke(new BasicStroke(1));
+									Utils.doLine(g, ppx, ppy-100, ppx, ppy-20);
+									Utils.doLine(g, ppx, ppy+100, ppx, ppy+20);
+									Utils.doLine(g, ppx-100, ppy, ppx-20, ppy);
+									Utils.doLine(g, ppx+100, ppy, ppx+20, ppy);
+									g.setColor(Color.white);
+									Utils.doEllipse(g, ppx-1, ppy-1, 2, 2, true);
+									//g.setXORMode(null);
+								} else {
+									g.setColor( over ? overPointBack: normalPointBack );
+									g.fill( pointBack );
+									g.setColor( over ?  overPoint : normalPoint );
+									g.setStroke(new BasicStroke(2));
+									g.draw( pointBack ); }}
+
+							if ( !drag && ( !active && showPOImenu && inChapter || active && over ) ){
+								g.setColor( over ?  overMenu : active ? normalMenu : hinted ? hintMenu : normalMenu );
+								Utils.drawString( g, ppx+ ( active ? r+ 15:5), ppy+ 5+ (active ? menuBoxHeight: 0), poiName); } 
+
+								
+							// neigbouring stats pointers
+							g.setColor(new Color(0,0,0,50));
+							g.setStroke(new BasicStroke(1));
+							if (over && active && !drag){ 
+								PointStat ps= Database.avgs.get(poi);
+								if (ps!=null)
+									for (Entry<String, Point> d : ps.distances.entrySet())
+										if (poiDef.POIs.containsKey(d.getKey())){
+											int cnt= ps.counts.get(d.getKey());
+											double l= d.getValue().length()*currRelScale/cnt;
+											//Utils.doEllipse( g, ppx- l/2, ppy- l/2, l, l, false);
+											Utils.doLine(g, ppx, ppy, ppx+ d.getValue().x* currRelScale/ cnt, ppy+ d.getValue().y* currRelScale/ cnt); }}
+							
+							if (inChapter)
+								menuCounter++;
+							
+						} else if (drag && over)
+							overButton= lastOverButton= currPoiPos; 
+						
 						}
-					else {
+					
+						if (poiDef!=null) 
+							poiDef.oldPOI= false;
+						
+						g.setFont(bold);
+						int pos=0;
+						for (String chapter : chapters){
+							String[] ch= chapter.split("/");
+							
+							//int pos= Integer.parseInt(ch[0]);
+							if (!drag && showPOImenu){
+								p= new Point( 20, pos* menuRowHeight*1.5+ menuBoxHeight/4 + 70 );
+								g.setColor( selChapter==null || !selChapter.equals(ch[1]) ? menuChapterBack : overMenuBack );
+								if (Utils.doRoundRectangle(g, p.x-5, p.y-15, 150, menuBoxHeight*1.5, 5, true).contains(mX, mY)){
+									System.err.println("over chapter "+ ch[1]);
+									selChapter= ch[1];
+								}
+								
+								g.setColor( menuChapterFront );
+								//Utils.doRectangle(g, p.x-5, p.y-15, maxWidths[column], menuBoxHeight, false);
+								Utils.drawString( g, p.x+ 150/2- g.getFontMetrics().stringWidth(ch[1])/2-10, p.y+ menuBoxHeight/4, ch[1] ); }
+							pos++; }
+						
+						g.setFont(bold);
+						pos= showPOImenu ? 200 : 50 ;
+						LinkedList<String> hints= new LinkedList<String>();
+						for (int i=0; i<lastPOIs.size(); i++)
+							if (lastPOIs.get(i)!=null){
+								int pp= lastPOIs.get(i)-POI_POS;
+								String poi= pp<Database.POIs.size() ? Database.POIs.get( pp ) : null;
+								if (poi!=null)
+									hints.add(poi); }
+						String[] hintsSorted= hints.toArray(new String[hints.size()]);
+						Arrays.sort(hintsSorted);
+						String lastHintChapter= null;
+						for (String hint : hintsSorted){
+							//int pos= Integer.parseInt(ch[0]);
+								if (!drag){
+									int pp= Database.POIs.indexOf(hint);
+									String[] pa= hint.split(" ");
+									if (showPOImenu && pa[0].equals(selChapter))
+										continue;
+									if (pa.length>1 && !pa[0].equals(lastHintChapter)){
+										menuCounter++;
+										lastHintChapter= pa[0]; }
+									boolean active= poiDef!=null && poiDef.POIs.containsKey( hint ) ;
+									int column= menuCounter++ / menuItemsPerColumn;
+									double w= g.getFontMetrics().stringWidth(lastPOIs.indexOf(Database.POIs.indexOf(hint)+POI_POS)+ " "+hint)+10;
+									if( maxWidths[column] < w ){
+										maxWidths[column]= w;
+										for (int i=1; i<colPos.length; i++)
+											colPos[i]= colPos[i-1]+ maxWidths[i-1]+ menuRowHeight; }
+
+									p= new Point( pos+ colPos[ (int) Math.floor(menuCounter / menuItemsPerColumn)], ( menuCounter % menuItemsPerColumn) * menuRowHeight + 70 );
+									Shape sh= Utils.getRoundRectangle(p.x-10, p.y-15, w+20, menuBoxHeight, 5);
+									if (sh.contains(mX, mY)){
+										System.err.println("over poi "+ hint );
+										overButton= pp+POI_POS; }
+									g.setColor( active? disabledMenuBack : lastOverButton==pp || overButton==pp ? overMenuBack : hintMenuBack );
+									g.fill(sh);
+									g.setColor( active? disabledMenu : lastOverButton==pp || overButton==pp ? overMenu : hintMenu );
+									Utils.drawString( g, p.x, p.y, lastPOIs.indexOf(Database.POIs.indexOf(hint)+POI_POS)+ " "+hint ); }}
+				} else {
 						showPOImenu= false;
 					}
 
-				if (selectedDef != null) {
-					
 
-					
+				if (selectedDef != null) {
+										
 					if (selectedDef.pos != null) {
 						g.setColor(Color.blue);
 						paintButton(g, 20, vh - 20, 10, OBSERVER_INDICATOR );
