@@ -133,7 +133,7 @@ img;hash:-2104956552;xhash:-90556843;fname:DSC00590.JPG;x:-334.705;y:-304.768;tx
 img;hash:-414941654;xhash:-1477998536;fname:DSC09660.JPG;x:519.514;y:312.274;tx:518.569;ty:312.149;
 img;hash:309385356;xhash:1935329004;fname:DSC00808.JPG;x:-349.829;y:-172.684;
 img;hash:-373863701;xhash:1909168390;fname:IMG_7430.JPG;x:926.092;y:839.993;tx:930.077;ty:845.697;
-img;hash:1016911171;xhash:457036559;fname:IMG_20170629_111652.jpg;x:913.988;y:817.581;tx:937.16;ty:826.679;
+img;hash:1016911171;xhash:457036559;fname:IMG_20170629_111652.jpg;x:913.988;y:817.581;tx:937.16;ty:826.679;pois:brana branka@0.016/-0.0931,roh dvor zahradka@-0.0064/0.0539,roh komora cesta@0.0511/-0.031,brana dvor@-0.33/-0.1438;oldpoi:false;
 img;hash:2110003878;xhash:233506755;fname:DSC09849.JPG;x:851.693;y:815.381;tx:753.647;ty:827.174;pois:zz ohnisko@-0.1228/0.1799;oldpoi:false;
 img;hash:1455731120;xhash:-1611656385;fname:DSC00921.JPG;x:925.362;y:841.924;tx:914.096;ty:842.797;
 img;hash:1528408732;xhash:-1727857299;fname:DSC00409.JPG;x:930.182;y:839.577;tx:924.765;ty:837.456;
@@ -154,7 +154,7 @@ img;hash:-174295239;xhash:515733582;fname:IMG_20170911_090624.jpg;x:841.943;y:80
 img;hash:1272133399;xhash:361551977;fname:IMG_20171223_155346.jpg;simile:img_20180605_173211.jpg;x:932.81;y:843.253;tx:935.584;ty:848.209;
 img;hash:-844667781;xhash:-1996891734;fname:IMG_20171223_112021.jpg;x:908.715;y:860.459;tx:898.005;ty:968.671;
 img;hash:-759402756;xhash:835484091;fname:DSC01001.JPG;x:949.727;y:877.327;tx:935.277;ty:783.169;
-img;hash:-1167635637;xhash:-1120231115;fname:IMG_20170629_150446.jpg;x:942.261;y:826.394;tx:907.168;ty:823.581;
+img;hash:-1167635637;xhash:-1120231115;fname:IMG_20170629_150446.jpg;x:942.261;y:826.394;tx:907.168;ty:823.581;pois:stlp strieska zahradka@-0.1712/0.0014,stlp strieska dvor@-0.1657/-0.0146,roh dvor zahradka@0.0058/-0.0236,roh komora cesta@-0.4897/0.1465,roh komora dvor@-0.2798/-0.0055;oldpoi:false;
 img;hash:1882946298;xhash:-1574722735;fname:DSC_2616.JPG;x:976.457;y:732.695;tx:979.093;ty:731.478;
 img;hash:-1356833406;xhash:1545889541;fname:DSC01458.JPG;x:859.099;y:814.571;tx:836.914;ty:811.626;pois:strom piknik@-0.005/0.0618,zz ohnisko@-0.1421/0.162;oldpoi:false;
 img;hash:1201281066;xhash:-1732310489;fname:DSC_2659.JPG;x:933.743;y:835.907;tx:927.892;ty:836.126;
@@ -227,7 +227,7 @@ img;hash:-89118004;xhash:2068308751;fname:IMG_20170910_142227.jpg;x:916.845;y:83
 img;hash:1882561471;xhash:1882561471;fname:DSC_2429.JPG;pois:okno kuchyna nova@0.2944/-0.0861,okno izba hore 2@0.3003/-0.2755,kopec obly po rubine@-0.4071/-0.1298,roh kuchyna spod@0.2746/0.0054;oldpoi:false;
 img;hash:754340763;xhash:-2140607084;fname:IMG_20180530_222927.jpg;simile:img_20180530_234348.jpg;x:929.864;y:842.398;tx:925.908;ty:845.416;
 img;hash:-115762115;xhash:-1082102869;fname:IMG_20180521_180533.jpg;x:901.468;y:846.285;tx:909.955;ty:840.993;pois:kanal okap kuchyna roh@0.3564/0.0042,dvere garaz@-0.323/-0.1439,kanal okap predsien roh@0.0874/-0.032;oldpoi:false;
-img;hash:-319347663;xhash:-1441116515;fname:DSC09698.JPG;x:944.364;y:847.621;tx:937.996;ty:856.577;
+img;hash:-319347663;xhash:-1441116515;fname:DSC09698.JPG;x:944.364;y:847.621;tx:937.996;ty:856.577;pois:roh izba spod@-0.2651/0.0529,brana branka spodna@-0.4292/-0.0403,zz okap stena diera@0.4826/0.052;oldpoi:false;
 img;hash:-743197301;xhash:1669222328;fname:IMG_20170701_194152.jpg;x:804.917;y:638.571;tx:829.075;ty:763.506;
 img;hash:886572581;xhash:-1334966572;fname:DSC00078.JPG;x:733.394;y:386.09;tx:763.819;ty:432.039;
 img;hash:1009787972;xhash:-1796899103;fname:IMG_20170629_184002.jpg;x:915.874;y:827.367;tx:909.128;ty:835.241;
@@ -272,7 +272,7 @@ img;hash:-205695465;xhash:1267877275;fname:IMG_20170911_090611.jpg;x:863.272;y:8
 img;hash:734202112;xhash:-351578318;fname:DSC00020.JPG;x:993.853;y:802.755;tx:994.541;ty:804.991;
 img;hash:585906693;xhash:585906693;fname:DSC09957.JPG;pois:zz tajch@-0.1916/-0.0613,kopec kalvaria@0.0703/-0.1186,zz slniecko@0.023/-0.0771,zz truban@-0.1073/-0.05,zz rezervoar@0.1546/-0.0491;oldpoi:false;
 img;hash:-444496514;xhash:1622294976;fname:DSC00750.JPG;simile:dsc01215.jpg;x:943.91;y:840.494;tx:937.612;ty:801.011;
-img;hash:309371480;xhash:1159614560;fname:DSC09707.JPG;x:905.716;y:817.786;tx:917.482;ty:836.188;
+img;hash:1159614560;xhash:1159614560;fname:DSC09707.JPG;x:905.795;y:817.839;tx:921.474;ty:826.426;pois:okno balkon@0.2775/-0.2076,roh balkon@0.2739/-0.2739,svetlo balkon@0.134/-0.2921,roh balkon dvor@-0.102/-0.3445,roh predsien@0.032/0.1879,roh komora dvor@-0.3314/0.1661,svetlo veranda@-0.1398/-0.1071,dvere dom@-0.1107/0.1784,roh predsien 2@0.2607/0.1872,okno predsien dvere@0.1428/0.094;oldpoi:false;
 img;hash:1098118197;xhash:380336189;fname:DSC00887.JPG;x:543.702;y:281.937;
 img;hash:-1202282888;xhash:-1202282888;fname:DSC09991.JPG;pois:zz komin Bana@0.1871/-0.0541,zz tajch@0.0/-0.0045,kopec kalvaria@0.2665/-0.0582,kopec zvonica@0.092/-0.0726,zz slniecko@0.2146/-0.0153,zz truban@0.0807/0.009,kopec vyhladna@-0.1028/-0.1136,zz rezervoar@0.3629/0.0176;oldpoi:false;
 img;hash:1411631030;xhash:1411631030;fname:DSC00270.JPG;pois:kopec spic vpravo@-0.4915/-0.0922,kopec rubina@-0.2447/-0.1157,strom pole roh@0.2873/0.056;oldpoi:false;
@@ -326,7 +326,7 @@ img;hash:-1247573992;xhash:-1323472981;fname:DSC01492.JPG;x:945.605;y:813.936;tx
 img;hash:-2018905526;xhash:-1134688387;fname:IMG_20170712_155950.jpg;x:908.034;y:845.202;tx:902.297;ty:833.728;
 img;hash:-467634367;xhash:-960097834;fname:DSC08764.JPG;x:719.603;y:801.354;tx:766.659;ty:866.308;
 img;hash:-791673427;xhash:-1089117722;fname:DSC01693.JPG;x:933.073;y:846.289;tx:935.63;ty:846.039;
-img;hash:902043849;xhash:1136823463;fname:IMG_20170629_111614.jpg;x:918.034;y:835.954;tx:915.557;ty:821.501;
+img;hash:902043849;xhash:1136823463;fname:IMG_20170629_111614.jpg;x:918.034;y:835.954;tx:915.557;ty:821.501;pois:roh dvor zahradka@0.2533/0.052,dvere garaz@0.1438/-0.1328;oldpoi:false;
 img;hash:1884752892;xhash:642358780;fname:DSC_2618.JPG;x:973.51;y:731.664;tx:963.714;ty:751.128;
 img;hash:-1988822621;xhash:629922450;fname:IMG_20170911_172822.jpg;x:899.41;y:870.672;tx:892.359;ty:844.543;
 img;hash:1228271001;xhash:1593343633;fname:IMG_20170712_120901.jpg;x:903.246;y:845.287;tx:901.502;ty:829.235;
@@ -366,7 +366,7 @@ img;hash:454308983;xhash:1843473558;fname:DSC09759.JPG;x:932.629;y:843.065;tx:93
 img;hash:308146387;xhash:705192197;fname:DSC_2486.JPG;x:539.086;y:-184.673;tx:437.649;ty:-11.363;pois:kopec spic vpravo@0.0546/-0.2565,kopec kalvaria@-0.3913/-0.2096,zz penzion@0.147/-5.0E-4,kopec rubina@0.3228/-0.2944;oldpoi:false;
 img;hash:-385135030;xhash:-17065371;fname:DSC09671.JPG;x:514.218;y:529.436;tx:513.123;ty:528.503;
 img;hash:-393520690;xhash:-1910873652;fname:DSCF0368.JPG;x:908.529;y:851.312;tx:910.686;ty:851.312;
-img;hash:-713148224;xhash:-1451643705;fname:IMG_20170629_123751.jpg;x:903.207;y:809.935;tx:929.162;ty:810.28;
+img;hash:-713148224;xhash:-1451643705;fname:IMG_20170629_123751.jpg;x:903.207;y:809.935;tx:929.162;ty:810.28;pois:stlp strieska zahradka@0.3428/0.037,stlp strieska dvor@0.4779/0.078,brana branka@0.1789/-0.079,svetlo komora cesta@0.2017/-0.1474,roh dvor zahradka@0.1817/0.0269,roh komora cesta@0.2045/-0.0301,okno komora hore@0.2944/-0.2255,roh komora dvor@0.4144/0.0137,brana dvor@-0.0123/-0.1141;oldpoi:false;
 img;hash:2129809194;xhash:2073620641;fname:IMG_7434.JPG;x:933.3;y:843.494;tx:935.157;ty:848.064;
 img;hash:213367963;xhash:880848585;fname:DSC01130.JPG;x:991.102;y:808.603;
 img;hash:-2105515748;xhash:-1808675146;fname:DSC09872.JPG;x:910.662;y:847.825;tx:908.631;ty:859.851;pois:okno izba hore 2@-0.0623/-0.22,kopec kalvaria@-0.1922/-0.2121,zz rezervoar@-0.1021/-0.1372;oldpoi:false;
@@ -379,7 +379,7 @@ img;hash:-2101325956;xhash:-474666156;fname:DSC00594.JPG;x:-335.716;y:-303.757;t
 img;hash:1171720202;xhash:1009681115;fname:DSC_2648.JPG;x:912.889;y:795.959;tx:919.034;ty:801.684;
 img;hash:1163686234;xhash:-348715946;fname:IMG_20170919_215035.jpg;x:926.6;y:839.976;tx:932.013;ty:843.94;
 img;hash:-134666864;xhash:185245644;fname:IMG_20180105_202327.jpg;simile:img_20180605_173211.jpg;x:933.032;y:843.416;tx:935.332;ty:848.261;
-img;hash:1875462119;xhash:1509938854;fname:IMG_20170629_111744.jpg;x:919.194;y:828.304;tx:921.904;ty:826.513;
+img;hash:1875462119;xhash:1509938854;fname:IMG_20170629_111744.jpg;x:919.194;y:828.304;tx:921.904;ty:826.513;pois:roh dvor zahradka@-0.2948/0.021;oldpoi:false;
 img;hash:54200896;xhash:964212788;fname:DSCF0515.JPG;x:865.852;y:839.665;tx:886.053;ty:848.633;
 img;hash:-1834363160;xhash:-1834363160;fname:DSC01404.JPG;pois:kopec rubina@-0.2976/-0.1076;oldpoi:false;
 img;hash:1425911187;xhash:277404000;fname:DSC09887.JPG;x:915.495;y:824.511;tx:918.536;ty:828.9;pois:stlp strieska dvor@0.2119/0.0271,stlp strieska zahradka@-0.1794/-0.1384,kanal strieska@-0.0428/-0.0068,roh komora dvor@-0.0316/-0.2588,stlp veranda@0.4044/-0.1461;oldpoi:false;
@@ -403,9 +403,9 @@ img;hash:145275955;xhash:337995572;fname:IMG_20170713_175109.jpg;x:897.45;y:906.
 img;hash:-582975498;xhash:1495742467;fname:DSC00394.JPG;x:932.567;y:851.134;tx:935.652;ty:849.401;
 img;hash:1178600554;xhash:-2009818684;fname:IMG_20170916_185029.jpg;x:908.656;y:860.276;tx:931.418;ty:892.395;pois:zz komin Bana@0.1351/-0.0452,kopec spic vpravo@0.4887/-0.0933,kopec kalvaria@0.2079/-0.0499,kopec zvonica@0.0494/-0.0592,kopec vyhladna@-0.1291/-0.0933;oldpoi:false;
 img;hash:1249929086;xhash:-815753539;fname:DSC01289.JPG;x:945.46;y:857.051;tx:939.919;ty:794.911;
-img;hash:-1993167697;xhash:1085064727;fname:IMG_20170628_144803.jpg;simile:img_20170628_144803.jpg;x:908.818;y:860.485;tx:920.305;ty:1929.253;pois:zz komin Bana@-0.0749/-0.0281,kopec spic vpravo@0.2275/-0.0673,zz tajch@-0.2531/0.0215,kopec kalvaria@-0.008/-0.0307,kopec zvonica@-0.1559/-0.0426,strom pole@0.4862/0.2081,zz slniecko@-0.0455/0.0037,zz truban@-0.1738/0.0313,kopec rubina@0.438/-0.1081,kopec vyhladna@-0.3622/-0.0852,zz rezervoar@0.0673/0.0289;oldpoi:false;
+img;hash:-1993167697;xhash:1085064727;fname:IMG_20170628_144803.jpg;simile:img_20170628_144803.jpg;x:908.818;y:860.485;tx:920.305;ty:1929.253;pois:zz komin Bana@-0.0749/-0.0276,kopec spic vpravo@0.2275/-0.0673,zz tajch@-0.2531/0.0215,kopec kalvaria@-0.008/-0.0307,kopec zvonica@-0.1559/-0.0426,strom pole@0.4862/0.2081,zz slniecko@-0.0455/0.0037,zz truban@-0.1738/0.0313,kopec rubina@0.438/-0.1081,kopec vyhladna@-0.3622/-0.0852,zz rezervoar@0.0673/0.0289;oldpoi:false;
 img;hash:-327864191;xhash:-327864191;fname:DSC01564.JPG;pois:strom bonsaj@-0.0138/0.0299,zz ohnisko@-0.3708/0.101;oldpoi:false;
-img;hash:307535190;xhash:1373600000;fname:DSC09705.JPG;x:918.379;y:830.969;tx:916.375;ty:833.036;
+img;hash:307535190;xhash:1373600000;fname:DSC09705.JPG;x:918.379;y:830.969;tx:916.375;ty:833.036;pois:roh predsien@-0.2573/-0.2331,stlp veranda@-0.0019/-0.0146;oldpoi:false;
 img;hash:684250291;xhash:-347405892;fname:P1110543.JPG;x:941.222;y:848.577;tx:968.036;ty:887.354;
 img;hash:1096165171;xhash:1369955517;fname:DSC00885.JPG;x:544.952;y:283.605;
 img;hash:-2086818980;xhash:-453855817;fname:IMG_20171005_180417.jpg;x:907.176;y:883.805;tx:880.834;ty:850.878;pois:roh domcek2 pole dole@0.1769/0.0502,kanal cisterna@0.2744/0.0989,strecha domcek1 spic spod@0.3901/-0.1262,roh chliev bok@0.3007/0.055,zz zachod@0.2859/0.0521,strom hruska domceky@-0.0029/0.0373,strecha dom roh cesta hore@0.447/-0.1392,strom orech domceky@0.1639/0.0279,okno chliev@0.3614/-0.0071;oldpoi:false;
@@ -483,6 +483,7 @@ img;hash:450058686;xhash:2077310484;fname:DSC09687.JPG;x:939.005;y:900.614;tx:89
 img;hash:1780578383;xhash:-1126512152;fname:IMG_20170711_130240.jpg;x:897.77;y:879.703;tx:897.642;ty:891.3;pois:kopec spic vpravo@0.4365/-0.4999,kopec zvonica@-0.318/-0.4565;oldpoi:false;
 img;hash:-549883839;xhash:-987249639;fname:DSC00267.JPG;x:947.869;y:855.753;tx:960.46;ty:859.566;
 img;hash:139413934;xhash:394720023;fname:DSC00094.JPG;x:905.068;y:800.567;tx:890.823;ty:795.679;
+img;hash:-894732089;xhash:-894732089;fname:IMG_20170710_104106.jpg;pois:zz komin Bana@0.4117/0.1223,zz tajch@0.2086/0.1625,kopec zvonica@0.3049/0.1004,zz slniecko@0.4473/0.1648,zz truban@0.2953/0.1826,strecha seciansky humno spic dvor@-0.314/0.1524,kopec vyhladna@0.1123/0.0548;oldpoi:false;
 img;hash:-793480021;xhash:-688324798;fname:DSC01691.JPG;x:934.612;y:846.496;tx:935.214;ty:847.577;
 img;hash:94100478;xhash:1688146624;fname:DSC09831.JPG;x:885.088;y:834.275;tx:888.365;ty:837.935;
 img;hash:-7707343;xhash:-764910063;fname:DSC09874.JPG;x:920.408;y:841.754;tx:882.084;ty:823.471;pois:strecha mastal spic@0.3998/-0.2143,strecha chliev spic spod@-0.4034/-0.0362,strecha domcek1 spic hore@0.0981/-0.1047,dvere mastal@0.383/0.1016;oldpoi:false;
@@ -509,13 +510,13 @@ img;hash:-1442127490;xhash:-1788914753;fname:DSC00754.JPG;x:932.92;y:851.249;tx:
 img;hash:-2001351443;xhash:650243905;fname:DSC00927.JPG;x:907.071;y:856.12;tx:912.499;ty:856.042;
 img;hash:-1397296813;xhash:875963366;fname:IMG_20180522_030034.jpg;x:933.048;y:844.14;tx:934.388;ty:845.772;pois:kanal sprcha@0.3293/0.1098;oldpoi:false;
 img;hash:-1132196979;xhash:1377929493;fname:DSCF0513.JPG;x:857.581;y:815.285;tx:871.338;ty:783.243;pois:strecha mastal roh hore@0.2782/-0.1594;oldpoi:false;
-img;hash:526572587;xhash:-711473435;fname:IMG_20170710_104434.jpg;x:914.053;y:841.001;tx:871.278;ty:825.036;
+img;hash:526572587;xhash:-711473435;fname:IMG_20170710_104434.jpg;x:914.053;y:841.001;tx:871.278;ty:825.036;pois:strecha domcek2 spic spod@0.037/0.11,strecha chliev spic hore@0.1648/0.1666,strecha chliev spic spod@-0.2145/0.1666,strecha domcek1 spic hore@0.4441/0.0885,strecha domcek1 spic spod@0.1077/0.0858;oldpoi:false;
 img;hash:-1401489269;xhash:1029079268;fname:IMG_20170915_163203.jpg;x:925.372;y:830.465;tx:912.107;ty:804.751;
 img;hash:1361860466;xhash:1361860466;fname:DSC_2430.JPG;pois:zz rezervoar@-0.4689/0.0464,strom hruska velka@-0.2024/0.0081;oldpoi:false;
 img;hash:-557068197;xhash:-694276477;fname:DSC01075.JPG;simile:dsc01007.jpg;x:879.936;y:819.387;tx:879.83;ty:832.383;
 img;hash:386697358;xhash:-242016974;fname:DSC09730.JPG;x:911.456;y:815.061;tx:909.45;ty:818.572;
 img;hash:1666185048;xhash:1666185048;fname:DSC01562.JPG;pois:strom piknik@0.1427/0.0218;oldpoi:false;
-img;hash:305712212;xhash:457134833;fname:DSC09703.JPG;simile:dsc09703.jpg;x:940.453;y:829.873;tx:932.28;ty:830.583;
+img;hash:305712212;xhash:457134833;fname:DSC09703.JPG;simile:dsc09703.jpg;x:940.453;y:829.873;tx:932.28;ty:830.583;pois:stlp strieska dvor@0.0335/-0.1391,stlp strieska zahradka@0.0488/-0.118,roh komora cesta@-0.2811/0.2972,roh komora dvor@-0.0903/-0.1151,strecha mastal roh spod@0.2819/-0.386,roh domcek1 dvor hore@0.1646/-0.4144;oldpoi:false;
 img;hash:842568327;xhash:-1248438210;fname:IMG_20180606_135211.jpg;simile:img_20180605_173211.jpg;x:933.176;y:843.352;tx:934.39;ty:848.253;pois:roh sprcha lavy@-0.1507/0.2789,kanal sprcha@0.1269/0.5988;oldpoi:false;
 img;hash:-921342553;xhash:-1227468319;fname:IMG_20170910_142151.jpg;x:908.769;y:860.547;tx:902.936;ty:862.279;pois:strecha dom roh spod@-0.0644/-0.4106;oldpoi:false;
 img;hash:29167260;xhash:1396674479;fname:DSC01607.JPG;x:909.182;y:847.985;tx:909.945;ty:859.752;pois:okno izba hore 2@0.0569/-0.0365;oldpoi:false;
@@ -526,7 +527,7 @@ img;hash:-379022178;xhash:732678265;fname:DSC09773.JPG;x:921.489;y:847.824;tx:92
 img;hash:-1718389661;xhash:1315501309;fname:IMG_20170915_135632.jpg;x:937.186;y:813.916;tx:892.716;ty:806.153;
 img;hash:1047283701;xhash:1897240157;fname:IMG_20171224_124050.jpg;x:906.749;y:810.731;tx:900.761;ty:810.479;
 img;hash:-62326645;xhash:-917176131;fname:IMG_20170708_192003.jpg;x:795.39;y:828.637;tx:751.078;ty:821.252;
-img;hash:1903964038;xhash:-1514538877;fname:IMG_20170629_102802.jpg;x:905.378;y:838.621;tx:900.742;ty:846.608;
+img;hash:1903964038;xhash:-1514538877;fname:IMG_20170629_102802.jpg;x:905.378;y:838.621;tx:900.742;ty:846.608;pois:roh kuchyna hore@-0.202/-0.0738;oldpoi:false;
 img;hash:-1672552487;xhash:-1744188577;fname:DSC01105.JPG;x:879.265;y:819.387;tx:879.336;ty:820.906;
 img;hash:-383312052;xhash:1724747309;fname:DSC09673.JPG;x:514.576;y:529.079;
 img;hash:-1125241289;xhash:209282406;fname:IMG_20170707_112908.jpg;x:884.346;y:795.227;tx:886.404;ty:794.584;
@@ -551,7 +552,7 @@ img;hash:-99760870;xhash:-929159643;fname:DSC00028.JPG;x:916.194;y:836.616;tx:88
 img;hash:512258041;xhash:512258041;fname:DSC00060.JPG;pois:strom luka oproti stredny Y@0.1901/0.0073,kopec spic vpravo@-0.1061/-0.1165,kopec rubina@0.0924/-0.1518;oldpoi:false;
 img;hash:-489178652;xhash:-869717550;fname:IMG_20180606_205951.jpg;x:933.067;y:843.473;tx:932.831;ty:847.288;pois:kanal sprcha@-0.234/0.7746,roh sprcha pravy@-0.0344/0.3899;oldpoi:false;
 img;hash:1520336405;xhash:-806541222;fname:DSC00400.JPG;x:899.008;y:866.09;tx:921.23;ty:838.979;
-img;hash:300746451;xhash:-1910756806;fname:DSC09700.JPG;x:944.446;y:847.703;tx:937.151;ty:843.808;
+img;hash:300746451;xhash:-1910756806;fname:DSC09700.JPG;x:944.446;y:847.703;tx:937.151;ty:843.808;pois:okno kuchyna@0.1733/-0.0325,zz okap stena diera@-0.2671/0.0728;oldpoi:false;
 img;hash:-1416579903;xhash:-1936985444;fname:DSC01433.JPG;x:939.458;y:830.366;tx:951.427;ty:852.738;pois:zz komin Bana@0.2303/-0.018,roh secianski cesta spod@-0.0071/0.1189,strecha seciansky roh spod cesta@0.0606/-0.0881,strecha seciansky humno roh hore@0.1758/0.0355,brana cesta spodna@0.208/0.0673,strecha seciansky humno roh spod@0.1687/0.0208,brana branka spodna@0.3198/0.1104,strecha seciansky humno spic cesta@0.1526/-0.0389;oldpoi:false;
 img;hash:1282672554;xhash:1954981775;fname:DSC00938.JPG;x:844.286;y:808.512;tx:824.291;ty:990.66;
 img;hash:1350393839;xhash:1920707533;fname:IMG_20170930_135645.jpg;x:914.22;y:822.196;tx:914.745;ty:820.437;
@@ -652,7 +653,7 @@ img;hash:-666723811;xhash:-1313033655;fname:DSC00366.JPG;x:929.963;y:851.897;tx:
 img;hash:289191965;xhash:289191965;fname:DSC00277.JPG;pois:rezervoar uzitkova@-0.048/0.0762;oldpoi:false;
 img;hash:-1357610751;xhash:1410145725;fname:DSC00641.JPG;x:-353.91;y:-292.639;
 img;hash:-1773597306;xhash:171041167;fname:IMG_20170915_135623.jpg;x:945.773;y:815.068;tx:946.779;ty:815.571;
-img;hash:-798327706;xhash:2008526670;fname:IMG_20170629_123724.jpg;x:921.733;y:830.185;tx:934.367;ty:825.702;
+img;hash:-798327706;xhash:2008526670;fname:IMG_20170629_123724.jpg;x:921.733;y:830.185;tx:934.367;ty:825.702;pois:brana branka@0.4747/-0.2332;oldpoi:false;
 img;hash:1168505554;xhash:716139678;fname:DSC08535.JPG;x:885.033;y:825.692;tx:882.628;ty:827.617;
 img;hash:1085304605;xhash:-1110674764;fname:DSCF0521.JPG;x:890.475;y:847.461;tx:888.839;ty:873.1;pois:zz komin Bana@-0.046/-0.0228,zz tajch@-0.2308/0.0452,kopec kalvaria@0.053/-0.0292,kopec zvonica@-0.1708/-0.0436,zz slniecko@-0.0124/0.0248,kopec vyhladna@-0.4535/-0.099,zz rezervoar@0.1535/0.053;oldpoi:false;
 img;hash:2132672988;xhash:-887813228;fname:DSC09850.JPG;x:846.619;y:810.602;tx:840.623;ty:814.191;pois:zz ohnisko@0.0073/0.0359;oldpoi:false;
@@ -715,7 +716,7 @@ img;hash:1161375567;xhash:-965929543;fname:DSC_2570.JPG;x:901.519;y:908.376;tx:8
 img;hash:2084322266;xhash:-1139401535;fname:DSC09907.JPG;x:905.8;y:855.91;tx:908.925;ty:847.644;
 img;hash:-381951967;xhash:-769558987;fname:DSC01587.JPG;x:850.135;y:816.63;tx:835.683;ty:814.78;pois:zz ohnisko@0.0299/0.1019;oldpoi:false;
 img;hash:-1934688471;xhash:-1934688471;fname:DSC_2485.JPG;pois:zz komin Bana@-0.4788/-0.0784,kopec spic vpravo@0.0095/-0.133,kopec kalvaria@-0.3661/-0.0812,zz penzion@0.0234/0.0798,kopec rubina@0.2344/-0.1709;oldpoi:false;
-img;hash:-1139107039;xhash:751281271;fname:IMG_20170628_145251.jpg;simile:img_20170628_144803.jpg;x:908.818;y:860.485;tx:922.392;ty:1930.688;pois:zz tajch@-0.2746/0.0129,kopec kalvaria@-0.0303/-0.0373,kopec zvonica@-0.1794/-0.0533,strom pole@0.4625/0.195,zz slniecko@-0.0683/-3.0E-4,zz truban@-0.1922/0.0231,kopec rubina@0.4165/-0.1112,kopec vyhladna@-0.3882/-0.0971,zz rezervoar@0.0476/0.0209;oldpoi:false;
+img;hash:-1139107039;xhash:751281271;fname:IMG_20170628_145251.jpg;simile:img_20170628_144803.jpg;x:908.818;y:860.485;tx:922.392;ty:1930.688;pois:zz tajch@-0.2746/0.0129,kopec kalvaria@-0.0303/-0.0373,kopec zvonica@-0.1794/-0.0533,strom pole@0.4625/0.195,zz slniecko@-0.0683/-3.0E-4,zz truban@-0.1922/0.0231,kopec rubina@0.4165/-0.1112,kopec vyhladna@-0.3882/-0.0971,zz rezervoar@0.049/0.0223;oldpoi:false;
 img;hash:441552951;xhash:-2054069526;fname:IMG_20170930_134729.jpg;x:911.122;y:823.46;tx:910.622;ty:816.301;pois:dvere humno@-0.1321/-0.257;oldpoi:false;
 img;hash:-666036719;xhash:1152095394;fname:IMG_20170910_125606.jpg;x:919.225;y:827.74;tx:918.056;ty:803.06;
 img;hash:-1523472466;xhash:-1523472466;fname:IMG_20180519_162638.jpg;pois:zz komin Bana@-0.208/-0.5979,roh schody pivnica@0.2513/0.2989,dvere pivnica@-0.4231/-0.3062,kopec kalvaria@-0.0751/-0.6037;oldpoi:false;
@@ -870,7 +871,7 @@ img;hash:-1232911408;xhash:598472069;fname:IMG_20171005_180053.jpg;x:905.458;y:8
 img;hash:-821459228;xhash:-821459228;fname:DSC_2479.JPG;pois:kopec spic vpravo@-0.2737/-0.1573,kopec obly po rubine@0.4337/-0.234,kopec rubina@0.0095/-0.1948;oldpoi:false;
 img;hash:71692333;xhash:71692333;fname:DSC_2440.JPG;pois:strecha chliev spic spod@-0.1389/-0.0176,okno izba dole@0.0947/5.0E-4,strecha dom spic kuchyna@-0.0478/-0.0969,strecha sennik spic spod@0.2529/-0.0518,strecha domcek2 spic hore@-0.2151/-0.0032,strecha seciansky humno spic cesta@0.4833/-0.1479,okno kuchyna nova@-0.0694/0.0014,okno izba hore 2@-0.0667/-0.0523,strecha domcek2 spic spod@-0.2435/-0.0171,strecha seciansky roh spod cesta@0.2331/-0.0122,strecha domcek1 spic spod@-0.1677/-0.0198,roh cesta dole@0.229/0.0298,brana branka spodna@0.1754/0.0167,strecha dom roh spod@-0.1195/-0.0789,okno izba hore@0.0951/-0.0546,strom hruska velka@0.1267/0.0041;oldpoi:false;
 img;hash:1858699175;xhash:-1721167489;fname:IMG_20170708_181222.jpg;x:908.187;y:814.888;tx:910.626;ty:843.851;
-img;hash:-740120793;xhash:1937132150;fname:IMG_20170629_123745.jpg;x:900.016;y:810.108;tx:891.135;ty:809.245;
+img;hash:-740120793;xhash:1937132150;fname:IMG_20170629_123745.jpg;x:900.016;y:810.108;tx:891.135;ty:809.245;pois:roh mastal spod@0.3231/-0.1912,roh domcek1 dvor hore@-0.4094/-0.0233;oldpoi:false;
 img;hash:336668784;xhash:769226469;fname:DSC_2496.JPG;x:633.897;y:441.714;tx:723.243;ty:907.089;
 img;hash:278844736;xhash:-1966069223;fname:DSC00345.JPG;x:502.849;y:262.247;
 img;hash:2044384304;xhash:2044384304;fname:DSC00290.JPG;pois:strom pole@-0.3268/0.1418,rezervoar uzitkova@-0.0634/0.2217,strom pole roh@0.1077/0.097;oldpoi:false;
@@ -891,7 +892,7 @@ img;hash:-2124436039;xhash:1483963074;fname:DSC09937.JPG;x:514.089;y:529.853;tx:
 img;hash:-1714714697;xhash:-788699620;fname:IMG_20180106_131900.jpg;simile:img_20180522_004150.jpg;x:933.008;y:843.319;tx:934.525;ty:847.258;pois:roh sprcha lavy@-0.1747/-0.3235,roh sprcha pravy@0.4564/-0.2426,roh sprcha pravy dvere@0.3148/0.9329;oldpoi:false;
 img;hash:-1356044539;xhash:-613931223;fname:DSC00645.JPG;x:-348.856;y:-210.765;tx:852.961;ty:730.271;
 img;hash:2119713015;xhash:-1596510881;fname:IMG_20180614_141629.jpg;x:925.466;y:838.883;tx:923.589;ty:838.842;
-img;hash:-760163389;xhash:1967999033;fname:IMG_20170629_103314.jpg;x:916.843;y:829.56;tx:916.062;ty:832.915;
+img;hash:-760163389;xhash:1967999033;fname:IMG_20170629_103314.jpg;x:916.843;y:829.56;tx:916.062;ty:832.915;pois:roh kuchyna hore@0.2149/-0.8131,roh predsien@-0.4519/-0.5335,stlp veranda@-0.3172/-0.0609;oldpoi:false;
 img;hash:1931148255;xhash:1562116872;fname:DSC01310.JPG;x:543.015;y:337.3;tx:891.977;ty:797.015;
 img;hash:1121800495;xhash:-871170370;fname:DSC00892.JPG;x:541.618;y:284.021;
 img;hash:-555931803;xhash:1716618802;fname:DSC01525.JPG;simile:dsc00265.jpg;x:942.993;y:849.014;tx:948.45;ty:873.655;pois:zz komin Bana@-0.212/-0.0937,kopec kalvaria@-0.0739/-0.1014,strecha seciansky roh spod cesta@-0.3077/-0.2507,strecha seciansky humno roh hore@-0.2293/0.0062,roh cesta dole@0.0303/0.1042,brana branka spodna@0.1908/0.1415,zz slniecko@-0.1472/-0.0275,zz rezervoar@0.1132/0.0157,strecha seciansky humno spic cesta@-0.2775/-0.1423,strom hruska velka@0.3077/0.1106;oldpoi:false;
@@ -990,7 +991,7 @@ img;hash:786188470;xhash:1570709746;fname:IMG_20170711_130106.jpg;x:894.823;y:85
 img;hash:683303196;xhash:-1594379313;fname:IMG_20180521_180600.jpg;x:907.067;y:837.362;tx:901.621;ty:844.879;pois:kanal okap chliev roh @-0.2449/-0.1819,roh chliev prechod@-0.2332/-0.1683,kanal roh@-0.2158/-0.0804;oldpoi:false;
 img;hash:-581851575;xhash:1679174321;fname:DSC00704.JPG;x:454.662;y:1083.586;tx:330.44;ty:956.116;
 img;hash:427423744;xhash:1032963372;fname:IMG_20170529_113102.jpg;x:934.303;y:813.479;tx:901.634;ty:843.03;
-img;hash:1882247786;xhash:4953477;fname:IMG_20170629_111749.jpg;x:917.595;y:829.088;tx:921.294;ty:824.981;
+img;hash:1882247786;xhash:4953477;fname:IMG_20170629_111749.jpg;x:917.595;y:829.088;tx:921.294;ty:824.981;pois:roh dvor zahradka@-0.2332/-0.0931;oldpoi:false;
 img;hash:-2032712783;xhash:839357448;fname:IMG_20170708_174948.jpg;x:847.529;y:787.16;tx:815.547;ty:870.993;
 img;hash:1773342914;xhash:-2107715551;fname:DSC01153.JPG;x:921.316;y:858.638;tx:921.426;ty:859.447;
 img;hash:-2036669290;xhash:-706877127;fname:DSC09969.JPG;x:515.31;y:529.478;tx:516.419;ty:526.255;
@@ -1124,7 +1125,7 @@ img;hash:357730394;xhash:368434165;fname:DSC09650.JPG;x:921.42;y:845.421;tx:918.
 img;hash:2049902426;xhash:589592663;fname:DSC09375.JPG;x:994.29;y:745.163;tx:950.497;ty:749.027;
 img;hash:-667075520;xhash:-1520118436;fname:DSC01038.JPG;x:711.122;y:561.588;tx:679.332;ty:604.408;
 img;hash:670974036;xhash:-248961892;fname:IMG_20180612_153129.jpg;x:933.137;y:844.228;tx:935.647;ty:844.167;
-img;hash:175997445;xhash:1975987657;fname:IMG_20170629_123853.jpg;x:923.762;y:811.042;tx:889.238;ty:825.543;
+img;hash:175997445;xhash:1975987657;fname:IMG_20170629_123853.jpg;x:923.762;y:811.042;tx:889.238;ty:825.543;pois:strecha chliev spic hore@-0.0749/-0.1689,strecha chliev spic spod@-0.2396/-0.1629,roh kuchyna hore@-0.4085/0.0187,strecha domcek1 spic hore@0.2236/-0.2109,strecha domcek1 spic spod@-0.0073/-0.1981,dvere mastal@0.403/0.0014,svetlo humno@0.4487/-0.2442,strecha mastal roh spod@0.3597/-0.1789,strecha domcek2 spic hore@0.2351/-0.1639,roh chliev dvor@-0.1556/0.0379;oldpoi:false;
 img;hash:415359023;xhash:1568764754;fname:DSC09740.JPG;x:900.079;y:841.889;tx:897.797;ty:841.956;
 img;hash:994079693;xhash:994079693;fname:DSC_2498.JPG;pois:zz komin Bana@-0.1384/-0.018,zz tajch@-0.4107/0.0622,kopec kalvaria@-0.023/-0.0225,kopec zvonica@-0.2967/-0.0482,zz slniecko@-0.1659/0.0437;oldpoi:false;
 img;hash:-1187225552;xhash:-1187225552;fname:DSC01151.JPG;pois:kopec spic vpravo@0.0023/-0.1983,kopec kalvaria@-0.2634/-0.1766,strom pole@0.2184/0.1015,zz slniecko@-0.3175/-0.1349,kopec rubina@0.2014/-0.227,zz rezervoar@-0.172/-0.1018;oldpoi:false;
@@ -1227,7 +1228,7 @@ img;hash:2138942789;xhash:-481063307;fname:DSC09857.JPG;x:908.741;y:860.511;tx:8
 img;hash:1180471894;xhash:-2085108434;fname:DSC09814.JPG;x:918.731;y:856.806;
 img;hash:-92016504;xhash:-92016504;fname:DSC00336.JPG;pois:strecha mastal spic@-0.216/0.0021,strecha dom spic izba@-0.2233/-0.0013,strecha domcek1 spic hore@-0.1943/0.0111,kopec kalvaria@0.2297/-0.0183,kopec zvonica@0.0656/-0.0324,strecha dom spic kuchyna@-0.1977/-0.0013,kopec vyhladna@-0.1206/-0.069,strom bonsaj@-0.1721/0.0294;oldpoi:false;
 img;hash:-1973224709;xhash:1951272671;fname:IMG_20170910_124705.jpg;x:877.973;y:853.051;tx:902.206;ty:853.402;
-img;hash:1003429767;xhash:175748332;fname:IMG_20170629_123932.jpg;simile:dsc09703.jpg;x:943.598;y:829.966;tx:922.079;ty:826.66;
+img;hash:1003429767;xhash:175748332;fname:IMG_20170629_123932.jpg;simile:dsc09703.jpg;x:943.598;y:829.966;tx:922.079;ty:826.66;pois:stlp strieska zahradka@-0.1921/-0.0251,stlp strieska dvor@-0.2017/-0.0388,dvere humno@0.1383/-0.1456,brana branka@-0.3893/-0.0799,strecha domcek1 spic hore@-0.0963/-0.2287,roh dvor zahradka@-0.0178/-0.0511,svetlo humno@0.1082/-0.2113,dvere mastal@0.047/-0.1077,dvere garaz@0.3528/-0.1552,strecha mastal roh spod@-0.0123/-0.1999;oldpoi:false;
 img;hash:898774258;xhash:-1304160697;fname:DSC00399.JPG;x:924.194;y:839.64;tx:935.615;ty:839.436;
 img;hash:1316687181;xhash:-777475384;fname:IMG_20171004_215117.jpg;x:929.701;y:847.274;tx:932.438;ty:847.199;
 img;hash:1403217064;xhash:20147609;fname:DSCF0509.JPG;x:926.772;y:847.363;tx:923.959;ty:845.62;
@@ -1257,7 +1258,7 @@ img;hash:-1357669772;xhash:-1999766694;fname:DSC00190.JPG;x:536.304;y:333.576;tx
 img;hash:1094836146;xhash:1506950563;fname:DSC00886.JPG;x:541.618;y:284.855;
 img;hash:-982272082;xhash:-82354973;fname:IMG_20180526_144424.jpg;x:934.236;y:845.251;tx:934.323;ty:846.304;pois:kanal sprcha@-0.0246/0.0072;oldpoi:false;
 img;hash:419180421;xhash:-1732771548;fname:DSC00843.JPG;x:-265.592;y:-262.151;
-img;hash:-1648301656;xhash:-2132451611;fname:IMG_20170629_111802.jpg;x:914.775;y:836.003;tx:915.71;ty:833.572;
+img;hash:-1648301656;xhash:-2132451611;fname:IMG_20170629_111802.jpg;x:914.775;y:836.003;tx:915.71;ty:833.572;pois:stlp veranda@-0.0414/-0.36;oldpoi:false;
 img;hash:1723807386;xhash:422947202;fname:DSC00924.JPG;simile:dsc00924.jpg;x:924.945;y:839.699;tx:932.117;ty:848.346;
 img;hash:-1267033709;xhash:-1267033709;fname:DSC09990.JPG;pois:zz komin Bana@-0.4549/-0.1001,kopec spic vpravo@-0.0879/-0.1132,kopec kalvaria@-0.3629/-0.096,kopec obly po rubine@0.3589/-0.1533,strom pole@0.1402/0.1501,zz slniecko@-0.4193/-0.0523,kopec rubina@0.1019/-0.1353,zz rezervoar@-0.2651/-0.0189,strom pole roh@0.1713/0.1159;oldpoi:false;
 img;hash:2078186581;xhash:280960809;fname:DSC09900.JPG;x:911.352;y:858.344;tx:912.381;ty:859.226;
@@ -1274,7 +1275,7 @@ img;hash:767364724;xhash:766407553;fname:DSC00100.JPG;x:917.75;y:803.273;tx:932.
 img;hash:-2132042225;xhash:1728417206;fname:IMG_20170629_195512.jpg;x:844.14;y:810.625;tx:882.081;ty:805.624;
 img;hash:599561117;xhash:599561117;fname:DSC00271.JPG;pois:strom pole roh@-0.072/0.065;oldpoi:false;
 img;hash:-620980558;xhash:-1978583543;fname:IMG_20170910_184311.jpg;x:910.972;y:836.744;tx:911.089;ty:845.993;pois:kanal okap chliev roh @0.47/-0.0712,zz uzol@0.4636/0.0609,kanal okap kuchyna roh@-0.0844/-0.222,kanal roh@0.464/-0.0311,kanal okap predsien roh@-0.2599/0.0209;oldpoi:false;
-img;hash:306623961;xhash:1537561939;fname:DSC09706.JPG;x:905.795;y:817.839;tx:921.474;ty:826.426;
+img;hash:306623961;xhash:1537561939;fname:DSC09706.JPG;x:905.795;y:817.839;tx:921.474;ty:826.426;pois:stlp strieska dvor@-0.0947/0.2899,stlp strieska zahradka@-0.1981/0.1966,roh balkon dvor@0.1624/-0.3438,roh predsien@0.2986/0.2083,okno komora hore@-0.1522/-0.1865,roh komora dvor@-0.059/0.1551,svetlo veranda@0.1194/-0.1034,dvere dom@0.1464/0.1843,stlp veranda@0.1362/0.2535;oldpoi:false;
 img;hash:-1192220574;xhash:-1058497646;fname:IMG_20170710_104251.jpg;simile:img_20170628_144803.jpg;x:908.741;y:860.434;tx:791.373;ty:1647.576;pois:zz komin Bana@-0.3238/-0.0021,kopec spic vpravo@-0.0051/-0.032,kopec kalvaria@-0.2426/-0.0043,kopec zvonica@-0.4295/-0.0205,kopec obly po rubine@0.4161/-0.0951,strom pole@0.2112/0.219,zz slniecko@-0.2899/0.0276,zz truban@-0.4441/0.0663,kopec rubina@0.1713/-0.0618,zz rezervoar@-0.1627/0.0599,strom pole roh@0.2428/0.1778;oldpoi:false;
 img;hash:1530295945;xhash:-1386286135;fname:DSC_2613.JPG;x:937.032;y:729.473;tx:946.442;ty:752.674;
 img;hash:-2044628592;xhash:-1352425655;fname:DSC09963.JPG;x:516.406;y:528.342;
@@ -1327,7 +1328,7 @@ img;hash:1224596717;xhash:-1668190428;fname:DSC00917.JPG;x:932.086;y:857.49;tx:9
 img;hash:-370474391;xhash:-1292209775;fname:DSCF0372.JPG;x:903.322;y:827.275;tx:911.482;ty:846.147;pois:roh nova kuchyna predsien@-0.2906/-0.1089,kanal okap kuchyna roh@-0.0926/-0.0228;oldpoi:false;
 img;hash:-792579540;xhash:-69114760;fname:DSC01694.JPG;x:933.198;y:846.912;tx:935.214;ty:844.106;
 img;hash:-1818820051;xhash:1362885500;fname:IMG_20170627_192331.jpg;x:902.032;y:775.532;tx:864.254;ty:749.221;
-img;hash:152183275;xhash:-1187311517;fname:IMG_20170629_123848.jpg;x:928.275;y:812.463;tx:933.891;ty:822.272;
+img;hash:152183275;xhash:-1187311517;fname:IMG_20170629_123848.jpg;x:928.275;y:812.463;tx:933.891;ty:822.272;pois:roh secianski cesta spod@-0.0041/-0.0584,svetlo komora cesta@0.021/-0.194,brana branka@-0.0461/-0.078,roh komora cesta@0.0301/-0.0041,okno komora male@0.388/-0.0443,brana dvor@-0.4455/-0.1351;oldpoi:false;
 img;hash:-680309505;xhash:-680309505;fname:DSC09713.JPG;x:903.06;y:826.115;tx:927.02;ty:809.334;
 img;hash:-98869805;xhash:-601140739;fname:IMG_0427a.jpg;x:882.028;y:817.812;tx:886.69;ty:808.432;
 img;hash:83726425;xhash:1480145530;fname:DSC01624.JPG;x:903.717;y:849.014;tx:911.902;ty:859.392;pois:okno izba hore 2@0.2731/-0.0948;oldpoi:false;
@@ -1337,21 +1338,21 @@ img;hash:-1869497297;xhash:897593702;fname:DSC09641.JPG;x:919.868;y:818.865;tx:9
 img;hash:-1308810363;xhash:1489171427;fname:IMG_20170709_135229.jpg;x:773.67;y:810.494;tx:789.099;ty:805.771;
 img;hash:826400612;xhash:-784851761;fname:DSC00057.JPG;x:693.474;y:705.177;tx:716.734;ty:818.609;pois:zz komin Bana@-0.1056/-0.0576,strom plosina okraj stredny@-0.4455/-0.1108,kopec spic vpravo@0.2623/-0.1104,kopec kalvaria@-0.0254/-0.0631,kopec zvonica@-0.2124/-0.0742,kopec vyhladna@-0.4592/-0.1195;oldpoi:false;
 img;hash:1078028196;xhash:-802241370;fname:DSC00415.JPG;x:929.555;y:860.856;tx:922.24;ty:881.713;
-img;hash:-320414544;xhash:418969334;fname:DSC09699.JPG;x:944.364;y:847.703;tx:937.164;ty:847.757;
+img;hash:-320414544;xhash:418969334;fname:DSC09699.JPG;x:944.364;y:847.703;tx:937.164;ty:847.757;pois:zz okap stena diera@0.1821/0.0592;oldpoi:false;
 img;hash:-1287934588;xhash:-1260680771;fname:IMG_20170915_163242.jpg;x:959.8;y:757.609;tx:977.257;ty:784.955;
-img;hash:932802662;xhash:-701125239;fname:IMG_20170629_111624.jpg;x:932.54;y:829.782;tx:918.377;ty:825.462;
+img;hash:932802662;xhash:-701125239;fname:IMG_20170629_111624.jpg;x:932.54;y:829.782;tx:918.377;ty:825.462;pois:stlp strieska zahradka@-0.1611/0.1214,stlp strieska dvor@-0.194/0.0566,dvere humno@0.3209/-0.1579,strecha chliev spic hore@-0.3031/-0.2378,strecha domcek1 spic hore@-0.0726/-0.2469,roh dvor zahradka@0.2629/0.0402,dvere mastal@0.1314/-0.094,roh komora dvor@-0.4423/0.1424,roh chliev dvor@-0.3136/-0.0078,stlp veranda@-0.4153/0.0799;oldpoi:false;
 img;hash:2104730779;xhash:1556774226;fname:DSC01372.JPG;x:930.37;y:859.867;tx:960.552;ty:890.12;
 img;hash:-468022820;xhash:-2073647455;fname:DSC08761.JPG;x:839.328;y:671.056;tx:785.744;ty:747.395;
 img;hash:1164377219;xhash:244346153;fname:DSC01259.JPG;x:941.566;y:771.914;tx:941.912;ty:826.271;
 img;hash:1046762882;xhash:2120283170;fname:DSC01216.JPG;x:942.443;y:826.405;tx:940.711;ty:853.931;
-img;hash:286909355;xhash:-302415743;fname:IMG_20170709_195414.jpg;x:794.415;y:777.615;tx:397.691;ty:46.56;
+img;hash:286909355;xhash:-302415743;fname:IMG_20170709_195414.jpg;x:794.415;y:777.615;tx:397.691;ty:46.56;pois:zz trafo@0.2252/0.0867,strom plosina maly hore@0.3318/0.1237,zz penzion@0.11/0.0817,rezervoar hore@0.074/0.0998;oldpoi:false;
 img;hash:1156022296;xhash:818133601;fname:DSC01250.JPG;simile:dsc01215.jpg;x:941.332;y:829.606;tx:940.974;ty:754.539;
 img;hash:1218769681;xhash:-1512700382;fname:IMG_20171009_033015.jpg;x:933.348;y:844.202;tx:934.465;ty:847.208;
 img;hash:527668842;xhash:1753398082;fname:IMG_20170712_065453.jpg;x:781.642;y:795.796;tx:786.141;ty:880.863;pois:strom plosina okraj stredny@0.2362/0.064,strom broccoli@-0.0086/0.0694,strom ceresna okraj spod@-0.362/0.0884,kopec rubina@-0.1601/-0.046;oldpoi:false;
 img;hash:205657692;xhash:205657692;fname:DSC01502.JPG;pois:strecha chliev spic hore@0.312/-0.3419,zz zachod@0.0782/0.1123;oldpoi:false;
 img;hash:439946155;xhash:439946155;fname:DSC_2435.JPG;pois:strecha seciansky roh spod cesta@-0.0446/-0.032,brana cesta spodna@0.1429/0.0243,brana branka spodna@-0.1335/0.0095,roh cesta dole@0.0694/0.069,okno izba dole@-0.2764/-0.0266,zz sennik@0.4121/-0.0694,okno izba hore@-0.2696/-0.1271;oldpoi:false;
 img;hash:1862133126;xhash:-1931196710;fname:IMG_20180527_222443.jpg;x:923.406;y:841.862;tx:935.422;ty:841.943;
-img;hash:1127032769;xhash:1002378453;fname:IMG_20170629_102740.jpg;x:916.74;y:831.251;tx:901.543;ty:840.254;
+img;hash:1127032769;xhash:1002378453;fname:IMG_20170629_102740.jpg;x:916.74;y:831.251;tx:901.543;ty:840.254;pois:roh kuchyna hore@-0.2848/0.0342,roh predsien 2@-0.4801/0.2264,roh chliev dvor@0.2729/0.0434;oldpoi:false;
 img;hash:1272982297;xhash:-2007312514;fname:DSC01293.JPG;x:927.494;y:696.862;tx:947.602;ty:795.726;
 img;hash:-1921784233;xhash:-1921784233;fname:DSC01466.JPG;pois:strom piknik@-0.1699/0.0718,zz ohnisko@-0.3141/0.1151;oldpoi:false;
 img;hash:-384216629;xhash:-1620428097;fname:DSC09670.JPG;x:513.63;y:530.001;tx:513.538;ty:528.249;
@@ -1383,7 +1384,7 @@ img;hash:211899674;xhash:7660366;fname:DSC01131.JPG;x:991.446;y:810.237;tx:991.3
 img;hash:-1441715164;xhash:-1347196954;fname:DSC00613.JPG;x:-343.802;y:-300.725;
 img;hash:-1000251817;xhash:-1155450193;fname:IMG_20170705_161724.jpg;x:884.624;y:854.886;tx:890.631;ty:866.9;
 img;hash:446906277;xhash:1276189103;fname:DSC00854.JPG;x:-300.909;y:-247.763;
-img;hash:1103392356;xhash:447684918;fname:DSC09704.JPG;simile:dsc01215.jpg;x:940.707;y:829.765;tx:937.917;ty:792.339;
+img;hash:1103392356;xhash:447684918;fname:DSC09704.JPG;simile:dsc01215.jpg;x:940.707;y:829.765;tx:937.917;ty:792.339;pois:brana pole hore@-0.008/-0.0218,strom morusa@-0.0736/-0.0335,brana dvor@-0.1726/-0.0583;oldpoi:false;
 img;hash:-556254248;xhash:730746750;fname:DSC01074.JPG;x:891.884;y:817.839;tx:882.251;ty:818.311;
 img;hash:-2004102038;xhash:-446527411;fname:DSC00926.JPG;x:907.357;y:856.102;tx:912.541;ty:855.974;
 img;hash:-413083622;xhash:-1783160800;fname:DSC08781.JPG;x:885.066;y:899.609;tx:907.979;ty:860.987;
@@ -1395,7 +1396,7 @@ img;hash:-1587002219;xhash:-966586083;fname:IMG_20180602_060124.jpg;simile:img_2
 img;hash:-153631971;xhash:-153631971;fname:DSC01430.JPG;pois:dvere humno@0.236/0.0874,strecha mastal spic@-0.0199/-0.2608,strecha domcek1 spic hore@-0.3092/-0.1819,dvere mastal@-0.037/0.027,strecha mastal roh spod@-0.1763/-0.1272,roh domcek1 dvor hore@-0.2772/0.0718;oldpoi:false;
 img;hash:1193873151;xhash:-1672751566;fname:IMG_20170919_215049.jpg;x:929.88;y:848.612;tx:931.936;ty:837.164;
 img;hash:773283112;xhash:1213272315;fname:DSC00039.JPG;x:724.855;y:378.778;tx:741.551;ty:404.067;
-img;hash:1790053382;xhash:-285203999;fname:IMG_20170629_111712.jpg;x:902.088;y:841.982;tx:901.233;ty:847.28;
+img;hash:1790053382;xhash:-285203999;fname:IMG_20170629_111712.jpg;x:902.088;y:841.982;tx:901.233;ty:847.28;pois:roh kuchyna hore@-0.413/0.4001,roh chliev prechod@0.2926/0.1489;oldpoi:false;
 img;hash:101348584;xhash:-1060892383;fname:IMG_20180605_204733.jpg;simile:img_20180605_173211.jpg;x:932.956;y:843.238;tx:934.77;ty:848.339;
 img;hash:-365912010;xhash:-931633145;fname:IMG_20171003_045226.jpg;x:933.043;y:844.567;tx:935.826;ty:845.278;
 img;hash:-1172779570;xhash:-1112402454;fname:IMG_20180530_232431.jpg;simile:img_20180530_234348.jpg;x:929.683;y:842.455;tx:925.826;ty:845.649;
@@ -1478,9 +1479,9 @@ img;hash:335237663;xhash:-921584016;fname:DSC01178.JPG;x:929.264;y:858.939;tx:92
 img;hash:1452630882;xhash:1212935321;fname:DSC00996.JPG;x:940.171;y:901.566;tx:868.621;ty:995.957;
 img;hash:179230805;xhash:-761622387;fname:IMG_20170712_185824.jpg;x:877.316;y:749.337;tx:851.671;ty:720.786;
 img;hash:-1010713219;xhash:-1010713219;fname:DSC09717.JPG;x:903.06;y:826.115;tx:888.237;ty:811.571;
-img;hash:172096771;xhash:-578462623;fname:IMG_20170629_123851.jpg;x:923.458;y:816.326;tx:915.732;ty:836.185;
+img;hash:172096771;xhash:-578462623;fname:IMG_20170629_123851.jpg;x:923.458;y:816.326;tx:915.732;ty:836.185;pois:stlp strieska zahradka@-0.194/0.0986,strecha chliev spic spod@0.2223/-0.1798,roh balkon dvor@-0.0516/-0.2351,roh komora dvor@-0.2551/0.0598,okno komora male@-0.4295/0.0123,roh predsien 2@-0.058/0.0041,kanal okap predsien roh@-0.0575/0.0365,stlp strieska dvor@-0.0178/0.0767,okno balkon@-0.1716/-0.2049,strecha chliev spic hore@0.4099/-0.2008,roh kuchyna hore@0.0653/-0.0087,roh dvor zahradka@-0.215/0.1406,roh predsien@-0.0922/0.021,strecha komora roh dvor@-0.1953/-0.188,strecha dom roh hore@0.1082/-0.2716,roh chliev dvor@0.2948/0.0278,stlp veranda@-0.0758/0.0529;oldpoi:false;
 img;hash:-1135315990;xhash:1040011828;fname:IMG_20170629_150458.jpg;x:931.145;y:808.469;tx:898.895;ty:829.423;
-img;hash:-763939573;xhash:1947109146;fname:IMG_20170629_123738.jpg;x:903.638;y:810.366;tx:891.394;ty:809.245;
+img;hash:-763939573;xhash:1947109146;fname:IMG_20170629_123738.jpg;x:903.638;y:810.366;tx:891.394;ty:809.245;pois:roh mastal spod@0.1953/-0.0452,dvere mastal@0.3592/0.0219;oldpoi:false;
 img;hash:-699522911;xhash:386174490;fname:DSC00212.JPG;x:795.482;y:716.251;tx:887.581;ty:777.547;
 img;hash:-694108916;xhash:-694108916;fname:DSC_2446.JPG;pois:strecha domcek2 spic spod@0.4283/-0.0347,strom pole@0.1506/0.0478,strom pole roh@-0.2272/0.0685;oldpoi:false;
 img;hash:2015183920;xhash:1452803713;fname:P1110511.JPG;x:912.661;y:848.33;tx:904.116;ty:859.846;
@@ -1500,7 +1501,7 @@ img;hash:1168446347;xhash:-2144585110;fname:DSC_2647.JPG;x:916.939;y:801.126;tx:
 img;hash:90710911;xhash:-2129194506;fname:DSC09830.JPG;x:878.138;y:832.392;tx:880.837;ty:836.973;
 img;hash:-2102257249;xhash:-1812358855;fname:DSC09873.JPG;x:911.916;y:847.915;tx:911.205;ty:859.447;pois:okno izba hore 2@0.0702/-0.1803,kopec spic vpravo@0.0994/-0.2178,zz rezervoar@-0.0658/-0.1122;oldpoi:false;
 img;hash:309768866;xhash:-1259666463;fname:IMG_20170708_175045.jpg;x:847.39;y:787.16;tx:842.907;ty:870.551;
-img;hash:302962645;xhash:977405212;fname:DSC09702.JPG;x:940.308;y:830.055;tx:938.362;ty:830.06;
+img;hash:302962645;xhash:977405212;fname:DSC09702.JPG;x:940.308;y:830.055;tx:938.362;ty:830.06;pois:roh komora cesta@-0.2717/-0.0626;oldpoi:false;
 img;hash:-847659150;xhash:-1372034145;fname:IMG_20171001_231057.jpg;x:929.797;y:848.661;tx:931.646;ty:837.138;
 img;hash:2112031738;xhash:-769710903;fname:DSC09918.JPG;x:924.489;y:844.626;tx:923.741;ty:844.647;
 img;hash:-838336517;xhash:-1328042956;fname:IMG_20171224_123000.jpg;x:855.904;y:845.977;tx:856.767;ty:821.163;
@@ -1557,7 +1558,7 @@ img;hash:-522485367;xhash:-2109650839;fname:DSC00726.JPG;x:459.533;y:1028.376;tx
 img;hash:-879447868;xhash:1969113970;fname:IMG_20171225_084501.jpg;x:919.744;y:836.454;tx:919.47;ty:833.282;
 img;hash:78541652;xhash:78541652;fname:DSC00053.JPG;pois:kopec spic vpravo@-0.2041/-0.1116,kopec rubina@-0.0026/-0.1546;oldpoi:false;
 img;hash:-1874709014;xhash:-1296012388;fname:IMG_20180526_144321.jpg;simile:img_20180522_004150.jpg;x:932.786;y:843.022;tx:934.892;ty:847.384;pois:roh sprcha lavy@-0.1646/-0.2137,kanal sprcha@0.026/0.0939,roh sprcha pravy@0.4015/-0.1155,roh sprcha pravy dvere@0.2267/0.8477;oldpoi:false;
-img;hash:-2104581496;xhash:-19831368;fname:IMG_20170710_104147.jpg;x:908.767;y:860.331;tx:492.037;ty:1308.085;
+img;hash:-2104581496;xhash:-19831368;fname:IMG_20170710_104147.jpg;x:908.767;y:860.331;tx:492.037;ty:1308.085;pois:strom luka oproti stredny Y@0.1775/0.1045,kopec spic vpravo@-0.3487/-0.0178,kopec obly po rubine@0.0584/-0.0543,strom pole@-0.1205/0.2291,kopec rubina@-0.1556/-0.0397,strom pole roh@-0.0872/0.188;oldpoi:false;
 img;hash:529233006;xhash:-209784348;fname:IMG_20170712_065457.jpg;x:805.634;y:815.54;tx:760.184;ty:835.706;pois:strom plosina okraj stredny@-0.335/0.0861,strom plosina okraj hore@0.3048/0.0446;oldpoi:false;
 img;hash:-902898648;xhash:-902898648;fname:DSC00068.JPG;pois:zz dom hobitton@0.1952/0.0776,kopec trirog@-0.1786/-0.0649;oldpoi:false;
 img;hash:-961033679;xhash:-752695080;fname:DSC01160.JPG;x:918.136;y:846.293;
@@ -1573,7 +1574,7 @@ img;hash:1989079966;xhash:-627634488;fname:DSC01333.JPG;x:845.079;y:807.342;tx:8
 img;hash:76066966;xhash:76066966;fname:DSC09789.JPG;x:912.181;y:847.84;tx:903.952;ty:853.455;
 img;hash:-362169255;xhash:1367011908;fname:DSC01590.JPG;x:847.272;y:815.538;tx:840.175;ty:814.559;pois:zz ohnisko@0.0403/0.0436;oldpoi:false;
 img;hash:-1663364367;xhash:-1663364367;fname:DSC01462.JPG;pois:strom piknik@0.0604/0.027,zz ohnisko@-0.0697/0.0711;oldpoi:false;
-img;hash:-1222319730;xhash:-913919570;fname:IMG_20170629_150429.jpg;x:921.806;y:818.757;tx:900.917;ty:840.562;
+img;hash:-1222319730;xhash:-913919570;fname:IMG_20170629_150429.jpg;x:921.806;y:818.757;tx:900.917;ty:840.562;pois:stlp strieska dvor@-0.1903/0.1529,stlp strieska zahradka@-0.4897/0.2743,roh kuchyna hore@-0.2328/0.0,strecha domcek1 spic hore@0.4788/-0.2729,roh predsien@-0.3984/0.0698,okno kuchyna nova male@-0.3578/-0.0475,strecha domcek1 spic spod@0.1821/-0.2487,roh predsien 2@-0.3683/0.0361,roh domcek1 dvor hore@0.4126/-0.0096,stlp veranda@-0.3387/0.1219;oldpoi:false;
 img;hash:-611277527;xhash:-1080522231;fname:DSC01507.JPG;x:842.381;y:838.299;tx:855.776;ty:857.457;pois:strom pole@0.2384/0.0877,strom hruska domceky@-0.264/0.2034,rezervoar uzitkova@0.4537/0.1138,strom pole roh@0.4935/0.1105;oldpoi:false;
 img;hash:-1781713641;xhash:-1781713641;fname:DSC00280.JPG;pois:kopec spic vpravo@0.0645/-0.0693,kopec kalvaria@-0.2239/-0.0373,zz rezervoar@-0.1285/0.0325,kopec rubina@0.2852/-0.1071;oldpoi:false;
 img;hash:1286880557;xhash:-195060806;fname:IMG_20171004_215106.jpg;x:929.946;y:847.604;tx:927.628;ty:848.43;
@@ -1632,6 +1633,7 @@ img;hash:-477981352;xhash:-477981352;fname:DSC01522.JPG;pois:strom pole@0.1095/0
 img;hash:-1704336950;xhash:2002622756;fname:IMG_20170918_104227.jpg;x:942.964;y:829.595;tx:933.096;ty:848.252;pois:strecha dom roh cesta hore@-0.213/-0.1401,strecha dom roh cesta spod@-0.4174/0.0364;oldpoi:false;
 img;hash:1496477317;xhash:18890742;fname:IMG_20170915_135026.jpg;x:961.09;y:759.157;tx:967.195;ty:769.218;
 img;hash:1453374899;xhash:1049422876;fname:DSC09898.JPG;x:904.329;y:849.225;tx:903.484;ty:848.196;
+img;hash:-1864058046;xhash:-1864058046;fname:IMG_20170709_195614.jpg;pois:zz komin Bana@0.0/-0.6189;oldpoi:false;
 img;hash:-1237544573;xhash:89783419;fname:DSC00687.JPG;x:379.967;y:1276.82;tx:895.528;ty:859.499;
 img;hash:-2010129353;xhash:-1808131557;fname:DSC09979.JPG;x:520.124;y:312.294;
 img;hash:-1611060518;xhash:-1611060518;fname:DSC01488.JPG;pois:kopec spic vpravo@-0.1919/-0.022,strom pole@0.2125/0.1599,kopec rubina@-0.0014/-0.0505;oldpoi:false;
@@ -1692,9 +1694,9 @@ img;hash:1488615645;xhash:567817482;fname:IMG_20180520_183601.jpg;x:915.605;y:83
 img;hash:-570454644;xhash:1178179245;fname:IMG_20180606_205926.jpg;simile:img_20180605_173211.jpg;x:932.629;y:842.568;tx:934.667;ty:848.084;pois:roh sprcha lavy@-0.1599/0.0886,kanal sprcha@0.1229/0.4203;oldpoi:false;
 img;hash:143077330;xhash:931358960;fname:DSC00098.JPG;x:905.627;y:806.572;tx:913.029;ty:794.003;
 img;hash:-886924979;xhash:-418769364;fname:IMG_20170915_120558.jpg;x:930.641;y:856.802;tx:930.391;ty:858.198;
-img;hash:304037714;xhash:-782328285;fname:DSC09701.JPG;x:944.364;y:847.703;tx:936.824;ty:836.26;
+img;hash:304037714;xhash:-782328285;fname:DSC09701.JPG;x:944.364;y:847.703;tx:936.824;ty:836.26;pois:svetlo komora cesta@0.1549/-0.1753,brana branka@0.2418/-0.0252,dvere garaz@0.1767/-0.0539,okno kuchyna@-0.1607/-0.0398,strecha komora roh cesta@0.2501/-0.1845,brana dvor@0.388/-0.0675;oldpoi:false;
 img;hash:1345721083;xhash:1345721083;fname:DSC01432.JPG;pois:dvere humno@-0.2608/0.1215,roh balkon dvor@-0.2971/0.037,strecha garaz spic@0.1791/-0.2068;oldpoi:false;
-img;hash:-755323322;xhash:2099119076;fname:IMG_20170629_103319.jpg;x:916.689;y:828.723;tx:899.635;ty:847.086;
+img;hash:-755323322;xhash:2099119076;fname:IMG_20170629_103319.jpg;x:916.689;y:828.723;tx:899.635;ty:847.086;pois:roh kuchyna hore@-0.224/-0.404;oldpoi:false;
 img;hash:-1569846137;xhash:422281835;fname:IMG_20171225_085734.jpg;x:919.638;y:836.381;tx:916.172;ty:833.192;
 img;hash:1990885504;xhash:-385324378;fname:DSC01335.JPG;x:845.253;y:807.689;tx:820.385;ty:880.034;
 img;hash:-353729088;xhash:-515815166;fname:DSC00785.JPG;x:853.021;y:808.459;tx:793.934;ty:835.67;
@@ -1722,7 +1724,7 @@ img;hash:282510133;xhash:-455061310;fname:IMG_20170712_155921.jpg;x:910.902;y:83
 img;hash:-731048289;xhash:1507007645;fname:DSC01013.JPG;x:829.577;y:827.243;tx:815.099;ty:850.996;
 img;hash:-328851587;xhash:432511412;fname:DSC00791.JPG;x:923.364;y:816.642;tx:920.354;ty:810.717;
 img;hash:2079448318;xhash:-507752614;fname:DSC00552.JPG;x:382.948;y:376.498;tx:790.293;ty:-224.916;
-img;hash:-1398312760;xhash:1006035796;fname:IMG_20170629_103247.jpg;x:917.0;y:830.938;tx:916.391;ty:832.495;
+img;hash:-1398312760;xhash:1006035796;fname:IMG_20170629_103247.jpg;x:917.0;y:830.938;tx:916.391;ty:832.495;pois:roh kuchyna hore@0.2913/-0.6539,roh predsien@-0.3082/-0.8429,roh predsien 2@-0.101/-0.7743,stlp veranda@0.1204/-0.5775;oldpoi:false;
 img;hash:1226915787;xhash:664075974;fname:DSC09916.JPG;x:919.958;y:856.744;tx:919.729;ty:850.176;
 img;hash:281901003;xhash:1847963461;fname:DSC_2548.JPG;x:885.304;y:873.832;tx:900.86;ty:857.77;
 img;hash:1252045273;xhash:-39347753;fname:DSC09827.JPG;x:918.471;y:837.303;tx:916.535;ty:833.095;
@@ -1731,7 +1733,7 @@ img;hash:-170535619;xhash:1533369137;fname:IMG_20170911_090628.jpg;x:842.083;y:8
 img;hash:-1184438173;xhash:-293805801;fname:DSC09987.JPG;x:618.153;y:436.501;tx:866.282;ty:809.78;pois:strecha domcek1 spic hore@-0.0771/0.0203,strom pred rezervoarom@0.1014/0.1019,strecha domcek2 spic hore@-0.0469/0.0212,kopec vyhladna@-0.0509/-0.1154;oldpoi:false;
 img;hash:-764252947;xhash:582418546;fname:IMG_20171225_085806.jpg;x:919.527;y:836.381;tx:916.144;ty:833.081;
 img;hash:-365517166;xhash:-1776095854;fname:IMG_7439.JPG;x:933.453;y:841.829;tx:933.502;ty:843.636;
-img;hash:920617515;xhash:2020809603;fname:IMG_20170629_123903.jpg;x:941.336;y:818.321;tx:939.267;ty:844.355;
+img;hash:920617515;xhash:2020809603;fname:IMG_20170629_123903.jpg;x:941.336;y:818.321;tx:939.267;ty:844.355;pois:brana branka@0.0374/-0.1091,svetlo komora cesta@0.152/-0.2702,brana cesta spodna@-0.1597/-0.1168,brana branka spodna@-0.0762/-0.1392,zz okap stena diera@0.0128/-0.1095;oldpoi:false;
 img;hash:-1916062407;xhash:-1232543386;fname:IMG_20170910_124725.jpg;x:891.089;y:877.046;tx:902.152;ty:865.291;
 img;hash:-498193253;xhash:1410504796;fname:DSC00283.JPG;x:903.128;y:912.661;tx:953.336;ty:1000.742;pois:zz tajch@0.145/-0.1194,kopec kalvaria@0.4744/-0.1951,kopec zvonica@0.2564/-0.2004,kopec vyhladna@0.0277/-0.234;oldpoi:false;
 img;hash:139591718;xhash:350873687;fname:IMG_20180607_165444.jpg;x:924.63;y:840.066;tx:932.28;ty:843.433;
@@ -1755,7 +1757,7 @@ img;hash:-409084882;xhash:1838961087;fname:DSC09664.JPG;x:518.429;y:312.433;tx:5
 img;hash:-1609989155;xhash:1368680620;fname:IMG_20170910_182109.jpg;simile:img_20170910_182109.jpg;x:905.228;y:843.69;tx:902.476;ty:845.688;pois:kanal okap chliev roh @-0.1744/-0.6469,zz uzol@0.0708/-0.2072,roh chliev prechod@-0.1061/-0.6861,kanal roh@-0.115/-0.4662;oldpoi:false;
 img;hash:1370709898;xhash:1370709898;fname:DSC09842.JPG;pois:strom bonsaj@0.4484/0.054;oldpoi:false;
 img;hash:-664817986;xhash:-1383944995;fname:IMG_20170919_165352.jpg;x:899.151;y:854.916;tx:899.711;ty:890.637;
-img;hash:1021472968;xhash:-645379930;fname:IMG_20170629_111659.jpg;x:907.367;y:815.389;tx:902.02;ty:840.899;
+img;hash:1021472968;xhash:-645379930;fname:IMG_20170629_111659.jpg;x:907.367;y:815.389;tx:902.02;ty:840.899;pois:roh kuchyna hore@-0.079/-0.2046;oldpoi:false;
 img;hash:1212104532;xhash:-724915511;fname:IMG_20171223_155323.jpg;simile:img_20180605_173211.jpg;x:932.917;y:843.408;tx:935.301;ty:847.55;
 img;hash:1713935608;xhash:219224493;fname:IMG_20170712_190746.jpg;x:817.753;y:815.683;tx:818.079;ty:910.9;
 img;hash:-639754314;xhash:-467068024;fname:DSC00372.JPG;x:930.042;y:851.976;tx:924.201;ty:851.95;
@@ -1763,7 +1765,7 @@ img;hash:1565904505;xhash:1565904505;fname:DSC01415.JPG;pois:zz krcah spod@0.145
 img;hash:1850669929;xhash:-1741714975;fname:IMG_20170915_135435.jpg;x:911.854;y:779.527;tx:899.986;ty:783.556;
 img;hash:186711106;xhash:-906743571;fname:DSC00901.JPG;x:930.4;y:852.158;tx:926.209;ty:851.568;
 img;hash:668347106;xhash:668347106;fname:DSC01524.JPG;pois:kopec spic vpravo@-0.217/-0.0995,strom wildo@-0.0422/0.0715,kopec rubina@-0.0246/-0.1232;oldpoi:false;
-img;hash:-1416835031;xhash:1039743500;fname:IMG_20170629_102935.jpg;x:912.432;y:833.007;tx:899.577;ty:847.167;
+img;hash:-1416835031;xhash:1039743500;fname:IMG_20170629_102935.jpg;x:912.432;y:833.007;tx:899.577;ty:847.167;pois:roh kuchyna hore@-0.1126/-0.2395;oldpoi:false;
 img;hash:793078080;xhash:-953722317;fname:DSC00042.JPG;x:724.609;y:370.185;tx:693.919;ty:338.512;
 img;hash:-2101254785;xhash:-1381769310;fname:IMG_20170628_115254.jpg;x:825.934;y:675.676;tx:900.964;ty:781.885;pois:strecha domcek1 spic hore@0.2967/-0.3624,strecha domcek1 spic spod@0.3526/-0.3648,strecha dom spic kuchyna@0.2383/-0.4256,strecha dom roh spod@0.3356/-0.3867,strecha domcek2 spic hore@0.4171/-0.3539,kopec vyhladna@0.2943/-0.58;oldpoi:false;
 img;hash:-811544898;xhash:-811544898;fname:DSC00278.JPG;pois:strom pole@0.1551/0.145,strom pole roh@-0.2004/0.0869;oldpoi:false;
@@ -1805,7 +1807,7 @@ img;hash:1074316123;xhash:-689256658;fname:DSC_0373.JPG;x:892.984;y:855.933;tx:8
 img;hash:1016831201;xhash:2136365407;fname:DSC01202.JPG;x:917.226;y:846.76;tx:916.962;ty:840.428;
 img;hash:1878736960;xhash:-378856171;fname:DSC08777.JPG;x:833.336;y:844.778;tx:875.76;ty:834.472;
 img;hash:1026284767;xhash:526703277;fname:DSCF0501.JPG;x:519.726;y:312.446;tx:809.09;ty:852.109;pois:zz komin Bana@0.1273/-0.0032,strom piknik@-0.0875/0.0522,strecha mastal spic@-0.2342/0.0402,kopec kalvaria@0.1965/-0.0104,strecha domcek1 spic hore@-0.2136/0.0473,strecha dom spic izba@-0.242/0.0374,kopec zvonica@0.0358/-0.0139,strecha dom spic kuchyna@-0.2181/0.0364,strecha dom roh spod@-0.2028/0.0409,strecha dom roh hore@-0.215/0.043,kopec vyhladna@-0.1508/-0.0402,strom bonsaj@-0.1915/0.061;oldpoi:false;
-img;hash:-1327796852;xhash:-2077185413;fname:IMG_20170709_195107.jpg;x:820.624;y:772.985;tx:885.529;ty:814.336;
+img;hash:-1327796852;xhash:-2077185413;fname:IMG_20170709_195107.jpg;x:820.624;y:772.985;tx:885.529;ty:814.336;pois:strecha mastal spic@-0.0379/-0.1027,roh mastal hore@-0.1077/0.0539,strecha domcek1 spic hore@0.1246/-0.0438,roh mastal spod@0.0406/0.0456,okno mastal dole bok@-9.0E-4/0.0219,strecha komora spic@0.0493/-0.0406,strecha dom spic kuchyna@0.2218/-0.0735,strecha mastal roh spod@0.0621/-0.0228,strecha domcek2 spic hore@0.2131/-0.0461,strom orech domceky@0.3806/0.0424,okno mastal hore@-0.0319/-0.0507,strom bonsaj@-0.4701/0.0689;oldpoi:false;
 img;hash:-1246912357;xhash:1963389394;fname:DSC01493.JPG;simile:img_20170918_104143.jpg;x:943.31;y:830.355;tx:946.737;ty:857.768;pois:roh secianski cesta spod@-0.2156/0.127,kopec kalvaria@0.0257/-0.0845,strecha seciansky roh spod cesta@-0.1157/-0.2224,strecha seciansky humno roh hore@-0.0519/-0.0263,brana cesta spodna@0.0083/0.009,roh cesta dole@0.0983/0.0337,brana branka spodna@0.2404/0.0736,strecha seciansky humno spic dvor@-0.0839/-0.1102,strom hruska velka@0.2716/-0.0301;oldpoi:false;
 img;hash:-1951326597;xhash:1942151604;fname:IMG_20180522_033837.jpg;x:934.978;y:847.158;pois:roh sprcha lavy@-0.0765/-0.1574,roh sprcha pravy dvere@0.208/0.8766;oldpoi:false;
 img;hash:-71600330;xhash:-650541122;fname:DSC00035.JPG;x:723.873;y:376.078;tx:751.372;ty:414.625;
@@ -1827,9 +1829,10 @@ img;hash:2083508317;xhash:1199083853;fname:DSC09908.JPG;x:905.821;y:855.888;tx:9
 img;hash:-383412064;xhash:982077577;fname:DSC01588.JPG;x:848.129;y:815.701;tx:840.338;ty:814.436;pois:zz ohnisko@0.0555/0.0887;oldpoi:false;
 img;hash:504431055;xhash:611586113;fname:IMG_20170707_112603.jpg;x:913.708;y:842.004;tx:910.259;ty:842.004;
 img;hash:1918948732;xhash:1697852642;fname:IMG_20170918_103034.jpg;x:912.023;y:848.086;tx:908.676;ty:859.694;pois:okno izba hore 2@-0.109/-0.1123;oldpoi:false;
+img;hash:2125146664;xhash:2125146664;fname:IMG_20170710_104116.jpg;pois:zz komin Bana@-0.1241/0.0438,kopec spic vpravo@0.1771/0.0132,zz tajch@-0.3126/0.0922,kopec kalvaria@-0.0557/0.0411,kopec zvonica@-0.2136/0.026,zz slniecko@-0.0981/0.0794,zz truban@-0.2259/0.1045,kopec rubina@0.372/-0.0215,zz rezervoar@0.0205/0.105;oldpoi:false;
 img;hash:-1520112558;xhash:1288381431;fname:IMG_20180601_230724.jpg;simile:img_20180530_234348.jpg;x:930.065;y:842.415;tx:925.895;ty:846.289;
 img;hash:-1946329070;xhash:1521136528;fname:IMG_20180602_060603.jpg;x:906.48;y:815.254;tx:918.309;ty:836.046;
-img;hash:966009226;xhash:-512599854;fname:IMG_20170629_111639.jpg;x:918.944;y:834.217;tx:924.614;ty:829.519;
+img;hash:966009226;xhash:-512599854;fname:IMG_20170629_111639.jpg;x:918.944;y:834.217;tx:924.614;ty:829.519;pois:brana branka@0.4979/-0.1789,roh dvor zahradka@-0.3829/-0.0078,brana dvor@0.0169/-0.2341;oldpoi:false;
 img;hash:-324305317;xhash:-703174095;fname:DSC09790.JPG;x:920.562;y:845.882;tx:921.083;ty:859.098;
 img;hash:368741784;xhash:-1255579875;fname:DSC09729.JPG;x:908.113;y:815.563;tx:910.62;ty:817.903;
 img;hash:-1040826360;xhash:1840686457;fname:IMG_20170930_103630.jpg;x:848.368;y:814.649;tx:810.251;ty:805.358;pois:strom piknik@-0.2253/0.017,strom plosina okraj hore@0.1465/0.0225;oldpoi:false;
@@ -1884,7 +1887,7 @@ img;hash:252602283;xhash:-975806041;fname:DSC_2537.JPG;x:876.908;y:816.596;tx:88
 img;hash:366935190;xhash:-442281266;fname:DSC09727.JPG;x:911.358;y:831.717;tx:921.052;ty:831.29;
 img;hash:80408075;xhash:80408075;fname:DSC01395.JPG;pois:strecha seciansky humno roh spod@-0.3582/-0.0829,kopec vyhladna@0.3994/-0.1161,strecha seciansky humno spic cesta@-0.4388/-0.1483;oldpoi:false;
 img;hash:-1028369358;xhash:892398109;fname:IMG_20170714_120656.jpg;x:891.92;y:847.591;tx:896.44;ty:851.236;
-img;hash:717061967;xhash:1699291688;fname:IMG_20170918_093503.jpg;x:908.831;y:860.218;tx:876.002;ty:956.535;pois:strom pole@0.2518/0.1242;oldpoi:false;
+img;hash:717061967;xhash:1699291688;fname:IMG_20170918_093503.jpg;x:908.831;y:860.218;tx:876.002;ty:956.535;pois:strom pole@0.25/0.1009,strom pole roh@0.2834/0.0634;oldpoi:false;
 img;hash:1585359324;xhash:1585359324;fname:DSC00072.JPG;pois:zz komin Bana@0.3421/0.0132,zz tajch@0.1127/0.0776,kopec kalvaria@0.4406/0.0054,kopec zvonica@0.2259/-0.0034,strom pole@0.1552/0.1479,kopec vyhladna@0.002/-0.041;oldpoi:false;
 img;hash:1226284487;xhash:-1996819746;fname:DSC_2665.JPG;x:916.668;y:848.883;tx:916.825;ty:859.398;
 img;hash:-775854517;xhash:-40916961;fname:DSC09879.JPG;x:922.443;y:841.872;tx:913.992;ty:843.878;
@@ -1906,13 +1909,13 @@ img;hash:478388627;xhash:150918782;fname:DSC09766.JPG;x:927.054;y:853.476;tx:927
 img;hash:-634158404;xhash:-1034527834;fname:DSC00378.JPG;x:930.252;y:850.371;tx:924.588;ty:857.643;
 img;hash:1305529528;xhash:-186729951;fname:DSC00491.JPG;x:785.584;y:785.025;tx:435.988;ty:131.218;pois:strom plosina maly hore@0.338/0.1305,zz penzion@-0.0301/0.0674;oldpoi:false;
 img;hash:-1680346107;xhash:-1680346107;fname:IMG_20170711_173655.jpg;pois:strom luka oproti stredny Y@0.1159/0.1817,kopec obly po rubine@0.1249/0.0239,strom ceresna okraj spod@-0.1781/0.1713;oldpoi:false;
-img;hash:839686527;xhash:-895187082;fname:IMG_20170629_103002.jpg;x:918.139;y:826.501;tx:937.338;ty:823.691;
-img;hash:-2111109373;xhash:-901558052;fname:IMG_20170710_104140.jpg;x:908.715;y:860.331;tx:936.97;ty:876.93;
+img;hash:839686527;xhash:-895187082;fname:IMG_20170629_103002.jpg;x:918.139;y:826.501;tx:937.338;ty:823.691;pois:stlp strieska zahradka@0.3409/0.2538,brana branka@0.2058/-0.1346,roh dvor zahradka@-0.2077/0.0931,strecha vierka rajtar roh hore@-0.2583/-0.2072,brana dvor@-0.2013/-0.1844;oldpoi:false;
+img;hash:-2111109373;xhash:-901558052;fname:IMG_20170710_104140.jpg;x:908.715;y:860.331;tx:936.97;ty:876.93;pois:zz tajch@0.3953/0.1063,zz truban@0.4984/0.1146,kopec vyhladna@0.2688/0.0073;oldpoi:false;
 img;hash:1201779053;xhash:1201779053;fname:DSC09992.JPG;pois:zz komin Bana@-0.3607/-0.0482,kopec spic vpravo@-0.0126/-0.0667,kopec kalvaria@-0.2755/-0.0482,kopec zvonica@-0.4793/-0.0766,kopec obly po rubine@0.45/-0.1118,strom pole@0.2223/0.2056,zz slniecko@-0.3287/-0.0072,kopec rubina@0.1781/-0.0906,zz rezervoar@-0.1853/0.0266;oldpoi:false;
 img;hash:-456072053;xhash:2095625567;fname:IMG_20170915_163324.jpg;x:960.144;y:757.437;tx:993.681;ty:793.21;
 img;hash:249422331;xhash:2131510295;fname:DSC00474.JPG;x:930.937;y:850.148;tx:928.951;ty:859.906;
 img;hash:-2132222111;xhash:1290459890;fname:DSC09864.JPG;x:908.792;y:860.459;tx:883.671;ty:961.113;
-img;hash:-1309305755;xhash:1302058291;fname:IMG_20170710_105022.jpg;simile:img_20170628_144803.jpg;x:908.69;y:860.331;tx:903.557;ty:1014.293;pois:zz komin Bana@-0.3715/-0.0145,strom luka oproti stredny Y@0.4482/0.0784,zz tajch@-0.5305/0.0899,kopec kalvaria@-0.2899/-0.0147,kopec zvonica@-0.4815/-0.0349,strom pole@0.1672/0.2051,zz slniecko@-0.3366/0.0233,zz truban@-0.4977/0.0558,zz rezervoar@-0.2019/0.0527,strom pole roh@0.1975/0.1691;oldpoi:false;
+img;hash:-1309305755;xhash:1302058291;fname:IMG_20170710_105022.jpg;simile:img_20170628_144803.jpg;x:908.69;y:860.331;tx:903.557;ty:1014.293;pois:zz komin Bana@-0.3715/-0.0145,strom luka oproti stredny Y@0.4993/0.1063,zz tajch@-0.5305/0.0899,kopec kalvaria@-0.2899/-0.0147,kopec zvonica@-0.4815/-0.0349,strom pole@0.1672/0.2051,zz slniecko@-0.3366/0.0233,zz truban@-0.4977/0.0558,zz rezervoar@-0.2019/0.0527,strom pole roh@0.1975/0.1691;oldpoi:false;
 img;hash:-630218805;xhash:1505313356;fname:IMG_20170713_175046.jpg;x:937.298;y:892.805;tx:912.939;ty:906.226;pois:kopec spic vpravo@-0.3616/-0.128,kopec obly po rubine@0.0564/-0.151,kopec rubina@-0.1637/-0.1438;oldpoi:false;
 img;hash:1449713551;xhash:1725925276;fname:DSC09894.JPG;x:921.169;y:847.975;tx:922.419;ty:846.615;
 img;hash:-1688295021;xhash:-1688295021;fname:IMG_20180520_183659.jpg;pois:roh chliev prechod@-0.2191/-0.0917;oldpoi:false;
@@ -1925,7 +1928,7 @@ img;hash:-2092525342;xhash:-2092525342;fname:DSC00159.JPG;pois:kopec zvonica@0.3
 img;hash:13524668;xhash:-843467416;fname:IMG_20170911_090528.jpg;x:869.269;y:814.901;tx:880.835;ty:792.196;
 img;hash:306257933;xhash:-307131322;fname:DSC00807.JPG;x:-333.513;y:-113.246;
 img;hash:2106557684;xhash:-1104364942;fname:DSC09912.JPG;x:921.683;y:855.733;tx:922.97;ty:858.417;
-img;hash:-793916691;xhash:-906851487;fname:IMG_20170629_123729.jpg;x:916.247;y:824.542;tx:897.861;ty:818.817;
+img;hash:-793916691;xhash:-906851487;fname:IMG_20170629_123729.jpg;x:916.247;y:824.542;tx:897.861;ty:818.817;pois:strecha domcek1 spic hore@-0.0297/-0.2661,roh mastal spod@0.173/-0.0406,dvere mastal@0.2834/-0.0292,strecha mastal roh spod@0.1241/-0.2086,roh domcek1 dvor hore@-0.0493/0.0037,roh chliev dvor@-0.4797/0.0954;oldpoi:false;
 img;hash:-551387158;xhash:1288487685;fname:DSC00718.JPG;x:444.919;y:1043.802;tx:893.092;ty:854.628;
 img;hash:2002794141;xhash:2002794141;fname:DSC01558.JPG;pois:strecha domcek1 spic spod@0.255/-0.4575,zz zachod@0.0651/0.0671;oldpoi:false;
 img;hash:-1654084694;xhash:-1690499483;fname:IMG_20171225_085706.jpg;x:919.776;y:836.464;tx:916.005;ty:829.975;
@@ -1941,7 +1944,7 @@ img;hash:188365822;xhash:234486521;fname:DSC01124.JPG;x:941.69;y:805.86;tx:942.5
 img;hash:862686847;xhash:1514275422;fname:DSC00531.JPG;x:166.176;y:5.138;
 img;hash:507587815;xhash:1020820542;fname:DSC00878.JPG;x:512.682;y:11.226;tx:434.201;ty:-12.319;
 img;hash:1942445116;xhash:-289408662;fname:IMG_20171224_124158.jpg;x:902.967;y:810.731;
-img;hash:1992371432;xhash:982850550;fname:IMG_20170629_102837.jpg;x:912.525;y:833.147;tx:899.438;ty:846.747;
+img;hash:1992371432;xhash:982850550;fname:IMG_20170629_102837.jpg;x:912.525;y:833.147;tx:899.438;ty:846.747;pois:roh kuchyna hore@-0.1593/0.0265,okno kuchyna nova male@-0.3478/-0.0475,roh predsien 2@-0.4683/0.11,kanal okap predsien roh@-0.4404/0.1817,roh chliev dvor@0.2953/0.089;oldpoi:false;
 img;hash:431434168;xhash:-1120649137;fname:IMG_20170712_120836.jpg;x:915.092;y:829.265;tx:914.756;ty:836.211;pois:kanal okap predsien roh@-0.0548/-0.4542;oldpoi:false;
 img;hash:-355673122;xhash:-1345688443;fname:DSC01597.JPG;x:839.971;y:826.714;tx:840.175;ty:814.395;pois:zz ohnisko@0.12/0.0318;oldpoi:false;
 img;hash:307153252;xhash:-1790690853;fname:DSC_2554.JPG;x:892.576;y:857.942;tx:891.459;ty:847.154;
@@ -1997,7 +2000,7 @@ img;hash:-681579571;xhash:865925345;fname:IMG_20170629_195314.jpg;x:850.004;y:81
 img;hash:-1058466154;xhash:-911584822;fname:IMG_20170705_161703.jpg;x:883.249;y:790.255;tx:885.688;ty:800.743;
 img;hash:740773710;xhash:513327014;fname:P1110562.JPG;x:976.863;y:724.787;tx:978.485;ty:731.478;
 img;hash:251246333;xhash:-1409943284;fname:DSC00476.JPG;x:929.911;y:857.507;tx:925.952;ty:851.268;
-img;hash:2111877898;xhash:308657053;fname:IMG_20170917_210128.jpg;simile:img_20180605_173211.jpg;x:933.031;y:843.653;tx:935.776;ty:848.014;pois:kanal sprcha@0.2088/0.5763;oldpoi:false;
+img;hash:2111877898;xhash:308657053;fname:IMG_20170917_210128.jpg;simile:img_20180605_173211.jpg;x:933.031;y:843.653;tx:935.776;ty:848.014;pois:roh sprcha lavy@-0.0194/0.0557,kanal sprcha@0.2088/0.5763;oldpoi:false;
 img;hash:1379317388;xhash:2044663774;fname:IMG_20170930_135655.jpg;x:914.587;y:820.332;
 img;hash:1163677989;xhash:111519743;fname:DSC09725.JPG;x:931.008;y:798.081;
 img;hash:-1980768419;xhash:-1079866335;fname:IMG_20180522_033828.jpg;simile:img_20180522_004150.jpg;x:932.797;y:843.175;tx:935.013;ty:847.134;pois:roh sprcha lavy@-0.1343/-0.3134,roh sprcha pravy@0.4506/-0.1834,roh sprcha pravy dvere@0.1979/0.7871;oldpoi:false;
@@ -2130,7 +2133,7 @@ img;hash:-628040440;xhash:-237942505;fname:IMG_20170629_103302.jpg;x:917.25;y:83
 img;hash:1295048147;xhash:956073059;fname:IMG_20170930_135627.jpg;x:913.879;y:822.038;tx:914.535;ty:820.254;
 img;hash:-1032780142;xhash:1041380007;fname:IMG_20170911_172701.jpg;x:907.013;y:875.925;tx:901.207;ty:865.28;
 img;hash:-788166445;xhash:-606726825;fname:DSC01699.JPG;x:933.816;y:843.499;tx:932.787;ty:847.975;
-img;hash:878636717;xhash:-336670048;fname:IMG_20170629_111607.jpg;x:916.554;y:834.534;tx:899.375;ty:840.347;
+img;hash:878636717;xhash:-336670048;fname:IMG_20170629_111607.jpg;x:916.554;y:834.534;tx:899.375;ty:840.347;pois:roh kuchyna hore@-0.3679/-0.1515,roh chliev dvor@0.2045/-0.1639;oldpoi:false;
 img;hash:2066246450;xhash:-417103212;fname:IMG_20170911_090643.jpg;x:818.701;y:821.196;tx:805.149;ty:797.717;
 img;hash:-1468430967;xhash:-1206568991;fname:DSC00605.JPG;x:-333.695;y:-304.768;tx:532.544;ty:-357.329;
 img;hash:117304500;xhash:979942207;fname:DSC00089.JPG;x:513.933;y:528.839;tx:515.606;ty:526.523;
