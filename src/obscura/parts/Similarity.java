@@ -69,9 +69,7 @@ public class Similarity {
 		for(String key : register){
 			ImgDef def= Database.imgInfos.get(key);
 			if (def!=null)
-				def.similar= this; }
-
-		
+				def.similar= this; }		
 		
 		Database.similarities.put( this.id, this); }
 	

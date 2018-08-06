@@ -188,6 +188,36 @@ public class ImgDef{
 			});
 		return resA; }
 	
+	
+	void findSimilarPattern(){
+		
+		// will be based on finding the same faces in the poi maps (triangles with same names of points, indiferrent to rotation and scale 
+		// if very similar, rot&scale will go to similarity evaluation along with factor of how similar and how many the faces are
+	
+		if (POIs.size()>2)
+			for (Entry<String, Point> poi : POIs.entrySet())
+				for (ImgDef def: Database.imgInfos.values())
+					if (def!=this && def.POIs.size()>3 && def.POIs.containsKey(poi.getKey())){
+						ArrayList<String> samePOIs= new ArrayList<String>();
+						for (Entry<String, Point> poi2 : def.POIs.entrySet())
+							if (poi2.getKey()!=poi.getKey() && POIs.containsKey(poi2.getKey())) // we have the same couple in other def
+								samePOIs.add(poi2.getKey());
+						if (samePOIs.size()>2){ // we have enough same points, let's calc triangles similarities
+							Point[] conns= new Point[samePOIs.size()*samePOIs.size()/2];
+							Point[] conns2= new Point[samePOIs.size()*samePOIs.size()/2];
+							Point[] scales= new Point[samePOIs.size()*samePOIs.size()/2];
+							Point[] angles= new Point[samePOIs.size()*samePOIs.size()/2];
+							int combo=0;
+							for (int i=0; i<samePOIs.size(); i++)
+								for (int j=0; j<samePOIs.size()-i; j++){
+								conns[combo]= POIs.get(samePOIs.get(i)).dup().sub(POIs.get(samePOIs.get(j)));
+								conns2[combo++]= def.POIs.get(samePOIs.get(i)).dup().sub(def.POIs.get(samePOIs.get(j))); }
+							for (int i=0; i<combo; i++){
+								scales[i]= conns[i].length()/conns2[i].length();
+								angles[i]= conns.i
+							}
+								
+							}}}
 
 	public void paint(Graphics2D g, float opacity){
 		boolean special= opacity==2;
