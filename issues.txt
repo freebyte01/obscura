@@ -32,3 +32,6 @@ OK + improved chapters menu, 2 level system + hotpoints shown afterwards
 OK + improved magnifying align system to not be in the way of putting the point
 
 ++ would be nice to have associative hotpoints, which are very often shown together, even if not in hotpoints yet
+
+
+++ show invisible (undefined yet) POIS from pattern match if available - predict

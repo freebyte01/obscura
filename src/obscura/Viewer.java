@@ -41,6 +41,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -161,7 +162,7 @@ public class Viewer extends JFrame implements KeyListener {
 			}
 		}
 	}
-	
+
 	void init() {
 
 		getContentPane().add(split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT));
@@ -295,13 +296,12 @@ public class Viewer extends JFrame implements KeyListener {
 								}
 							});
 							if (listPos>0){
-								list.setSelectedIndex(listPos);
-								list.ensureIndexIsVisible(list.getSelectedIndex());
+								selectInList(listPos);
+
 							}
 						} else {
 							int newIndex = list.getSelectedIndex() + e.getWheelRotation();
-							list.setSelectedIndex( newIndex  % list.getModel().getSize() );
-							list.ensureIndexIsVisible(list.getSelectedIndex());
+							selectInList( newIndex  % list.getModel().getSize() );
 						}
 					}
 				}
@@ -317,12 +317,15 @@ public class Viewer extends JFrame implements KeyListener {
 
 			public void mouseDragged(MouseEvent e) {
 
+				if (!mb1) 
+					return;
+				
 				drag = true; // !mapEditMode && shift;
 				// if (!ctrl)
 				// return;
 				System.err.println(">>>"+overButton);
 				mouseMoved(e);
-				
+
 				if (!isMapMode()) {
 					if (selButton>-1){
 						if (selButton>=POI_POS){
@@ -439,13 +442,28 @@ public class Viewer extends JFrame implements KeyListener {
 				if (selMap!=null && selButton>-1 || drag && overButton>=POI_POS ){
 					selMap= null; selButton= -1;
 					Database.updateRelations();
+					if (selectedDef!=null)
+						matchingDef= selectedDef.findSimilarPattern();
 					Obscura.data.writeDatabase(); }
 				drag = false;
 				pickedPoint = null;
+				mb1 &= e.getButton()!=MouseEvent.BUTTON1;
+				mb2 &= e.getButton()!=MouseEvent.BUTTON2;
+				mb3 &= e.getButton()!=MouseEvent.BUTTON3;
+
 				view.repaint();
+
 			}
 
 			synchronized public void mousePressed(MouseEvent e) {
+				
+				onMouseMove(e);
+				mousePressedTime= System.currentTimeMillis();
+				
+				mb1 |= e.getButton()==MouseEvent.BUTTON1;
+				mb2 |= e.getButton()==MouseEvent.BUTTON2;
+				mb3 |= e.getButton()==MouseEvent.BUTTON3;
+				
 
 				selRangeP1 = selRangeP2 = null;
 
@@ -453,7 +471,9 @@ public class Viewer extends JFrame implements KeyListener {
 					pickedPoint = overPoint;
 					if (selectedArea != null)
 						selectedArea.activePoly = selectedArea.getPolyFor(pickedPoint);
-				}
+				} else if (shift && e.getButton()==MouseEvent.BUTTON3)
+					hintsCenter= new Point(mX, mY);
+					
 				selMap= overMap; 
 				selButton= overButton;
 				if (selButton>=POI_POS){
@@ -462,9 +482,13 @@ public class Viewer extends JFrame implements KeyListener {
 					lastPOIs.push(selButton);
 					while (lastPOIs.size()>20)
 						lastPOIs.removeLast(); }
+				repaint();
 			}
 
 			public void mouseExited(MouseEvent e) {
+				mb1 = false;
+				mb2 = false;
+				mb3 = false;
 				System.err.println("mouse exited " + e.getX() + view.getWidth());
 				selMap= null; selButton=-1;
 				onMouseMove(e);
@@ -472,6 +496,9 @@ public class Viewer extends JFrame implements KeyListener {
 			}
 
 			public void mouseEntered(MouseEvent e) {
+				mb1 |= e.getButton()==MouseEvent.BUTTON1;
+				mb2 |= e.getButton()==MouseEvent.BUTTON2;
+				mb3 |= e.getButton()==MouseEvent.BUTTON3;
 			}
 
 			public void mouseClicked(MouseEvent e) {
@@ -594,23 +621,35 @@ public class Viewer extends JFrame implements KeyListener {
 		});
 		readMaps();
 	}
-	
+	long mousePressedTime;
+	boolean mb1, mb2, mb3;
+
+	Object[] matchingDef= { null, 0, 0 };
+	void selectInList(int pos){
+		list.setSelectedIndex(pos);
+		list.ensureIndexIsVisible(list.getSelectedIndex());
+		selectedDef= Database.imgInfos.get(list.getSelectedValue().getName().toLowerCase());
+		matchingDef= null;
+		if (selectedDef!=null)
+			matchingDef= selectedDef.findSimilarPattern();
+	}
+
 	void genKey(int keyCode, boolean ctrl, boolean shift, boolean alt ){
 		try {
-	        Robot robot = new Robot();
+			Robot robot = new Robot();
 
-	        // Simulate a mouse click
-	        //robot.mousePress(InputEvent.BUTTON1_MASK);
-	        //robot.mouseRelease(InputEvent.BUTTON1_MASK);
+			// Simulate a mouse click
+			//robot.mousePress(InputEvent.BUTTON1_MASK);
+			//robot.mouseRelease(InputEvent.BUTTON1_MASK);
 
-	        // Simulate a key press
-	        robot.keyPress(keyCode); //KeyEvent.VK_A);
-	        robot.keyRelease(keyCode); //KeyEvent.VK_A);
+			// Simulate a key press
+			robot.keyPress(keyCode); //KeyEvent.VK_A);
+			robot.keyRelease(keyCode); //KeyEvent.VK_A);
 
-	} catch (AWTException e) {
-	        e.printStackTrace();
-	}
-		
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	static Point selRangeP1, selRangeP2;
@@ -628,7 +667,7 @@ public class Viewer extends JFrame implements KeyListener {
 		rYo = rY;
 		rX = (mX - view.getWidth() / 2) / zoom - sx;
 		rY = (mY - view.getHeight() / 2) / zoom - sy;
-		
+
 		oImgX= imgX; oImgY= imgY;
 		imgX= (mX - view.getWidth() / 2- imgOff.x)/imgZoom;
 		imgY= (mY - view.getHeight() / 2- imgOff.y)/imgZoom;
@@ -682,7 +721,7 @@ public class Viewer extends JFrame implements KeyListener {
 
 	synchronized void goNextPic() {
 		alternativeImgF = null;
-		list.setSelectedIndex(((list.getSelectedIndex() + 1) % list.getModel().getSize()));
+		selectInList((list.getSelectedIndex() + 1) % list.getModel().getSize());
 	}
 
 	public Point[] pickedPoint, overPoint;
@@ -881,7 +920,7 @@ public class Viewer extends JFrame implements KeyListener {
 	public ImgDef selectedDef, lastDef, alternativeDef, lastAlternativeDef;
 	BufferedImage selectedImg, viewedImg, alternativeImg;
 	Map overMap, selMap;
-	Point overCenter, selCenter;
+	Point overCenter, selCenter, hintsCenter;
 	int overButton= -1, selButton= -1, lastOverButton=-1, clickedButton=-1;
 	public static final int OBSERVER_INDICATOR= 10; 
 	public static final int SIMILAR_INDICATOR= 15; 
@@ -906,8 +945,15 @@ public class Viewer extends JFrame implements KeyListener {
 	String selChapter=null;
 	Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor( new BufferedImage( 1, 1, BufferedImage.TYPE_INT_ARGB ), new java.awt.Point(0, 0), "blank cursor");
 
-	
+
 	synchronized void paintView(Graphics2D g) {
+
+		if (shift){
+			if (!mapEditMode)
+				if (hintsCenter==null)
+					hintsCenter= new Point(mX, mY);
+		} else
+			hintsCenter= null;
 
 
 		if ( alternativeImgF == null && selectedImgF != null && selectedImg == null)
@@ -1140,7 +1186,7 @@ public class Viewer extends JFrame implements KeyListener {
 				case 8: // PI / 2
 					rw = vh;
 					rh = vw;
-					
+
 					rmY = mX;
 					break;
 				default:
@@ -1156,19 +1202,19 @@ public class Viewer extends JFrame implements KeyListener {
 				g.setTransform(old);
 
 				g.translate(vw/2 + imgOff.x, vh/2 + imgOff.y); // center to screen
-				
+
 				g.setColor(Color.yellow);
-				
+
 				g.setTransform(ImgProvider.getAffineForOrientation(g.getTransform(), orientation, (int) Math.round(currRelScale),
 						(int) Math.round(ih * currImgScale)));
-				
+
 
 
 				if (currImgScale < 1)
 					Utils.aaOn(g);
 
 				g.drawImage(viewedImg, 0, 0, (int) Math.round(iw * currImgScale), (int) Math.round(ih * currImgScale), null);
-				
+
 
 
 				if (shift && drag){
@@ -1177,11 +1223,11 @@ public class Viewer extends JFrame implements KeyListener {
 					//Utils.doLine(g, 0, vh/2, vw,  vh/2 );
 					//g.setClip(null);
 					//g.scale(1/currImgScale,1/currImgScale);
-					
+
 					g.setClip(new Ellipse2D.Double(-200+mX, -200+mY, 400, 400));
 
 					double magnify= 2;
-					
+
 					g.translate(vw/2 + imgOff.x+ (vw/2-mX*magnify/2+ imgOff.x), vh/2 + imgOff.y+ (vh/2-mY*magnify/2+imgOff.y)); // center to screen
 
 					g.setTransform(ImgProvider.getAffineForOrientation(g.getTransform(), orientation, (int) Math.round( currRelScale*magnify),
@@ -1197,9 +1243,9 @@ public class Viewer extends JFrame implements KeyListener {
 					Utils.doEllipse(g, mX-200, mY-200, 400, 400, false);
 				}
 
-				
+
 				g.setTransform(old);
-				
+
 
 				if (!drag && mX > view.getWidth() - 200) { 
 					try { paintNearThumbs(g, 200);
@@ -1208,45 +1254,45 @@ public class Viewer extends JFrame implements KeyListener {
 					alternativeImgF = null;
 
 				if (shift){ // show/edit similarity POIs
-					
+
 					if (mX<50) 
 						showPOImenu= true;
-					
+
 					ImgDef poiDef= Database.imgInfos.get(viewedImgF.getName().toLowerCase()); //lastAlternativeDef==null ? selectedDef : lastAlternativeDef;
-					
+
 					System.err.println(poiDef + ":" + alternativeDef);
-					
+
 					Point p;
-					
+
 					g.setColor(lastOverButton==POI_ADD_BUTTON?Color.YELLOW:Color.BLUE);
-					
+
 					p= new Point(30, 30);
-					
+
 					Utils.doEllipse(g, p.x-10, p.y-10, 20, 20, true);
-					
+
 					if ( Math.abs(mX-p.x)<10 && Math.abs(mY-p.y) < 10 ){
 						System.err.println("POI ADD BUTTON");
 						overButton= POI_ADD_BUTTON; }
-					
+
 					int poiPos= 0, offX=0, offY=0;
-					
+
 					String[] tree= new String[10];
 
 					Color dragPoint= new Color( 255, 255, 0, 200);
 					Color dragPointDark= new Color( 50, 50, 50, 200);
-					
+
 					Color overPoint= Color.yellow;
 					Color overPointBack= Color.yellow;
-					
+
 					Color normalPoint= new Color(250,250,255);
 					Color normalPointBack= Color.black;
 
 					Color menuChapterFront= Color.BLACK;
 					Color menuChapterBack= Color.WHITE;
-					
+
 					Color overMenu= Color.BLACK;
 					Color overMenuBack= Color.YELLOW;
-					
+
 					Color hintMenu= new Color(0,0,0);
 					Color hintMenuBack= new Color(255,255,200);
 
@@ -1256,49 +1302,65 @@ public class Viewer extends JFrame implements KeyListener {
 					Color disabledMenu= new Color(200,200,255, 150);
 					Color disabledMenuBack= new Color(30,30,30, 100);
 
-					
+
 					Font normal= g.getFont();
 					Font bold= new Font(normal.getName(), Font.BOLD, normal.getSize());
-					
+
 					double[] maxWidths= new double[20];
 					double[] colPos= new double[20];
-					
+
 					int menuCounter=0;
 					int menuBoxHeight= 20;
 					int menuRowHeight= 25;
 
 					int maxListHeight= view.getHeight() - 140;
-					
+
 					int menuItemsPerColumn= maxListHeight / menuRowHeight;
-					
+
 					LinkedList<String> chapters= new LinkedList<String>();
 					
+					
+					double rotate= 0;
+					double scale= 1;
+					Point shift= new Point();
+					Point imgCenter= new Point(view.getWidth()/2,view.getHeight()/2).add(imgOff);
+					System.err.println(shift+":"+scale+":"+rotate);
+
+					if (matchingDef!=null && matchingDef.length>4 && matchingDef[4]!=null ){
+						rotate= (Double) matchingDef[1];
+						scale= (Double) matchingDef[2];
+						shift= ((Point) matchingDef[3]).dup().mul(currRelScale);
+						System.err.println(shift+":"+scale+":"+rotate);
+
+					}
+
 					for (String poi : Database.POIs){
-						
+
 						int currPoiPos= POI_POS+ poiPos++;
-						
+
 						int column= menuCounter / menuItemsPerColumn;
-						
+
 						if (column>10)
 							continue;
-						
+
 						boolean over= lastOverButton == currPoiPos;
 
 						boolean active= poiDef!=null && poiDef.POIs.containsKey( poi ) ;
-						
+
 						boolean hinted= lastPOIs.indexOf( currPoiPos )>=0;
-						
+
 						String[] parts= poi.split(" "); // chapters
 						if (!parts[0].equals(tree[0]))
 							chapters.add(menuCounter + "/"+ (tree[0]=parts[0]));
-						
+
 						boolean inChapter= selChapter==null || parts[0].equals(selChapter);
 						String poiName= parts.length==1 || active || selChapter==null ? poi : poi.substring(parts[0].length()+1);
-						
+						Point matchPoi= matchingDef!=null && matchingDef[0]!=null ? ((ImgDef)matchingDef[0]).POIs.get(poiName) : null;
+
 						if (!drag || over){
-							
-							double ppx, ppy;
-							
+
+							double ppx, ppy, mppx=0, mppy=0;
+
 							if ( active ) {
 								p= poiDef.POIs.get(poi);
 								if (poiDef.oldPOI){ // recalc to relative pois from old absolute pois
@@ -1306,15 +1368,19 @@ public class Viewer extends JFrame implements KeyListener {
 									p.y= (p.y - view.getHeight()/2- imgOff.y)/currRelScale; }
 								ppx= view.getWidth()/2+ imgOff.x+ p.x*currRelScale;
 								ppy= view.getHeight()/2+ imgOff.y+ p.y*currRelScale;
+
 							} else {
 								if (alt) // zooming so don't show the menu
 									continue;
 								p= new Point( 150+30+ colPos[column], ( menuCounter % menuItemsPerColumn) * menuRowHeight + 70 );
 								ppx= p.x;
 								ppy= p.y; }
-
-							int r= active ? 6 : 10;
 							
+							if (matchPoi!=null){
+								mppx = matchPoi.x*currRelScale;//* ((Double) matchingDef[2]);
+								mppy= matchPoi.y*currRelScale;//* ((Double) matchingDef[2]); 
+							}
+
 							Shape txtBack;
 							if ( !drag && ( !active && showPOImenu && inChapter || active && over )){
 								double w= g.getFontMetrics().stringWidth(poiName)+10;
@@ -1330,16 +1396,73 @@ public class Viewer extends JFrame implements KeyListener {
 								g.setColor( over ? overMenuBack : hinted ? hintMenuBack : normalMenuBack );
 								g.fill(txtBack); }
 
-								
+
+
 							Shape pointBack=null;
+							int r= over ? 6 : 3;
+							
+							
+							boolean matched= matchingDef!=null && matchingDef.length>4 && matchingDef[4]!=null && ((ArrayList<String>)matchingDef[4]).contains(poi);
+
+							if (matchPoi!=null && !drag && matched){
+								
+								
+								
+								AffineTransform gg= (AffineTransform) g.getTransform();
+
+								g.translate(imgCenter.x, imgCenter.y);
+								
+								pointBack= Utils.getEllipse( mppx- r*2, mppy-r*2, r* 4, r* 4);
+								g.setColor(Color.black);
+								g.fill(pointBack);
+								Utils.doLine(g, mppx, mppy, ppx- imgCenter.x, ppy- imgCenter.y);
+								//g.drawString(poiName+"_r", (float) mppx, (float) mppy);
+								g.setColor(Color.white);
+								g.draw(pointBack);
+								
+								g.setColor(new Color(255,255,255,100));
+								//Utils.doLine(g, mppx, mppy+5, mppx+shift.x, mppy+shift.y+5);
+
+								Utils.doLine(g, -10, 0, 10, 0 );
+								Utils.doLine(g, 0, -10, 0, 10 );
+								
+								g.translate(shift.x, shift.y);
+								
+//								
+								g.scale( scale, scale );
+
+								g.rotate((Double) matchingDef[1]);
+
+								g.setColor(matched?new Color(255,255,0,100):new Color(255,255,255,100));
+								g.fill(pointBack);
+
+								//g.translate(matchVect.x, matchVect.y);
+								
+								//g.draw(pointBack);
+								//Utils.doLine(g, mppx, mppy, 0, 0);
+								//g.drawString(poiName+"_t", (float) mppx, (float) mppy);
+								//Utils.doLine(g, mppx, mppy, ppx- winnCenter.x, ppy-winnCenter.y); // line from matchPOI to current POI
+
+								
+//								g.translate( ((Point) matchingDef[5]).x*currRelScale, ((Point) matchingDef[5]).y*currRelScale );
+//								g.setColor(new Color(255,255,0,150));
+//								g.fill(pointBack);
+//								g.translate( -((Point) matchingDef[5]).x*currRelScale, -((Point) matchingDef[5]).y*currRelScale );
+//								g.rotate(-(Double) matchingDef[1]);
+//								g.scale( 1/((Double) matchingDef[2]), 1/((Double) matchingDef[2]) );
+
+								g.setTransform(gg);
+							}
+
+
 							if (active){
 								pointBack= Utils.getEllipse( ppx- r, ppy-r, r* 2, r* 2);
 								Rectangle2D rr= pointBack.getBounds2D();
 								if ( mX>rr.getX() && mX<rr.getMaxX() && mY>rr.getY() && mY<rr.getMaxY()){
 									lastOverButton= overButton= currPoiPos;
 									over= true; }
-								 
-								
+
+
 								if (drag){
 									g.setColor(dragPointDark);
 									g.setStroke(new BasicStroke(3));
@@ -1368,7 +1491,7 @@ public class Viewer extends JFrame implements KeyListener {
 								g.setColor( over ?  overMenu : active ? normalMenu : hinted ? hintMenu : normalMenu );
 								Utils.drawString( g, ppx+ ( active ? r+ 15:5), ppy+ 5+ (active ? menuBoxHeight: 0), poiName); } 
 
-								
+
 							// neigbouring stats pointers
 							g.setColor(new Color(0,0,0,50));
 							g.setStroke(new BasicStroke(1));
@@ -1381,100 +1504,106 @@ public class Viewer extends JFrame implements KeyListener {
 											double l= d.getValue().length()*currRelScale/cnt;
 											//Utils.doEllipse( g, ppx- l/2, ppy- l/2, l, l, false);
 											Utils.doLine(g, ppx, ppy, ppx+ d.getValue().x* currRelScale/ cnt, ppy+ d.getValue().y* currRelScale/ cnt); }}
-							
+
 							if (inChapter)
 								menuCounter++;
-							
+
 						} else if (drag && over)
 							overButton= lastOverButton= currPoiPos; 
+
+					}
+
+					if (poiDef!=null) 
+						poiDef.oldPOI= false;
+
+					if (!alt){
+						g.setFont(bold);
+						int pos=0;
+						for (String chapter : chapters){
+							String[] ch= chapter.split("/");
+
+							//int pos= Integer.parseInt(ch[0]);
+							if (!drag && showPOImenu){
+								p= new Point( 20, pos* menuRowHeight*1.5+ menuBoxHeight/4 + 70 );
+								g.setColor( selChapter==null || !selChapter.equals(ch[1]) ? menuChapterBack : overMenuBack );
+								if (Utils.doRoundRectangle(g, p.x-5, p.y-15, 150, menuBoxHeight*1.5, 5, true).contains(mX, mY)){
+									System.err.println("over chapter "+ ch[1]);
+									selChapter= ch[1];
+								}
+
+								g.setColor( menuChapterFront );
+								//Utils.doRectangle(g, p.x-5, p.y-15, maxWidths[column], menuBoxHeight, false);
+								Utils.drawString( g, p.x+ 150/2- g.getFontMetrics().stringWidth(ch[1])/2-10, p.y+ menuBoxHeight/4, ch[1] ); }
+							pos++; }
+
+						g.setFont(bold);
+						pos= showPOImenu ? 200 : 50 ;
+						LinkedList<String> hints= new LinkedList<String>();
+						for (int i=0; i<lastPOIs.size(); i++)
+							if (lastPOIs.get(i)!=null){
+								int pp= lastPOIs.get(i)-POI_POS;
+								String poi= pp<Database.POIs.size() ? Database.POIs.get( pp ) : null;
+								if (poi!=null)
+									hints.add(poi); }
 						
-						}
-					
-						if (poiDef!=null) 
-							poiDef.oldPOI= false;
-						
-						if (!alt){
-							g.setFont(bold);
-							int pos=0;
-							for (String chapter : chapters){
-								String[] ch= chapter.split("/");
-								
-								//int pos= Integer.parseInt(ch[0]);
-								if (!drag && showPOImenu){
-									p= new Point( 20, pos* menuRowHeight*1.5+ menuBoxHeight/4 + 70 );
-									g.setColor( selChapter==null || !selChapter.equals(ch[1]) ? menuChapterBack : overMenuBack );
-									if (Utils.doRoundRectangle(g, p.x-5, p.y-15, 150, menuBoxHeight*1.5, 5, true).contains(mX, mY)){
-										System.err.println("over chapter "+ ch[1]);
-										selChapter= ch[1];
-									}
-									
-									g.setColor( menuChapterFront );
-									//Utils.doRectangle(g, p.x-5, p.y-15, maxWidths[column], menuBoxHeight, false);
-									Utils.drawString( g, p.x+ 150/2- g.getFontMetrics().stringWidth(ch[1])/2-10, p.y+ menuBoxHeight/4, ch[1] ); }
-								pos++; }
-							
-							g.setFont(bold);
-							pos= showPOImenu ? 200 : 50 ;
-							LinkedList<String> hints= new LinkedList<String>();
-							for (int i=0; i<lastPOIs.size(); i++)
-								if (lastPOIs.get(i)!=null){
-									int pp= lastPOIs.get(i)-POI_POS;
-									String poi= pp<Database.POIs.size() ? Database.POIs.get( pp ) : null;
-									if (poi!=null)
-										hints.add(poi); }
+						if (mb3 && (mousePressedTime+500< System.currentTimeMillis())){
 							String[] hintsSorted= hints.toArray(new String[hints.size()]);
 							Arrays.sort(hintsSorted);
 							String lastHintChapter= null;
+							int hintPos= 0;
 							for (String hint : hintsSorted){
 								//int pos= Integer.parseInt(ch[0]);
-									if (!drag){
-										int pp= Database.POIs.indexOf(hint);
-										String[] pa= hint.split(" ");
-										if (showPOImenu && pa[0].equals(selChapter))
-											continue;
-										if (pa.length>1 && !pa[0].equals(lastHintChapter)){
-											menuCounter++;
-											lastHintChapter= pa[0]; }
-										boolean active= poiDef!=null && poiDef.POIs.containsKey( hint ) ;
-										int column= menuCounter++ / menuItemsPerColumn;
-										double w= g.getFontMetrics().stringWidth(lastPOIs.indexOf(Database.POIs.indexOf(hint)+POI_POS)+ " "+hint)+10;
-										if( maxWidths[column] < w ){
-											maxWidths[column]= w;
-											for (int i=1; i<colPos.length; i++)
-												colPos[i]= colPos[i-1]+ maxWidths[i-1]+ menuRowHeight; }
-	
-										p= new Point( pos+ colPos[ (int) Math.floor(menuCounter / menuItemsPerColumn)], ( menuCounter % menuItemsPerColumn) * menuRowHeight + 70 );
-										Shape sh= Utils.getRoundRectangle(p.x-10, p.y-15, w+20, menuBoxHeight, 5);
-										if (sh.contains(mX, mY)){
-											System.err.println("over poi "+ hint );
-											overButton= pp+POI_POS; }
-										g.setColor( active? disabledMenuBack : lastOverButton==pp || overButton==pp ? overMenuBack : hintMenuBack );
-										g.fill(sh);
-										g.setColor( active? disabledMenu : lastOverButton==pp || overButton==pp ? overMenu : hintMenu );
-										Utils.drawString( g, p.x, p.y, lastPOIs.indexOf(Database.POIs.indexOf(hint)+POI_POS)+ " "+hint ); }}}
+								if (!drag){
+									int pp= Database.POIs.indexOf(hint);
+									String[] pa= hint.split(" ");
+									if (showPOImenu && pa[0].equals(selChapter))
+										continue;
+									if (pa.length>1 && !pa[0].equals(lastHintChapter)){
+										menuCounter++;
+										lastHintChapter= pa[0]; }
+									boolean active= poiDef!=null && poiDef.POIs.containsKey( hint ) ;
+									int column= menuCounter++ / menuItemsPerColumn;
+									double w= g.getFontMetrics().stringWidth(lastPOIs.indexOf(Database.POIs.indexOf(hint)+POI_POS)+ " "+hint)+10;
+									if( maxWidths[column] < w ){
+										maxWidths[column]= w;
+										for (int i=1; i<colPos.length; i++)
+											colPos[i]= colPos[i-1]+ maxWidths[i-1]+ menuRowHeight; }
+
+									p= showPOImenu || hintsCenter==null ? new Point( pos+ colPos[ (int) Math.floor(menuCounter / menuItemsPerColumn)], ( menuCounter % menuItemsPerColumn) * menuRowHeight + 70 )
+									: hintsCenter.dup().add(0, (hintPos++ -hintsSorted.length/2)*25) ;
+									Shape sh= Utils.getRoundRectangle(p.x-10, p.y-15, w+20, menuBoxHeight, 5);
+									if (sh.contains(mX, mY)){
+										System.err.println("over poi "+ hint );
+										overButton= pp+POI_POS; }
+									g.setColor( active? disabledMenuBack : lastOverButton==pp || overButton==pp ? overMenuBack : hintMenuBack );
+									g.fill(sh);
+									g.setColor( active? disabledMenu : lastOverButton==pp || overButton==pp ? overMenu : hintMenu );
+									Utils.drawString( g, p.x, p.y, lastPOIs.indexOf(Database.POIs.indexOf(hint)+POI_POS)+ " "+hint ); }}}}
 				} else {
-						showPOImenu= false;
-					}
+					showPOImenu= false;
+				}
 
 
 				if (selectedDef != null) {
-										
+
 					if (selectedDef.pos != null) {
 						g.setColor(Color.blue);
 						paintButton(g, 20, vh - 20, 10, OBSERVER_INDICATOR );
 
-					if (selectedDef.targ != null) {
-						g.setColor(Color.yellow); 					}
+						if (selectedDef.targ != null) {
+							g.setColor(Color.yellow); 					}
 						paintButton(g, 50, vh - 20, 10, TARGET_INDICATOR ); }
 
 					if (alternativeImgF==null && selectedDef.similar!=null  || alternativeImgF!=null && selectedDef.isSimilarTo(alternativeImgF.getName().toLowerCase())) {
 						g.setColor(Color.green);
 						paintButton(g, 80, vh - 20, 10, SIMILAR_INDICATOR ); }
-					
+
 					if (selectedDef.POIs.size() > 0) {
 						g.setColor(Color.yellow);
 						paintButton(g, 110, vh - 20, 10, POIS_INDICATOR, selectedDef.POIs.size()+"" ); }
 
+					stateLabel.setText(mb1+":"+mb2+":"+mb3);
+					
 				}}
 
 		g.setTransform(old);
@@ -1496,7 +1625,7 @@ public class Viewer extends JFrame implements KeyListener {
 		if (txt!=null) Utils.drawString(g, x+rad, y+4, txt);
 		if (Utils.doEllipse( g, x-rad/2, y-rad/2, rad, rad, true).contains(mX, mY)){
 			overButton= TARGET_INDICATOR; } }
-	
+
 	private int lastThumbsHeight;
 	private LinkedHashMap<File, BufferedImage> thumbs = new LinkedHashMap<File, BufferedImage>();
 
@@ -1515,6 +1644,12 @@ public class Viewer extends JFrame implements KeyListener {
 
 		if ( shift ){
 			//System.err.println( "paint similar .. "+ (selectedDef!=null && selectedDef.similar != null) + selectedDef + selectedDef.similar );
+
+			if (selectedDef!=null && matchingDef!=null && matchingDef[0]!=null){
+				totalHeight= paintThumbs(g, new ImgDef[]{ (ImgDef)matchingDef[0] }, stripWidth, slideX, offY, totalHeight);
+				totalHeight= paintThumbsDelimiter(g, stripWidth, slideX, offY, totalHeight);
+			}
+
 			if ( selectedDef!=null && selectedDef.similar != null ){				
 
 				selectedDef.similar.sort();
@@ -1567,7 +1702,7 @@ public class Viewer extends JFrame implements KeyListener {
 	int paintThumbs(Graphics2D g, ImgDef[] thumbsSet, int stripWidth, int slideX, int offY, int totalHeight) throws IOException{
 		if (thumbsSet != null)
 			for (ImgDef def : thumbsSet) {
-				if (shift && !def.isSimilarTo(selectedDef))
+				if (shift && (def!=matchingDef[0] && !def.isSimilarTo(selectedDef)))
 					continue;
 				if (def.file == null)
 					if (def.path != null)
