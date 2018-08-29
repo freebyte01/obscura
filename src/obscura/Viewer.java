@@ -195,7 +195,7 @@ public class Viewer extends JFrame implements KeyListener {
 				int hash = Database.getHashCode(file);
 				ImgDef def= Database.imgInfos.get(file.getName().toLowerCase());
 				boolean hasThumb = new File(ImgProvider.getThumbsPath(file), hash + ".jpg").exists();
-				JLabel c = new JLabel(sdfs.format(new Date(file.lastModified())) + (hasThumb ? "[] " : "   ")+ (def!=null?(def.POIs.size()+100+" ").substring(2):"   ")
+				JLabel c = new JLabel(sdfs.format(new Date(file.lastModified())) + (hasThumb ? "[] " : "   ")+ (def!=null?(def.POIs.size()+100+" ").substring(1).replaceAll("^0", " "):"   ")
 						+ shortName(file.getPath()));
 				c.setFont(isSelected ? listFontB : listFont);
 				c.setForeground(isSelected ? Color.black : Color.gray);
@@ -443,7 +443,7 @@ public class Viewer extends JFrame implements KeyListener {
 					selMap= null; selButton= -1;
 					Database.updateRelations();
 					if (selectedDef!=null)
-						matchingDef= selectedDef.findSimilarPattern();
+						matchingDef= selectedDef.findSimilarPatterns();
 					Obscura.data.writeDatabase(); }
 				drag = false;
 				pickedPoint = null;
@@ -572,8 +572,10 @@ public class Viewer extends JFrame implements KeyListener {
 									if ( poiPos < Database.POIs.size()){
 										String oldName= Database.POIs.get(poiPos);
 										if (e.getButton()==MouseEvent.BUTTON3){
-											if (JOptionPane.showConfirmDialog(view, "do you want to delete POI "+ oldName+ " from definition?")==JOptionPane.OK_OPTION)
+											if (JOptionPane.showConfirmDialog(view, "do you want to delete POI "+ oldName+ " from definition?")==JOptionPane.OK_OPTION){
 												selectedDef.POIs.remove(oldName);
+												
+											}
 										}else { 
 											String newName= JOptionPane.showInputDialog("new POI name", oldName);
 											if (newName!=null && newName.trim().length()>3){
@@ -624,14 +626,14 @@ public class Viewer extends JFrame implements KeyListener {
 	long mousePressedTime;
 	boolean mb1, mb2, mb3;
 
-	Object[] matchingDef= { null, 0, 0 };
+	Object[][] matchingDef= new Object[0][];
 	void selectInList(int pos){
 		list.setSelectedIndex(pos);
 		list.ensureIndexIsVisible(list.getSelectedIndex());
 		selectedDef= Database.imgInfos.get(list.getSelectedValue().getName().toLowerCase());
-		matchingDef= null;
+		matchingDef= new Object[0][];
 		if (selectedDef!=null)
-			matchingDef= selectedDef.findSimilarPattern();
+			matchingDef= selectedDef.findSimilarPatterns();
 	}
 
 	void genKey(int keyCode, boolean ctrl, boolean shift, boolean alt ){
@@ -1326,10 +1328,10 @@ public class Viewer extends JFrame implements KeyListener {
 					Point imgCenter= new Point(view.getWidth()/2,view.getHeight()/2).add(imgOff);
 					System.err.println(shift+":"+scale+":"+rotate);
 
-					if (matchingDef!=null && matchingDef.length>4 && matchingDef[4]!=null ){
-						rotate= (Double) matchingDef[1];
-						scale= (Double) matchingDef[2];
-						shift= ((Point) matchingDef[3]).dup().mul(currRelScale);
+					if ( matchingDef.length>0 && matchingDef[0][0]!=null ){
+						rotate= (Double) matchingDef[0][1];
+						scale= (Double) matchingDef[0][2];
+						shift= ((Point) matchingDef[0][3]).dup().mul(currRelScale);
 						System.err.println(shift+":"+scale+":"+rotate);
 
 					}
@@ -1355,7 +1357,7 @@ public class Viewer extends JFrame implements KeyListener {
 
 						boolean inChapter= selChapter==null || parts[0].equals(selChapter);
 						String poiName= parts.length==1 || active || selChapter==null ? poi : poi.substring(parts[0].length()+1);
-						Point matchPoi= matchingDef!=null && matchingDef[0]!=null ? ((ImgDef)matchingDef[0]).POIs.get(poiName) : null;
+						Point matchPoi= matchingDef.length>0 && matchingDef[0][0]!=null ? ((ImgDef)matchingDef[0][0]).POIs.get(poiName) : null;
 
 						if (!drag || over){
 
@@ -1396,17 +1398,12 @@ public class Viewer extends JFrame implements KeyListener {
 								g.setColor( over ? overMenuBack : hinted ? hintMenuBack : normalMenuBack );
 								g.fill(txtBack); }
 
-
-
 							Shape pointBack=null;
 							int r= over ? 6 : 3;
 							
-							
-							boolean matched= matchingDef!=null && matchingDef.length>4 && matchingDef[4]!=null && ((ArrayList<String>)matchingDef[4]).contains(poi);
+							boolean matched= matchingDef.length>0 && matchingDef[0][4]!=null && ((ArrayList<String>)matchingDef[0][4]).contains(poi);
 
 							if (matchPoi!=null && !drag && matched){
-								
-								
 								
 								AffineTransform gg= (AffineTransform) g.getTransform();
 
@@ -1431,7 +1428,7 @@ public class Viewer extends JFrame implements KeyListener {
 //								
 								g.scale( scale, scale );
 
-								g.rotate((Double) matchingDef[1]);
+								g.rotate((Double) matchingDef[0][1]);
 
 								g.setColor(matched?new Color(255,255,0,100):new Color(255,255,255,100));
 								g.fill(pointBack);
@@ -1546,7 +1543,7 @@ public class Viewer extends JFrame implements KeyListener {
 								if (poi!=null)
 									hints.add(poi); }
 						
-						if (mb3 && (mousePressedTime+500< System.currentTimeMillis())){
+						if (mb3 ){//&& (mousePressedTime+500< System.currentTimeMillis())){
 							String[] hintsSorted= hints.toArray(new String[hints.size()]);
 							Arrays.sort(hintsSorted);
 							String lastHintChapter= null;
@@ -1569,8 +1566,9 @@ public class Viewer extends JFrame implements KeyListener {
 										for (int i=1; i<colPos.length; i++)
 											colPos[i]= colPos[i-1]+ maxWidths[i-1]+ menuRowHeight; }
 
-									p= showPOImenu || hintsCenter==null ? new Point( pos+ colPos[ (int) Math.floor(menuCounter / menuItemsPerColumn)], ( menuCounter % menuItemsPerColumn) * menuRowHeight + 70 )
-									: hintsCenter.dup().add(0, (hintPos++ -hintsSorted.length/2)*25) ;
+									p= showPOImenu || hintsCenter==null ? 
+											new Point( pos+ colPos[ (int) Math.floor(menuCounter / menuItemsPerColumn)], ( menuCounter % menuItemsPerColumn) * menuRowHeight + 70 )
+											: hintsCenter.dup().add(50, (hintPos++ -hintsSorted.length/2)*25) ;
 									Shape sh= Utils.getRoundRectangle(p.x-10, p.y-15, w+20, menuBoxHeight, 5);
 									if (sh.contains(mX, mY)){
 										System.err.println("over poi "+ hint );
@@ -1645,8 +1643,10 @@ public class Viewer extends JFrame implements KeyListener {
 		if ( shift ){
 			//System.err.println( "paint similar .. "+ (selectedDef!=null && selectedDef.similar != null) + selectedDef + selectedDef.similar );
 
-			if (selectedDef!=null && matchingDef!=null && matchingDef[0]!=null){
-				totalHeight= paintThumbs(g, new ImgDef[]{ (ImgDef)matchingDef[0] }, stripWidth, slideX, offY, totalHeight);
+			if ( selectedDef!=null && matchingDef.length>0 ){
+				for (Object o : matchingDef )
+					if (((Object[]) o)[0]!=null)
+						totalHeight= paintThumbs(g, new ImgDef[]{ (ImgDef) ((Object[]) o)[0] }, stripWidth, slideX, offY, totalHeight);
 				totalHeight= paintThumbsDelimiter(g, stripWidth, slideX, offY, totalHeight);
 			}
 
@@ -1702,8 +1702,8 @@ public class Viewer extends JFrame implements KeyListener {
 	int paintThumbs(Graphics2D g, ImgDef[] thumbsSet, int stripWidth, int slideX, int offY, int totalHeight) throws IOException{
 		if (thumbsSet != null)
 			for (ImgDef def : thumbsSet) {
-				if (shift && (def!=matchingDef[0] && !def.isSimilarTo(selectedDef)))
-					continue;
+				//if (shift && (!def.isSimilarTo(selectedDef)))
+				//	continue;
 				if (def.file == null)
 					if (def.path != null)
 						def.file = new File(def.path);

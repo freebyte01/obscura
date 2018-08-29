@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
@@ -189,94 +190,138 @@ public class ImgDef{
 		return resA; }
 	
 	
-	public Object[] findSimilarPattern(){
+	public Object[][] findSimilarPatterns(){
+		
+		LinkedList<Object[]> result= new LinkedList<Object[]>();
 		
 		// will be based on finding the same faces in the poi maps (triangles with same names of points, indiferrent to rotation and scale 
 		// if very similar, rot&scale will go to similarity evaluation along with factor of how similar and how many the faces are
-		ImgDef matchingDef=null;
-		int[] winnerAnglesSpectrum= null;
-		int[] winnerScalesSpectrum= null;
-		double winnerAnglesMatch= 0;
-		double winnerScalesMatch= 0;
-		double winnerAngle=0, winnerScale=0;
-		String[] matchPois= {};
-		Point[] currConns={};
-		Point[] matchConns={};
-		int winnerSpikeAngle=0, winnerSpikeScale=0;
-		ArrayList<String> matchedPois= new ArrayList<String>(); 
+		int winnerAnglesMatches= 0;
+		int winnerScalesMatches= 0;
 		
+		System.err.println("\n\n*********** matching "+ POIs.size()+ " : "+ file);
 		
-		if (POIs.size()>1)
-			for (Entry<String, Point> poi : POIs.entrySet())
-				for (ImgDef def: Database.imgInfos.values())
-					if (def!=this && def.POIs.size()>3 && def.POIs.containsKey(poi.getKey())){
-						ArrayList<String> samePOIs= new ArrayList<String>();
-						for (Entry<String, Point> poi2 : def.POIs.entrySet())
-							if (poi2.getKey()!=poi.getKey() && POIs.containsKey(poi2.getKey())) // we have the same couple in other def
-								samePOIs.add(poi2.getKey());
+		if (POIs.size()>2) // min 3 points available in current picture
+				for (ImgDef def: Database.imgInfos.values()) // search all other images which have matching POIs and min. 2 other pois
+					if (def!=this && def.POIs.size()>2){
 						
-						if (samePOIs.size()>1){ // we have enough same points, let's calc triangles similarities
+						// find all same pois in the other picture
+						ArrayList<String> samePOIs= new ArrayList<String>();
+						for (Entry<String, Point> poi : def.POIs.entrySet())
+							if (!poi.getKey().startsWith(".") && POIs.containsKey(poi.getKey())){ // we have the same couple in other def
+								samePOIs.add(poi.getKey()); }						
+						
+						if (samePOIs.size()>2){ // we have enough same points, let's calc triangles similarities
+							
 							String[] pois= samePOIs.toArray(new String[samePOIs.size()]);
-							Point[] conns= new Point[pois.length*pois.length/2+1];
-							Point[] conns2= new Point[pois.length*pois.length/2+1];
-							double[] scales= new double[pois.length*pois.length/2+1];
-							double[] angles= new double[pois.length*pois.length/2+1];
+							System.err.println("\n *** "+ pois.length+"/"+ def.POIs.size() +" same poi adept: "+ def.fName );
+							
+							// let's prepare comparable pois combinations in one direction
+							Point[] conns= new Point[pois.length*pois.length/2-1]; 
+							Point[] conns2= new Point[pois.length*pois.length/2-1];
+							double[] scales= new double[pois.length*pois.length/2-1];
+							double[] angles= new double[pois.length*pois.length/2-1];
 							int combo=0;
-							for (int i=0; i<pois.length-1; i++)
+							for (int i=0; i<pois.length-1; i++){
+								//System.err.println("  * "+ pois[i]);
 								for (int j=i+1; j<pois.length; j++){
 									conns[combo]= POIs.get(pois[i]).dup().sub(POIs.get(pois[j]));
-									conns2[combo++]= def.POIs.get(pois[i]).dup().sub(def.POIs.get(pois[j])); }
+									conns2[combo]= def.POIs.get(pois[i]).dup().sub(def.POIs.get(pois[j])); 
+									// System.err.println("  -> "+ pois[j]+" : "+combo + " : "+ conns[combo]+ " / "+ conns2[combo]); 
+									combo++; }}
+							System.err.println("  combo "+ combo );
+							
+							// lets calculate relevant connections relative scales and angles
 							double[] avgScale= new double[scales.length]; 
 							double[] avgAngle= new double[scales.length]; 
-							int[] spectrumScale= new int[scales.length]; 
+							int[] spectrumScales= new int[scales.length]; 
 							int[] spectrumAngles= new int[scales.length]; 
-							for (int i=0; i<combo; i++){
-								scales[i]= conns[i].length()/conns2[i].length();
-								angles[i]= conns[i].angle()-conns2[i].angle();
-								for (int j=0; j<i; j++){
-									if (Math.abs(scales[i]-scales[j])/(scales[i]+scales[j])*2<0.2){
-										avgScale[i]+=scales[j];
-										avgScale[j]+=scales[i];
-										spectrumScale[i]++;
-										spectrumScale[j]++; }
-									if (Math.abs(angles[i]-angles[j])/(angles[i]+angles[j])*2<0.2){
-										avgAngle[i]+=angles[j];
-										avgAngle[j]+=angles[i];
-										spectrumAngles[i]++;
-										spectrumAngles[j]++; }}}
-							int spikeScale=0;
-							for (int i=1; i< spectrumScale.length; i++) // maximum similar angle count on
-								if (spectrumScale[i]>spectrumScale[spikeScale])
+							int cmb=0;
+							for (int f=0; f<pois.length-1; f++){
+								System.err.println(" ** "+ pois[f]);
+								for (int t=f+1; t<pois.length; t++){
+									System.err.println("  * "+ pois[t]+" : "+cmb);
+									scales[cmb]= conns[cmb].length()/conns2[cmb].length();
+									angles[cmb]= conns[cmb].angle()-conns2[cmb].angle();
+									//System.err.println("  -> "+ pois[t]+" : "+combo + " : "+ relScale+ " / "+ relAngle); }
+									for (int j=0; j<cmb; j++){
+										// relative == abs.difference / average
+										double relScale= Math.abs(scales[cmb]-scales[j])*2 / (scales[cmb]+scales[j]);
+										double relAngle= Math.abs(angles[cmb]-angles[j])/5;
+										if (relScale<0.05){ // max 5% difference of scales
+											avgScale[j]+=(scales[j]+scales[cmb])/2;
+											avgScale[cmb]+=(scales[j]+scales[cmb])/2;
+											spectrumScales[cmb]++;
+											spectrumScales[j]++; }
+										if (relAngle<5d/180*Math.PI){ // max 5 degrees difference
+											avgAngle[j]+=(angles[j]+angles[cmb])/2;
+											avgAngle[cmb]+=(angles[j]+angles[cmb])/2;
+											spectrumAngles[cmb]++;
+											spectrumAngles[j]++; }}
+									cmb++; }}
+							int spikeScale=-1;
+							for (int i=1; i< spectrumScales.length; i++) // maximum similar scale count on
+								if ( spikeScale<0 ? spectrumScales[i]>0 : spectrumScales[i]>spectrumScales[spikeScale])
 									spikeScale= i;
-							int spikeAngle=0;
+							int spikeAngle=-1;
 							for (int i=1; i< spectrumAngles.length; i++) // maximum similar angle count on
-								if (spectrumAngles[i]>spectrumAngles[spikeAngle])
+								if ( spikeAngle<0 ? spectrumAngles[i]>0 : spectrumAngles[i]>spectrumAngles[spikeAngle])
 									spikeAngle= i;
-							if (spectrumAngles[spikeAngle]*1d/spectrumAngles.length>winnerAnglesMatch){
-								if (spectrumScale[spikeScale]*1d/spectrumScale.length>winnerScalesMatch){
-									matchingDef= def;
-									winnerAnglesSpectrum= spectrumAngles;
-									winnerScalesSpectrum= spectrumScale;
-									winnerAngle= avgAngle[spikeAngle]/spectrumScale[spikeScale];
-									winnerScale= avgScale[spikeScale]/spectrumAngles[spikeAngle];
-									winnerSpikeAngle= spikeAngle;
-									winnerSpikeScale= spikeScale;
-									winnerAnglesMatch= spectrumAngles[spikeAngle]*1d/spectrumAngles.length;
-									winnerScalesMatch= spectrumScale[spikeScale]*1d/spectrumScale.length;
-									matchPois= pois;
-									currConns= conns;
-									matchConns= conns2;
-									}}
-								
-							}}
-		if (matchingDef!=null){
-			System.err.println("winner matching for "+this.file+" is "+matchingDef.file+ " with angle match "+ winnerAnglesMatch+ " and with scale match "+ winnerScalesMatch);
-			if (winnerAnglesMatch<0.5 || winnerScalesMatch<0.5)
-				return new Object[]{ null, 0, 1, null, null, null };
+							/*System.err.println("  * scales:"+ Arrays.toString(scales));
+							System.err.println("     scavgs:"+ Arrays.toString(avgScale));
+							System.err.println("     scspec:"+ Arrays.toString(spectrumScales));
+							System.err.println("     scspik:"+ spikeScale );
+							System.err.println("  * angles:"+ Arrays.toString(angles));
+							System.err.println("     anavgs:"+ Arrays.toString(avgAngle));
+							System.err.println("     anspec:"+ Arrays.toString(spectrumAngles));
+							System.err.println("     anspik:"+ spikeAngle );*/
+							if (	spikeAngle>=0 
+									&& spikeScale>=0 
+									&& spectrumAngles[spikeAngle]>=winnerAnglesMatches 
+									&& spectrumScales[spikeScale]>=winnerScalesMatches ){
+										result.addFirst(
+											wrapCurrentWinner(
+													def, 
+													spikeScale, spikeAngle,
+													spectrumScales, spectrumAngles,
+													avgScale[spikeScale]/spectrumScales[spikeScale],
+													avgAngle[spikeAngle]/spectrumAngles[spikeAngle],
+													samePOIs.toArray(new String[samePOIs.size()]), 
+													conns, conns2
+													));
+							} else System.err.println(" **** not similar "+ def.fName);}}
+		for (Iterator<Object[]> io= result.iterator(); io.hasNext();)
+			if (((ArrayList<String>)io.next()[4]).size()==0)
+				io.remove();
+		Object[][] res= result.toArray(new Object[result.size()][]);
+		Object[][] sorted= res.length>5 ? Arrays.copyOf(res, 5): res;
+		if (sorted.length>1);
+			Arrays.sort(sorted, new Comparator<Object[]>() {
+				public int compare(Object[] o1, Object[] o2) {
+					int diff= ((((ArrayList<String>)o2[4]).size() - ((ArrayList<String>)o1[4]).size()) % 2); 
+					return (int) (diff==0? Math.round(sorted.length*100*(((Point)o2[3]).length() / ((Point)o1[3]).length())) : diff); }});
+		
+		return sorted; }
+	
+	private Object[] wrapCurrentWinner(
+			ImgDef matchingDef, 
+			int spikeScale, int spikeAngle,
+			int[] spectrumScales, int[] spectrumAngles,
+			double majorScale,	double majorAngle, 
+			String[] matchPois,	
+			Point[] currConns, Point[] matchConns
+			){
+		
+
+		ArrayList<String> matchedPois= new ArrayList<String>(); 
+		
+		if (matchingDef!=null && spectrumScales[spikeScale]>0 && spectrumAngles[spikeAngle]>0){
+			
+			System.err.println("  *** wrapping as matching "+matchingDef.fName+ " with angle match "+ majorAngle+ " and with scale match "+ majorScale);
 			int combo=0, cnt=0, pcnt=0;
 			Point shift= new Point();
-			double cos= Math.cos(winnerAngle);
-			double sin= Math.sin(winnerAngle);
+			double cos= Math.cos(majorAngle);
+			double sin= Math.sin(majorAngle);
 			
 			for (int i=0; i<matchPois.length-1; i++){
 				String poii= matchPois[i];
@@ -284,32 +329,32 @@ public class ImgDef{
 				Point mi= matchingDef.POIs.get(poii);
 				for (int j=i+1; j<matchPois.length; j++){
 					String poij= matchPois[j];
-					boolean ca= winnerAnglesSpectrum[ combo ]>=winnerAnglesSpectrum[ winnerSpikeAngle ];
-					boolean cs= winnerScalesSpectrum[ combo ]>=winnerScalesSpectrum[ winnerSpikeScale ];
-					if (ca || cs){
+					boolean ca= spectrumAngles[ combo ]>= spectrumAngles[ spikeAngle ];
+					boolean cs= spectrumScales[ combo ]>= spectrumScales[ spikeScale ];
+					if (ca && cs){
 						currConns[combo].add( ci );
 						matchConns[combo].add( mi );//.mul(ca&&cs?1:0.5));
 						if (!matchedPois.contains( poii )){
 							Point rmi= new Point( mi.x*cos- mi.y*sin, mi.y*cos+ mi.x*sin);
-							Point v= ci.dup().sub( rmi.mul( winnerScale ));
-							System.err.println("diff "+poii+":"+ v);
+							Point v= ci.dup().sub( rmi.mul( majorScale ));
+							System.err.println("    * diff "+poii+":"+ v);
 							shift.add( v );//.mul(ca&&cs?1:0.5));
 							matchedPois.add( poii );
 							pcnt++; }
 						if (!matchedPois.contains(poij)){
 							Point mj= matchingDef.POIs.get( poij );
 							Point rmj= new Point( mj.x*cos- mj.y*sin, mj.y*cos+ mj.x*sin);
-							Point v= POIs.get(poij).dup().sub(rmj.mul(winnerScale));
-							System.err.println("diff "+poij+":"+ v);
+							Point v= POIs.get(poij).dup().sub(rmj.mul(majorScale));
+							System.err.println("    * diff "+poij+":"+ v);
 							shift.add(v);//.mul(ca&&cs?1:0.5));
 							matchedPois.add( poij );
 							pcnt++; }
 						cnt+= 1; }//ca&&cs?2:1; }
 					combo++; }}
 			shift.mul(1d/pcnt);
-			System.err.println(shift+":"+5);
-			return new Object[]{ matchingDef, winnerAngle, winnerScale, shift, matchedPois }; }
-		return  new Object[]{ null, 0, 1, null, null, null }; }
+			System.err.println("    ** shift:"+ shift+ " scale:"+ majorScale+ " rotation:"+ majorAngle);
+			return new Object[]{ matchingDef, majorAngle, majorScale, shift, matchedPois }; }
+		return  new Object[]{ null, new Double(0), new Double (1), null, null, null }; }
 
 	public void paint(Graphics2D g, float opacity){
 		boolean special= opacity==2;
