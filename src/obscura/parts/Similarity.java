@@ -30,6 +30,7 @@ public class Similarity {
 	
 	public Similarity registerKey(String defKey){
 		return registerKey(defKey, true); }
+	
 	public Similarity registerKey(String defKey, boolean storeImmediately){
 		if (!register.contains(defKey))
 			register.add(defKey);

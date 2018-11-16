@@ -71,6 +71,7 @@ import javax.swing.event.ListSelectionListener;
 
 import obscura.parts.Area;
 import obscura.parts.ImgDef;
+import obscura.parts.ImgDef.Comparison;
 import obscura.parts.ImgProvider;
 import obscura.parts.Point;
 import obscura.parts.PointStat;
@@ -441,7 +442,7 @@ public class Viewer extends JFrame implements KeyListener {
 				}
 				if (selMap!=null && selButton>-1 || drag && overButton>=POI_POS ){
 					selMap= null; selButton= -1;
-					Database.updateRelations();
+					//Database.updateRelations();
 					if (selectedDef!=null)
 						matchingDef= selectedDef.findSimilarPatterns();
 					Obscura.data.writeDatabase(); }
@@ -626,12 +627,12 @@ public class Viewer extends JFrame implements KeyListener {
 	long mousePressedTime;
 	boolean mb1, mb2, mb3;
 
-	Object[][] matchingDef= new Object[0][];
+	ImgDef.Comparison[] matchingDef= new ImgDef.Comparison[0];
 	void selectInList(int pos){
 		list.setSelectedIndex(pos);
 		list.ensureIndexIsVisible(list.getSelectedIndex());
 		selectedDef= Database.imgInfos.get(list.getSelectedValue().getName().toLowerCase());
-		matchingDef= new Object[0][];
+		matchingDef= new ImgDef.Comparison[0];
 		if (selectedDef!=null)
 			matchingDef= selectedDef.findSimilarPatterns();
 	}
@@ -1328,10 +1329,10 @@ public class Viewer extends JFrame implements KeyListener {
 					Point imgCenter= new Point(view.getWidth()/2,view.getHeight()/2).add(imgOff);
 					System.err.println(shift+":"+scale+":"+rotate);
 
-					if ( matchingDef.length>0 && matchingDef[0][0]!=null ){
-						rotate= (Double) matchingDef[0][1];
-						scale= (Double) matchingDef[0][2];
-						shift= ((Point) matchingDef[0][3]).dup().mul(currRelScale);
+					if ( matchingDef.length>0 && matchingDef[0]!=null ){
+						rotate= (Double) matchingDef[0].generalRotation;
+						scale= (Double) matchingDef[0].generalScale;
+						shift= new Point(); // ((Point) matchingDef[0][4]).dup().mul(currRelScale);
 						System.err.println(shift+":"+scale+":"+rotate);
 
 					}
@@ -1357,7 +1358,7 @@ public class Viewer extends JFrame implements KeyListener {
 
 						boolean inChapter= selChapter==null || parts[0].equals(selChapter);
 						String poiName= parts.length==1 || active || selChapter==null ? poi : poi.substring(parts[0].length()+1);
-						Point matchPoi= matchingDef.length>0 && matchingDef[0][0]!=null ? ((ImgDef)matchingDef[0][0]).POIs.get(poiName) : null;
+						Point matchPoi= matchingDef.length>0 && matchingDef[0]!=null ? matchingDef[0].def.POIs.get(poiName) : null;
 
 						if (!drag || over){
 
@@ -1401,7 +1402,7 @@ public class Viewer extends JFrame implements KeyListener {
 							Shape pointBack=null;
 							int r= over ? 6 : 3;
 							
-							boolean matched= matchingDef.length>0 && matchingDef[0][4]!=null && ((ArrayList<String>)matchingDef[0][4]).contains(poi);
+							boolean matched= matchingDef.length>0 && matchingDef[0]!=null && matchingDef[0].contains( poi );
 
 							if (matchPoi!=null && !drag && matched){
 								
@@ -1424,11 +1425,10 @@ public class Viewer extends JFrame implements KeyListener {
 								Utils.doLine(g, 0, -10, 0, 10 );
 								
 								g.translate(shift.x, shift.y);
-								
-//								
+
 								g.scale( scale, scale );
 
-								g.rotate((Double) matchingDef[0][1]);
+								g.rotate((Double) matchingDef[0].generalRotation);
 
 								g.setColor(matched?new Color(255,255,0,100):new Color(255,255,255,100));
 								g.fill(pointBack);
@@ -1626,7 +1626,20 @@ public class Viewer extends JFrame implements KeyListener {
 
 	private int lastThumbsHeight;
 	private LinkedHashMap<File, BufferedImage> thumbs = new LinkedHashMap<File, BufferedImage>();
-
+	
+//	{
+//	new Thread(){
+//		public void run() {
+//			try { sleep(3000); }catch (InterruptedException e){}
+//			while (true) {
+//					System.err.println("repainting pattern match");
+//					Viewer.this.repaint();
+//				try { sleep(400); }catch (InterruptedException e){}
+//			}
+//		};
+//		
+//	}.start();
+//	}
 	void paintNearThumbs(Graphics2D g, int stripWidth) throws IOException {
 
 
@@ -1644,9 +1657,9 @@ public class Viewer extends JFrame implements KeyListener {
 			//System.err.println( "paint similar .. "+ (selectedDef!=null && selectedDef.similar != null) + selectedDef + selectedDef.similar );
 
 			if ( selectedDef!=null && matchingDef.length>0 ){
-				for (Object o : matchingDef )
-					if (((Object[]) o)[0]!=null)
-						totalHeight= paintThumbs(g, new ImgDef[]{ (ImgDef) ((Object[]) o)[0] }, stripWidth, slideX, offY, totalHeight);
+				for ( Comparison o : matchingDef )
+					if ( o != null )
+						totalHeight= paintThumbs(g, new ImgDef[]{ o.otherDef }, stripWidth, slideX, offY, totalHeight);
 				totalHeight= paintThumbsDelimiter(g, stripWidth, slideX, offY, totalHeight);
 			}
 

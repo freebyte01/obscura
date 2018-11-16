@@ -285,14 +285,14 @@ public class Database {
 				for (Entry<String, Point> ee: def.POIs.entrySet()){
 					String relId= ee.getKey();
 					if ( !baseId.equals(relId) ){
-						Point baseRel= base.distances.get( relId );
+						Point baseToRel= base.distances.get( relId ); // ??? haaa ? unnormalized ?
 						relCnt++;
 						Point vect= ee.getValue().dup().sub(e.getValue());
-						if (baseRel==null){
+						if (baseToRel==null){
 							base.distances.put( relId, vect);
 							base.counts.put( relId, 1 );
 						} else {
-							baseRel.add( vect );
+							baseToRel.add( vect );
 							base.counts.put( relId, base.counts.get(relId)+1 ); }}}}}
 		System.err.println("done updating relations - total rel : "+ relCnt+" def : "+ defCnt+" , done in "+ (System.currentTimeMillis()-stopWatch)/1000.00); }
 }
