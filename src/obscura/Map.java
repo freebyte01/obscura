@@ -7,6 +7,6 @@ public class Map{
 	public double x,y;
 	public double rot, scale=1;
 	private BufferedImage img;
-	public BufferedImage setImg(BufferedImage img){ return this.img= img; }
+	public BufferedImage setImg( BufferedImage img ){ return this.img= img; }
 	public BufferedImage getImg(){ return this.img; }
 }

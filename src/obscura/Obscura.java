@@ -13,43 +13,48 @@ public class Obscura {
 	static FileOutputStream lockStream;
 	static FileLock lock;
 	
-	public static ArrayList<File> observeDirs= new ArrayList<File>();
-	static ArrayList<File> currentImages= new ArrayList<File>();
-	public static void main(String[] args) {
-		System.err.println("starting Obscura");
+	public static final ArrayList<File> OBSERVE_DIRS= new ArrayList<File>();
+	public static final ArrayList<File> CURR_IMAGES= new ArrayList<File>();
+	
+	public static void main( String[] args ) {
+		
+		System.err.println( "starting Obscura" );
+		System.getProperties().setProperty( "sun.java2d.opengl", "true" ); 
+		
 		try{
-			File lockFile= new File(".lock");
-			if (lockFile.exists() && !lockFile.renameTo(lockFile))
-				throw new RuntimeException("lock file locked..");
-			lockStream = new FileOutputStream(lockFile);
+			File lockFile= new File( ".lock" );
+			if ( lockFile.exists() 
+			&& !lockFile.renameTo( lockFile ))
+				throw new RuntimeException( "lock file locked.." );
+			
+			lockStream = new FileOutputStream( lockFile );
 		    lock = lockStream.getChannel().lock();
-		} catch (Exception e){
+		    
+		} catch ( Exception e ){
 			e.printStackTrace();
-			System.err.println("Obscura is running already!");
-			System.exit(1);
-		}
-		for (String s : args){
-			System.out.println("testing watch dir "+ s);
-			File f= new File(s);
-			if (f.isDirectory() && f.exists())
-				observeDirs.add(f);
-		}
+			System.err.println( "Obscura is running already!" );
+			System.exit( 1 ); }
+		
+		for ( String s : args ){
+			System.out.println( "testing watch dir "+ s );
+			File f= new File( s );
+			if ( f.isDirectory() && f.exists())
+				OBSERVE_DIRS.add( f ); }
 		
 		Thread t = new Thread() {
             public void run() {
-            	//data.writeDatabase("imageDefs.dat");
-            	try{ lock.release(); } catch (Exception e){ e.printStackTrace(); }
-            	try{ lockStream.close(); } catch(Exception e){ e.printStackTrace(); }
-            	System.out.println("closing Obscura");
-                Obscura.running= false;
-            }
+            	//data.writeDatabase( "imageDefs.dat" );
+            	try{ lock.release(); } catch ( Exception e ){ e.printStackTrace(); }
+            	try{ lockStream.close(); } catch( Exception e ){ e.printStackTrace(); }
+            	System.out.println( "closing Obscura" );
+                Obscura.running= false; }
         };
-        Runtime.getRuntime().addShutdownHook(t);
+        
+        Runtime.getRuntime().addShutdownHook( t );
 
-        data= new Database("imageDefs.dat");
+        data= new Database( "imageDefs.dat" );
 		viewer= new Viewer();
 
-		watcher = new Watcher(observeDirs);
-        watcher.start();
-	}
+		watcher = new Watcher( OBSERVE_DIRS );
+        watcher.start(); }
 }

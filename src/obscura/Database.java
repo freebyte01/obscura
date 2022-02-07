@@ -22,223 +22,242 @@ import obscura.parts.PointStat;
 import obscura.parts.Poly;
 import obscura.parts.Similarity;
 
+
 public class Database {
 
 	public static HashMap<String, ImgDef> imgInfos= new HashMap<String, ImgDef>();
+	
 	public static HashMap<String, Area> areas= new HashMap<String, Area>();
+	
+	/**
+	 * groups more images and POIs together
+	 * if image contains more of given POIs
+	 * to make som other calculations based on this raw similarity
+	 */
 	public static HashMap<String, Similarity> similarities= new HashMap<String, Similarity>();
+	
 	public static LinkedList<String> POIs= new LinkedList<String>();
-	public static void addPOI(String poi){
-		if (!POIs.contains(poi))
-			POIs.add(poi);
+	
+	
+	public static void addPOI( String poi ){
+		if ( !POIs.contains( poi ))
+			POIs.add( poi );
 		sortPOIs(); }
+	
+	
 	public static void sortPOIs(){
-		String[] pois= POIs.toArray(new String[POIs.size()]);
-		Arrays.sort(pois);
+		String[] pois= POIs.toArray( new String[ POIs.size()]);
+		Arrays.sort( pois );
 		POIs.clear();
-		POIs.addAll(Arrays.asList(pois)); }
+		POIs.addAll( Arrays.asList( pois )); }
 	
-	public static boolean isSimilar(String defKey1, String defKey2){
-		Similarity sim1= getSimilarityContaining(defKey1);
-		if (sim1==null) return false;
-		return sim1 == getSimilarityContaining(defKey2); }
 	
-	public static Similarity getSimilarityContaining(String key){
-		for (Similarity sim : similarities.values())
-			if ( sim.register.contains(key) )
+	public static boolean isSimilar( String defKey1, String defKey2 ){
+		Similarity sim1= getSimilarityContaining( defKey1 );
+		if ( sim1==null ) return false;
+		return sim1 == getSimilarityContaining( defKey2 ); }
+	
+	
+	public static Similarity getSimilarityContaining( String key ){
+		for ( Similarity sim : similarities.values())
+			if ( sim.register.contains( key ) )
 				return sim;
 		return null; }
 	
-	public static Similarity  regToSimilarity(String simKey, String defKey ){
-		return regToSimilarity(simKey, defKey, false); }
-	static Similarity  regToSimilarity(String simKey, String defKey, boolean createIfNoSimilarityKey ){
-		Similarity sim= simKey!=null ? similarities.get(simKey) : getSimilarityContaining(defKey);
-		if (sim==null)
-			if (createIfNoSimilarityKey)
+	
+	public static Similarity regToSimilarity( String simKey, String defKey ){
+		return regToSimilarity( simKey, defKey, false ); }
+	
+	
+	static Similarity  regToSimilarity( String simKey, String defKey, boolean createIfNoSimilarityKey ){
+		Similarity sim= simKey!=null ? similarities.get( simKey ) : getSimilarityContaining( defKey );
+		if ( sim==null )
+			if ( createIfNoSimilarityKey )
 				sim= new Similarity( simKey==null ? defKey : simKey );
 			else 
 				return null;
 		else
-			if (!isCompatible(sim.id, defKey)) // don't include def if too different to others
+			if ( !isCompatible( sim.id, defKey )) // don't include def if too different to others
 				return sim;
 		return sim.registerKey( defKey ); }
 
+	
 	// at least they should be nearly same location in average and same vector
-	public static boolean isCompatible(Similarity sim1, Similarity sim2){
-		if (sim1==null || sim2==null)
+	public static boolean isCompatible( Similarity sim1, Similarity sim2 ){
+		if ( sim1==null || sim2==null )
 			return false;
-		if (sim1==sim2)
+		if ( sim1==sim2 )
 			return true;
 		Point[] p1= sim1.getPositioning();
 		Point[] p2= sim2.getPositioning();
-		Point v1= p1[1].sub(p1[0]); 
-		Point v2= p2[1].sub(p2[0]);
+		Point v1= p1[ 1 ].sub( p1[ 0 ]); 
+		Point v2= p2[ 1 ].sub( p2[ 0 ]);
 		double ratio= v1.length()/v2.length(); 
-		if (Math.abs(1 - ratio)>0.1) 
+		if ( Math.abs( 1 - ratio )>0.1 ) 
 			return false; // ratio needs to be nearly 1
-		Point distLoc= p1[0].sub(p2[0]);
-		if (Math.abs((v1.length()+v2.length())/2/distLoc.length())<10){ 
-			System.err.println("locations incompatible "+ (( v1.length() + v2.length() ) / 2) + " vs " + distLoc.length() );
+		Point distLoc= p1[ 0 ].sub( p2[ 0 ]);
+		if ( Math.abs(( v1.length()+v2.length())/2/distLoc.length())<10 ){ 
+			System.err.println( "locations incompatible "+ (( v1.length() + v2.length() ) / 2 ) + " vs " + distLoc.length() );
 			return false; }// the locations for similarity groups should differ max 1/10 of distance to target
-		Point distTarg= p1[1].sub(p2[1]);
-		if ( ( v1.length() + v2.length() ) / 2/ distTarg.length() < 5){
-			System.err.println("targets incompatible "+ (( v1.length() + v2.length() ) / 2) + " vs " + distTarg.length() );
+		Point distTarg= p1[ 1 ].sub( p2[ 1 ]);
+		if ( ( v1.length() + v2.length() ) / 2/ distTarg.length() < 5 ){
+			System.err.println( "targets incompatible "+ (( v1.length() + v2.length() ) / 2 ) + " vs " + distTarg.length() );
 			return false; } // the locations for similarity groups should differ max 1/5 of distance to target
 		return false; } // so far let's proof it works before allowing big merges
 	
-	public static boolean isCompatible(String simKey, String defKey){
+	public static boolean isCompatible( String simKey, String defKey ){
 		Similarity sim1= similarities.get( simKey );
 		ImgDef def= imgInfos.get( defKey );
-		if (def==null || def.targ==null) // for now only fully defined imgdefs are considered
+		if ( def==null || def.targ==null ) // for now only fully defined imgdefs are considered
 			return false;
 		Point[] p1= sim1.getPositioning();
-		Point v1= p1[1].sub(p1[0]); 
-		Point v2= def.targ.sub(def.pos);
+		Point v1= p1[ 1 ].sub( p1[ 0 ]); 
+		Point v2= def.targ.sub( def.pos );
 		double ratio= v1.length()/v2.length(); 
-		if (Math.abs(1 - ratio)>0.1) 
+		if ( Math.abs( 1 - ratio )>0.1 ) 
 			return false; // ratio needs to be nearly 1
-		Point distLoc= p1[0].sub(def.pos);
-		if (Math.abs((v1.length()+v2.length())/2/distLoc.length())<10){ 
-			System.err.println("locations incompatible "+ (( v1.length() + v2.length() ) / 2) + " vs " + distLoc.length() );
+		Point distLoc= p1[ 0 ].sub( def.pos );
+		if ( Math.abs(( v1.length()+v2.length())/2/distLoc.length())<10 ){ 
+			System.err.println( "locations incompatible "+ (( v1.length() + v2.length() ) / 2 ) + " vs " + distLoc.length() );
 			return false; }// the locations for similarity groups should differ max 1/10 of distance to target
-		Point distTarg= p1[1].sub(def.targ);
-		if ( ( v1.length() + v2.length() ) / 2/ distTarg.length() < 5){
-			System.err.println("targets incompatible "+ (( v1.length() + v2.length() ) / 2) + " vs " + distTarg.length() );
+		Point distTarg= p1[ 1 ].sub( def.targ );
+		if ( ( v1.length() + v2.length() ) / 2/ distTarg.length() < 5 ){
+			System.err.println( "targets incompatible "+ (( v1.length() + v2.length() ) / 2 ) + " vs " + distTarg.length() );
 			return false; } // the locations for similarity groups should differ max 1/5 of distance to target
 		return false; } // so far let's proof it works before allowing big merges
 	
-	public static Similarity  pairAsSimilar(String defKey1, String defKey2){
+	public static Similarity  pairAsSimilar( String defKey1, String defKey2 ){
 		Similarity sim1= getSimilarityContaining( defKey1 );
 		Similarity sim2= getSimilarityContaining( defKey2 );
 		
-		if (sim1==sim2)
-			if (sim1!=null)
+		if ( sim1==sim2 )
+			if ( sim1!=null )
 				return sim1;
 			else {
-				sim1= regToSimilarity( defKey1, defKey1, true);
-				return sim1.registerKey( defKey1); }
+				sim1= regToSimilarity( defKey1, defKey1, true );
+				return sim1.registerKey( defKey1 ); }
 		else 
 			if ( sim1 == null )
-				return sim2.registerKey(defKey1);
+				return sim2.registerKey( defKey1 );
 			else if ( sim2 == null )
-				return sim1.registerKey(defKey2);
+				return sim1.registerKey( defKey2 );
 			else { // merge similarities
-				if (!isCompatible(sim1, sim2)){
-					int dialogResult = JOptionPane.showConfirmDialog (null, 
+				if ( !isCompatible( sim1, sim2 )){
+					int dialogResult = JOptionPane.showConfirmDialog ( null, 
 							"Similarity groups incompatible. Do you still want to continue and merge them?","Warning",
-							JOptionPane.YES_NO_OPTION);
-					if(dialogResult == JOptionPane.NO_OPTION)
+							JOptionPane.YES_NO_OPTION );
+					if( dialogResult == JOptionPane.NO_OPTION )
 						return sim1; }
-				for (String key : sim2.register)
-					sim1.registerKey(key, false);
-				for (String poi : sim2.POIs)
-					if (!sim1.POIs.contains(poi))
-						sim1.POIs.add(poi);
-				similarities.remove(sim2.id);
+				for ( String key : sim2.register )
+					sim1.registerKey( key, false );
+				for ( String poi : sim2.POIs )
+					if ( !sim1.POIs.contains( poi ))
+						sim1.POIs.add( poi );
+				similarities.remove( sim2.id );
 				Obscura.data.writeDatabase();
 				return sim1; }}
 
-	public static Similarity  rejectFromSimilar(String defKey){
+	public static Similarity  rejectFromSimilar( String defKey ){
 		Similarity sim= getSimilarityContaining( defKey );
-		if (sim!=null){
-			sim.register.remove(defKey);
+		if ( sim!=null ){
+			sim.register.remove( defKey );
 			Obscura.data.writeDatabase();
 			return sim; }
 		return null; }
 
 	
-	public static final ImgDef[] NO_IMG_DEFS = new ImgDef[0]; 
+	public static final ImgDef[] NO_IMG_DEFS = new ImgDef[ 0 ]; 
 	
 	String dataFile= null ;
-	public Database() { this("imageDefs.dat"); }
-	public Database(String databaseFile) {
-		if (databaseFile==null)
-			throw new RuntimeException("no database file specified!");
-		readDatabase(databaseFile);
+	public Database() { this( "imageDefs.dat" ); }
+	public Database( String databaseFile ) {
+		if ( databaseFile==null )
+			throw new RuntimeException( "no database file specified!" );
+		readDatabase( databaseFile );
 	}
 	
-	// ImgDef getImgDef(int hash){ return getImgDef(hash, false); }
-	/*ImgDef getImgDef(int hash, boolean force){
-		if (imgInfos.containsKey(hash))
-			return imgInfos.get(hash);
+	// ImgDef getImgDef( int hash ){ return getImgDef( hash, false ); }
+	/*ImgDef getImgDef( int hash, boolean force ){
+		if ( imgInfos.containsKey( hash ))
+			return imgInfos.get( hash );
 		else 
-			return force ? new ImgDef(hash) : null; } */
-	ImgDef getImgDef(File f){ return getImgDef(f, false); }
-	ImgDef getImgDef(File f, boolean force){
+			return force ? new ImgDef( hash ) : null; } */
+	ImgDef getImgDef( File f ){ return getImgDef( f, false ); }
+	ImgDef getImgDef( File f, boolean force ){
 		String key= f.getName().toLowerCase();
-		if (imgInfos.containsKey(key))
-			return imgInfos.get(key);
+		if ( imgInfos.containsKey( key ))
+			return imgInfos.get( key );
 		else 
-			return force ? new ImgDef(f) : null; }
+			return force ? new ImgDef( f ) : null; }
 	
 	
-	public static int getHashCode(File f){ 
-		return f==null?0:(f.length()+"_"+f.getName().toLowerCase()).hashCode(); }
+	public static int getHashCode( File f ){ 
+		return f==null?0:( f.length()+"_"+f.getName().toLowerCase()).hashCode(); }
 	
-	void readDatabase(String path){
+	void readDatabase( String path ){
 		imgInfos.clear();
-		File file= new File(path);
-		if (file.isDirectory())
-			throw new RuntimeException("database filename "+ path +" is ocuppied!");
-		if (!file.exists()){
-			System.err.println("no images data file "+ path + " found!");
+		File file= new File( path );
+		if ( file.isDirectory())
+			throw new RuntimeException( "database filename "+ path +" is ocuppied!" );
+		if ( !file.exists()){
+			System.err.println( "no images data file "+ path + " found!" );
 			return;
 		}
 		dataFile = path; 
 		BufferedReader br= null;
 		try {
-			br = new BufferedReader(new FileReader(file)); 
+			br = new BufferedReader( new FileReader( file )); 
 		    String line;
-		    while ((line = br.readLine()) != null){ 
-		    	if (line.startsWith("img;")) new ImgDef(line);
-		    	else if (line.startsWith("simil;")) new Similarity().read(line);
-		    	else if (line.startsWith("area;")) new Area().read(line);
-		    	else if (line.startsWith("place;")) new Place(line);
-		    	else if (line.startsWith("poly;")) new Poly(line);
-		    	else if (line.startsWith("map;")) {
-		    		String arId= getValue(line, "ass", "0");
-		    		Area a= areas.get(arId);
-		    		if (a==null) 
+		    while (( line = br.readLine()) != null ){ 
+		    	if ( line.startsWith( "img;" )) new ImgDef( line );
+		    	else if ( line.startsWith( "simil;" )) new Similarity().read( line );
+		    	else if ( line.startsWith( "area;" )) new Area().read( line );
+		    	else if ( line.startsWith( "place;" )) new Place( line );
+		    	else if ( line.startsWith( "poly;" )) new Poly( line );
+		    	else if ( line.startsWith( "map;" )) {
+		    		String arId= getValue( line, "ass", "0" );
+		    		Area a= areas.get( arId );
+		    		if ( a==null ) 
 		    			continue;
-		    		int lev= Integer.parseInt(getValue(line, "lev", "0"));
-		    		Map m= a.maps.get(lev)==null? new Map() : a.maps.get(lev);
-		    		m.x= Double.parseDouble(getValue(line, "x", "0"));
-		    		m.y= Double.parseDouble(getValue(line, "y", "0"));
-		    		m.rot= Double.parseDouble(getValue(line, "rot", "0"));
-		    		m.scale= Double.parseDouble(getValue(line, "sc", "1"));
-		    		a.maps.put(lev, m); }}
-		    ImgDef[] sortedImgInfos= new ImgDef[imgInfos.size()];
-		    imgInfos.values().toArray(sortedImgInfos);
-		    Arrays.sort(sortedImgInfos, new Comparator<ImgDef>() {@Override
-		    	public int compare(ImgDef o1, ImgDef o2) {
+		    		int lev= Integer.parseInt( getValue( line, "lev", "0" ));
+		    		Map m= a.maps.get( lev )==null? new Map() : a.maps.get( lev );
+		    		m.x= Double.parseDouble( getValue( line, "x", "0" ));
+		    		m.y= Double.parseDouble( getValue( line, "y", "0" ));
+		    		m.rot= Double.parseDouble( getValue( line, "rot", "0" ));
+		    		m.scale= Double.parseDouble( getValue( line, "sc", "1" ));
+		    		a.maps.put( lev, m ); }}
+		    ImgDef[] sortedImgInfos= new ImgDef[ imgInfos.size()];
+		    imgInfos.values().toArray( sortedImgInfos );
+		    Arrays.sort( sortedImgInfos, new Comparator<ImgDef>() {@Override
+		    	public int compare( ImgDef o1, ImgDef o2 ) {
 		    		return o1.file == null ? o2.file == null ? 0 : -1 : o2.file==null ? 1 : o1.file.lastModified() >= o2.file.lastModified() ? 1 : -1;
 		    }
-			});
+			} );
 		    imgInfos.clear();
-		    for (ImgDef imgInfo : sortedImgInfos)
-		    	imgInfos.put(imgInfo.fName.toLowerCase(), imgInfo);
+		    for ( ImgDef imgInfo : sortedImgInfos )
+		    	imgInfos.put( imgInfo.fName.toLowerCase(), imgInfo );
 		    
 		    Watcher.updateImgDefsByFiles();
 		    
 		    updateRelations();
 		    
-		}catch (Exception e) {
+		}catch ( Exception e ) {
 			e.printStackTrace();
 		} finally {
-			if (br!=null) try{ br.close(); } catch (Exception e2) {}
+			if ( br!=null ) try{ br.close(); } catch ( Exception e2 ) {}
 		}
 	}
-	public void writeDatabase(){ writeDatabase(dataFile); }
-	public void writeDatabase(String path){
-		File file= new File(path);
-		while (file.exists() && file.isDirectory()){
+	public void writeDatabase(){ writeDatabase( dataFile ); }
+	public void writeDatabase( String path ){
+		File file= new File( path );
+		while ( file.exists() && file.isDirectory()){
 			path+="_";
-			file= new File(path);
+			file= new File( path );
 		}
 		dataFile= path;
 		StringBuilder sb= new StringBuilder();
 		for ( ImgDef id : imgInfos.values() )
-			if (id.file!=null)
+			if ( id.file!=null )
 				sb.append( id.store() );
 		for ( Area a : areas.values() )
 			sb.append( a.store() );
@@ -246,53 +265,53 @@ public class Database {
 			sb.append( s.store() );
 		BufferedWriter bw= null;
 		try {
-			bw= new BufferedWriter(new FileWriter(file));
-			bw.write(sb.toString());
-			System.out.println(new Date()+ " - img database written to "+ file.getAbsolutePath());
-		} catch (Exception e) {
+			bw= new BufferedWriter( new FileWriter( file ));
+			bw.write( sb.toString());
+			System.out.println( new Date()+ " - img database written to "+ file.getAbsolutePath());
+		} catch ( Exception e ) {
 			e.printStackTrace();
 		} finally{
-			if (bw!=null) try{ bw.close(); } catch (Exception e2) {}
+			if ( bw!=null ) try{ bw.close(); } catch ( Exception e2 ) {}
 		}
 	}
 	
-	public static String getValue(String definition, String key){ return getValue(definition, key, null); }
-	public static String getValue(String definition, String key, String def){
+	public static String getValue( String definition, String key ){ return getValue( definition, key, null ); }
+	public static String getValue( String definition, String key, String def ){
 		key= ";"+ key+":";
 		int ix;
 		String val= def;
-		if ((ix= definition.indexOf(key))>-1){ 
+		if (( ix= definition.indexOf( key ))>-1 ){ 
 			ix+=key.length(); 
-			val= definition.substring(ix, definition.indexOf(";", ix));
+			val= definition.substring( ix, definition.indexOf( ";", ix ));
 		}
-		val= "null".equals(val)?def:val;
+		val= "null".equals( val )?def:val;
 		return val;
 	}
 
 	public static HashMap<String, PointStat> avgs= new HashMap<String, PointStat>();
 	public static void updateRelations(){
-		//if (true) return ;
+		//if ( true ) return ;
 		long stopWatch= System.currentTimeMillis();
 		int defCnt=0, relCnt= 0;
-		System.err.println("updating relations ");
-		for (ImgDef def : imgInfos.values()){
+		System.err.println( "updating relations " );
+		for ( ImgDef def : imgInfos.values()){
 			defCnt++;
-			for (Entry<String, Point> e: def.POIs.entrySet()){
+			for ( Entry<String, Point> e: def.POIs.entrySet()){
 				String baseId= e.getKey();
 				PointStat base= avgs.get( baseId ); 
-				if (base==null)
+				if ( base==null )
 					avgs.put( baseId, base= new PointStat( baseId ));
-				for (Entry<String, Point> ee: def.POIs.entrySet()){
+				for ( Entry<String, Point> ee: def.POIs.entrySet()){
 					String relId= ee.getKey();
-					if ( !baseId.equals(relId) ){
+					if ( !baseId.equals( relId ) ){
 						Point baseToRel= base.distances.get( relId ); // ??? haaa ? unnormalized ?
 						relCnt++;
-						Point vect= ee.getValue().dup().sub(e.getValue());
-						if (baseToRel==null){
-							base.distances.put( relId, vect);
+						Point vect= ee.getValue().dup().sub( e.getValue());
+						if ( baseToRel==null ){
+							base.distances.put( relId, vect );
 							base.counts.put( relId, 1 );
 						} else {
 							baseToRel.add( vect );
-							base.counts.put( relId, base.counts.get(relId)+1 ); }}}}}
-		System.err.println("done updating relations - total rel : "+ relCnt+" def : "+ defCnt+" , done in "+ (System.currentTimeMillis()-stopWatch)/1000.00); }
+							base.counts.put( relId, base.counts.get( relId )+1 ); }}}}}
+		System.err.println( "done updating relations - total rel : "+ relCnt+" def : "+ defCnt+" , done in "+ ( System.currentTimeMillis()-stopWatch )/1000.00 ); }
 }
