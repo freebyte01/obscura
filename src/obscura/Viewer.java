@@ -89,7 +89,7 @@ public class Viewer extends JFrame implements KeyListener {
 
 				System.out.println(
 						bounds.getX() + "," + bounds.getY() + " " + bounds.getWidth() + "x" + bounds.getHeight());
-				setSize(( int ) Math.round( bounds.getWidth() / 2 ), ( int ) Math.round( bounds.getHeight() / 2 ));
+				setSize((int) Math.round( bounds.getWidth() / 2 ), (int) Math.round( bounds.getHeight() / 2 ));
 			}
 		}
 		init();
@@ -299,7 +299,7 @@ public class Viewer extends JFrame implements KeyListener {
 							newIndex += newIndex<0? viewedDef.similar.register.size() : 0;
 							int listPos = Arrays.binarySearch( Watcher.sorted, Database.imgInfos.get( viewedDef.similar.register.get( newIndex )).file, new Comparator<File>() {
 								public int compare( File o1, File o2 ) { 
-									//return ( int ) o1.lastModified()>=o2.lastModified()?1:-1;
+									//return (int) o1.lastModified()>=o2.lastModified()?1:-1;
 									boolean o1Comp= o1.getName().indexOf( '-' )>-1;
 									boolean o2Comp= o2.getName().indexOf( '-' )>-1;
 									return o1Comp ? o2Comp ? o1.getName().compareTo( o2.getName()) 
@@ -745,9 +745,9 @@ public class Viewer extends JFrame implements KeyListener {
 		rX = ( mX - view.getWidth() / 2 ) / zoom - sx;
 		rY = ( mY - view.getHeight() / 2 ) / zoom - sy;
 
-		oImgX= imgX; oImgY= imgY;
-		imgX= ( mX - view.getWidth() / 2- imgOff.x )/imgZoom;
-		imgY= ( mY - view.getHeight() / 2- imgOff.y )/imgZoom;
+		oImgX = imgX; oImgY= imgY;
+		imgX = ( mX - view.getWidth() / 2 - imgOff.x ) / imgZoom;
+		imgY = ( mY - view.getHeight() / 2 - imgOff.y ) / imgZoom;
 
 		int b1 = MouseEvent.BUTTON1_DOWN_MASK;
 		int b2 = MouseEvent.BUTTON2_DOWN_MASK;
@@ -1110,7 +1110,7 @@ public class Viewer extends JFrame implements KeyListener {
 		double vw = view.getWidth();
 		double vh = view.getHeight();
 
-		AffineTransform old = g.getTransform();
+		AffineTransform norm = g.getTransform();
 
 		if ( isMapMode()) {
 
@@ -1128,7 +1128,7 @@ public class Viewer extends JFrame implements KeyListener {
 //                    RenderingHints.VALUE_INTERPOLATION_BICUBIC );
 
             
-			// g.drawLine( 0, 0, ( int ) rX, ( int ) rY );
+			// g.drawLine( 0, 0, (int) rX, (int) rY );
 			int rule = AlphaComposite.SRC_OVER;
 			Composite compA = AlphaComposite.getInstance( rule, .6f );
 			Composite compAO = AlphaComposite.getInstance( rule, .8f );
@@ -1146,15 +1146,19 @@ public class Viewer extends JFrame implements KeyListener {
 					
 					try{
 						Map m = selectedArea.maps.get( lev );
+						
 						if ( m == null )
 							selectedArea.maps.put( lev, m= new Map());
 						
-						g.setColor( new Color( 200,200,100, lastMap==m?255:200 ) );
+						g.setColor( new Color( 200, 200, 100, lastMap == m ? 255 : 200 ) );
+						
 						if ( m.getImg() == null ){ // jpg or png map
-							m.setImg( ImgProvider.provideImage( new File( "maps/lev_"+lev+".png" ), false, 1, 1 )); 
+							m.setImg( ImgProvider.provideImage( new File( "maps/lev_"+ lev+ ".png" ), false, 1, 1 )); 
 							if ( m.getImg()==null )
-								m.setImg( ImgProvider.provideImage( new File( "maps/lev_"+lev+".jpg" ), false, 1, 1 )); }
-						if ( m.getImg()!=null ){
+								m.setImg( ImgProvider.provideImage( new File( "maps/lev_"+ lev+ ".jpg" ), false, 1, 1 )); }
+						
+						if ( m.getImg() != null ) { // draw map
+							
 							AffineTransform o= g.getTransform();
 							int w= m.getImg().getWidth();
 							int h= m.getImg().getHeight();
@@ -1162,36 +1166,48 @@ public class Viewer extends JFrame implements KeyListener {
 							g.rotate( m.rot );
 							g.scale( m.scale, m.scale );
 							double mZoom= zoom * m.scale;
-							g.setComposite( lastMap==m?compAO:compA );
+							g.setComposite( lastMap == m ? compAO : compA );
 							g.drawImage( m.getImg(), -w/2, -h/2, w, h, null );
 							g.setComposite( compS );
+							
 							if ( mapEditMode && ctrl ){
+								
 								double rrX= rX- m.x, rrY= rY- m.y;
 								rrX/= m.scale; rrY/= m.scale; 
 								double rrrX= Math.cos( -m.rot )* rrX- Math.sin( -m.rot )* rrY, rrrY= Math.sin( -m.rot )* rrX+ Math.cos( -m.rot )* rrY;
+								
 								if ( Utils.doEllipse( g, w/2-5/mZoom, h/2-5/mZoom, 10/mZoom, 10/mZoom, true ).contains( rrrX, rrrY ) && selMap==null ){ 
 									lastMap= overMap= m; overButton= SCALE_INDICATOR; overCenter= new Point( m.x, m.y ); }
+								
 								if ( Utils.doEllipse( g, w/2+20/mZoom, -5/mZoom, 10/mZoom, 10/mZoom, null, true ).contains( rrrX, rrrY ) && selMap==null ){ 
 									lastMap= overMap= m; overButton= ROTATE_INDICATOR; overCenter= new Point( m.x, m.y ); }
+								
 								g.setStroke( new BasicStroke(( float )( 3/mZoom )));
+								
 								if ( Utils.doEllipse( g, -20/mZoom, -20/mZoom, 40/mZoom, 40/mZoom, false ).contains( rrrX, rrrY ) && selMap==null ){ 
 									lastMap= overMap= m; overButton= MOVE_INDICATOR; }
+								
 								g.draw( new Line2D.Double( w/2, 0, w/2+20/mZoom, 0 ));
+								
 								if ( overMap==m )
 									Utils.doRectangle( g, -w/2, -h/2, w, h, false );
+								
 								Utils.doRectangle( g, rrrX-2/mZoom, rrrY-2/mZoom, 4/mZoom, 4/mZoom, false ); }
-							g.setTransform( o );
-						}
+							
+							g.setTransform( o ); }
+						
 					} catch ( Exception e ) { e.printStackTrace();}			
 
 			if ( mapEditMode ){
+				
 				g.setStroke( new BasicStroke( 1f ));
 				g.setColor( new Color( 200,200,100, 30 ) );
+				
 				for ( int i=-10; i<=10; i++ ) 
 					g.draw( new Line2D.Double( i*30/Utils.ratioMetric, -300/Utils.ratioMetric, i*30/Utils.ratioMetric, 300/Utils.ratioMetric ));
+				
 				for ( int j=-10; j<=10; j++ ) 
-					g.draw( new Line2D.Double( -300/Utils.ratioMetric, j*30/Utils.ratioMetric, 300/Utils.ratioMetric, j*30/Utils.ratioMetric ));
-			}
+					g.draw( new Line2D.Double( -300/Utils.ratioMetric, j*30/Utils.ratioMetric, 300/Utils.ratioMetric, j*30/Utils.ratioMetric )); }
 
 			g.setComposite( compS );
 			// drawDef( g, lastDef, 0.3f );
@@ -1210,21 +1226,22 @@ public class Viewer extends JFrame implements KeyListener {
 			for ( ImgDef def : Database.imgInfos.values())
 
 				if ( def.pos != null ) {
+					
 					double vx = rX - def.pos.x, vy = rY - def.pos.y;
 					double diff = vx * vx + vy * vy;
+					
 					if ( min > diff ) {
 						min = diff;
-						nearest = def;
-					}
+						nearest = def; }
+					
 					if ( diff < radius2 ) {
 						Utils.aaOn( g, true );
 						def.paint( g, ( float ) ( 1 - diff / radius2 + ( lastNearest==def ? 1:0 )));
+						
 					} else {
 						Utils.aaOff( g );
 						g.setColor( cPos );
-						g.fill( new Rectangle2D.Double( def.pos.x - posR, def.pos.y - posR, posD, posD ));
-					}
-				}
+						g.fill( new Rectangle2D.Double( def.pos.x - posR, def.pos.y - posR, posD, posD )); }}
 
 			for ( Area a : Database.areas.values())
 				a.paint( g, rX, rY );
@@ -1239,11 +1256,14 @@ public class Viewer extends JFrame implements KeyListener {
 
 			if ( selectedDef == null ) {
 			} else {
+				
 				if ( nearPositions != null )
 					for ( ImgDef ic : nearPositions )
 						ic.paint( g, 0.3f );
+				
 				else if ( lastDef != null )
 					lastDef.paint( g, 0.5f );
+				
 				if ( nearTargets != null )
 					for ( ImgDef it : nearTargets )
 						it.paint( g, 0.3f ); }
@@ -1264,24 +1284,33 @@ public class Viewer extends JFrame implements KeyListener {
 					g.draw( new Rectangle2D.Double( selRangeP1.x, selRangeP1.y, selRangeP2.x - selRangeP1.x,
 							selRangeP2.y - selRangeP1.y )); }}
 
-			g.setTransform( old );
+			g.setTransform( norm );
 
 			paintMap( g );
 
-			if ( nearest!=null && shift && !mapEditMode ){
+			if ( nearest!=null 
+			&& shift 
+			&& !mapEditMode )
+				
 				try{ 
 					//System.err.println( nearest.file );
-					BufferedImage nearestImg= lastNearestF!=null && lastNearestF== nearest.file ? lastNearestImg 
-							: ImgProvider.provideImage( nearest.file, 1 );
+					BufferedImage nearestImg= lastNearestF != null 
+												&& lastNearestF == nearest.file ? 
+														lastNearestImg 
+														: ImgProvider.provideImage( nearest.file, 1 );
+					
 					lastNearestF= nearest.file;
 					lastNearestImg= nearestImg;
-					if ( nearestImg!=null ){
+					
+					if ( nearestImg != null ){
+						
 						int ww= view.getWidth()/2;
-						int hh= ( int ) Math.round( 1d*ww/nearestImg.getWidth()*nearestImg.getHeight());
-						if ( hh>view.getHeight()/2 ){
-							ww*= 1d*view.getHeight()/2/hh;
-							hh= view.getHeight()/2;
-						}
+						int hh= (int) Math.round( 1d*ww/nearestImg.getWidth()*nearestImg.getHeight());
+						
+						if ( hh > view.getHeight() / 2 ){
+							ww*= 1d * view.getHeight() / 2 / hh;
+							hh= view.getHeight() / 2; }
+						
 						g.setColor( new Color( 255, 255, 255, 50 ));
 						g.fill( new Rectangle2D.Double(
 								( mX < ww/2 + 20 ? 20 : mX > view.getWidth() - ww/2 -20 ? view.getWidth()- ww -40 : mX- ww/2 )-10, 
@@ -1294,14 +1323,17 @@ public class Viewer extends JFrame implements KeyListener {
 					}
 
 				} catch ( IOException e ) {}
-			}
-
-		} else
+			
+			// MAP MODE END
+			
+		} else // not map mode
 
 			if ( viewedImg != null ) {
 				
 				double iw = viewedImg.getWidth( null );
 				double ih = viewedImg.getHeight( null );
+				
+				ImgDef poiDef= Database.imgInfos.get( viewedImgF.getName().toLowerCase()); //lastAlternativeDef==null ? selectedDef : lastAlternativeDef;
 
 				int orientation = 1;
 				try {
@@ -1334,75 +1366,196 @@ public class Viewer extends JFrame implements KeyListener {
 
 				currRelScale= iw * currImgScale;
 
-				g.setTransform( old );
+				g.setTransform( norm );
+				
+				System.out.println( "off: "+ imgOff.x +":"+ imgOff.y+ "  "+ vw+":"+vh+ "  "+ mX+":"+mY + " sc: "+ currImgScale);
 
-				g.translate( vw/2 + imgOff.x, vh/2 + imgOff.y ); // center to screen
+				g.translate( vw/2 + imgOff.x, vh/2 + imgOff.y ); // center axis to screen
+				
 
 				g.setColor( Color.yellow );
 
 				long wt = System.currentTimeMillis();
-				g.setTransform( ImgProvider.getAffineForOrientation( g.getTransform(), orientation, ( int ) Math.round( currRelScale ),
-						( int ) Math.round( ih * currImgScale )));
+				g.setTransform( ImgProvider.getAffineForOrientation( 
+										g.getTransform(), 
+										orientation, 
+										(int) Math.round( currRelScale ),
+										(int) Math.round( ih * currImgScale )));
 
 				if ( currImgScale < 1 )
 					Utils.aaOn( g );
 
-				g.drawImage( viewedImg, 0, 0, ( int ) Math.round( iw * currImgScale ), ( int ) Math.round( ih * currImgScale ), null );
+				g.drawImage( viewedImg, 0, 0,
+								(int) Math.round( iw * currImgScale ), 
+								(int) Math.round( ih * currImgScale ), null ); // scaled actual image draw
 //				System.err.println( ".."+ drawCnt++ + " in "+ ( System.currentTimeMillis() - wt )+ "ms" );
+				
+				Utils.doEllipse( g, -10, -10, 20, 20, false );
+				Utils.doEllipse( g, mX -5, mY-5, 10, 10, true );
+				
+				
+//				g.setTransform( norm );
+//				g.translate( vw/2 + imgOff.x, vh/2 + imgOff.y ); // center axis to screen
+//
+//				g.setColor( Color.blue );
+//				Utils.doEllipse( g, -10, -10, 20, 20, true );
+//				Utils.doEllipse( g, mX -5, mY-5, 10, 10, true );
 
-				if ( shift && drag ){
-					g.setTransform( old );
+				g.setTransform( norm );
+				java.awt.geom.Area insideMagnifier = new java.awt.geom.Area(new Ellipse2D.Double( -100 + mX, -100 + mY, 200, 200 ));
+
+				if ( shift 
+				&& drag
+				){
+					
+
+					
 					//Utils.doLine( g, vw/2, 0,  vw/2, vh );
 					//Utils.doLine( g, 0, vh/2, vw,  vh/2 );
 					//g.setClip( null );
 					//g.scale( 1/currImgScale,1/currImgScale );
 
-					g.setClip( new Ellipse2D.Double( -200+mX, -200+mY, 400, 400 ));
+					g.setColor( new Color( 0, 0 , 0, 50 ));
+					g.setStroke( new BasicStroke( 2 ));
+					Utils.doEllipse( g, mX - 100, mY - 100, 200, 200, false );
+					
+					g.setClip( insideMagnifier );
 
-					double magnify= 2;
+					double magnify = 4;
 
-					g.translate( vw/2 + imgOff.x+ ( vw/2-mX*magnify/2+ imgOff.x ), vh/2 + imgOff.y+ ( vh/2-mY*magnify/2+imgOff.y )); // center to screen
+					g.setTransform( norm );
+                    g.translate( 	vw/2 + imgOff.x + ( vw/2 + imgOff.x - mX  )* ( magnify - 1 ) , 
+                    				vh/2 + imgOff.y + ( vh/2 + imgOff.y - mY  )* ( magnify - 1 )); // center to screen
+                    
+//					g.translate( vw/2 + imgOff.x - ( mX - imgOff.x ) * ( magnify - 1 ), 
+//								 vh/2 + imgOff.y - ( mY - imgOff.y ) * ( magnify - 1 ) ); // center to screen
 
-					g.setTransform( ImgProvider.getAffineForOrientation( g.getTransform(), orientation, ( int ) Math.round( currRelScale*magnify ),
-							( int ) Math.round( ih * currImgScale*magnify )));
+                    g.setTransform( ImgProvider.getAffineForOrientation( 
+                    									g.getTransform(), 
+                    									orientation, 
+                    									( int ) Math.round( currRelScale*magnify ),
+                    									( int ) Math.round( ih * currImgScale*magnify )));
+                    
+//					g.setTransform( ImgProvider.getAffineForOrientation( 
+//											g.getTransform(), 
+//											orientation, 
+//											(int) Math.round( magnify ),
+//											(int) Math.round( magnify )));
 
 					if ( currImgScale < 1 )
 						Utils.aaOn( g );
 
-					g.drawImage( viewedImg, 0, 0, ( int ) Math.round( iw * currImgScale*magnify ), ( int ) Math.round( ih * currImgScale*magnify ), null );
-					//g.drawImage( viewedImg, 0, 0, ( int )vw, ( int )vh, null );
-					g.setClip( null );
-					g.setTransform( old );
-					Utils.doEllipse( g, mX-200, mY-200, 400, 400, false ); }
+                    g.drawImage( viewedImg, 0, 0, ( int ) Math.round( iw * currImgScale*magnify ), ( int ) Math.round( ih * currImgScale*magnify ), null );
+                    
+//					g.drawImage( viewedImg, 0, 0,	(int) Math.round( iw * currImgScale * magnify ), 
+//													(int) Math.round( ih * currImgScale * magnify ), null );
 
-				g.setTransform( old );
+                    //g.drawImage( viewedImg, 0, 0, (int)vw, (int)vh, null );
+
+                    
+                    g.setColor( new Color( 0, 0 , 0, 100 ) );
+                    
+					for ( String poi : Database.POIs ){
+
+						if ( poiDef != null 
+						&& poiDef.POIs.containsKey( poi ) ) {
+								
+								Point p = poiDef.POIs.get( poi );
+								
+								double riw = currRelScale; 
+								double rih = ih * currImgScale;
+								
+								double ppx = ( riw / 2 + p.x * currRelScale ) * magnify;
+								double ppy = ( rih / 2 + p.y * currRelScale ) * magnify;
+								
+								double t;
+
+								switch ( orientation ) {
+								case 1: break;
+								case 2: ppx = -ppx; break;
+								case 3: // PI rotation
+								case 4: ppy = -ppy; break;
+								case 5: break; // - PI/2 and Flip X
+								case 6: break; // -PI/2 and -width
+								case 7: break; // PI/2 and Flip
+								case 8: // PI / 2
+									t = ppy;
+									ppy = -ppx;
+									ppx = t;
+									break;
+								default:
+									break; }
+								
+
+			                    g.setColor( new Color( 255, 255, 255, 100 ) );
+								Utils.doEllipse( (Graphics2D) g, ppx - 8, ppy - 8, 16, 16, true  );
+
+			                    g.setColor( new Color( 0, 0 , 0, 100 ) );
+
+			                    Utils.doLine( (Graphics2D) g, ppx, 0, ppx, ppy );
+								Utils.doLine( (Graphics2D) g, 0, ppy, ppx, ppy );
+
+								Utils.doEllipse( (Graphics2D) g, ppx - 4, ppy - 4, 8, 8, true  );
+						}}
+					
+
+//					g.setClip( null );
+                    
+                    
+					g.setTransform( norm );
+
+//					g.setColor( new Color( 255, 255 , 0, 200 ));
+//					g.setStroke( new BasicStroke( 3 ));
+//					Utils.doEllipse( g, -10, -10, 20, 20, false );
+//					Utils.doEllipse( g, mX-5, mY-5, 10, 10, false );
+					
+
+
+//					g.setColor( new Color( 0, 0 , 0, 100 ));
+//					g.setStroke( new BasicStroke( 4 ));
+//					Utils.doEllipse( g, mX - 200, mY - 200, 400, 400, false );
+
+					}
+
+				g.setTransform( norm );
+				
+				if ( shift
+				&& drag
+				&& !isMapMode()) {
+					java.awt.geom.Area outsideMagnifier = new java.awt.geom.Area( new Rectangle2D.Double( 0, 0, getWidth(), getHeight()));
+					outsideMagnifier.subtract( insideMagnifier );
+					g.setClip( outsideMagnifier ); }
+					
 
 				if ( !drag
 				&& !shift
 				&& mX > view.getWidth() - 200 ) { 
-					try { paintNearThumbs( g, 200 ); } catch ( IOException e ) {}
+					try { paintNearThumbs( g, 200 ); } 
+					catch ( IOException e ) {}
 					
 				} else 
 					alternativeImgF = null;
 
-				if ( shift ){ // show/edit similarity POIs
+				
+				if ( shift
+				&& !drag ){ // show/edit similarity POIs
 
 					if ( mX < 50 ) 
 						showPOImenu= true;
-
-					ImgDef poiDef= Database.imgInfos.get( viewedImgF.getName().toLowerCase()); //lastAlternativeDef==null ? selectedDef : lastAlternativeDef;
 
 //					System.out.println( poiDef + ":" + alternativeDef );
 
 					Point p;
 
-					g.setColor( lastOverButton==POI_ADD_BUTTON?Color.YELLOW:Color.BLUE );
+					g.setColor( lastOverButton == POI_ADD_BUTTON ? Color.YELLOW : Color.BLUE );
 
 					p= new Point( 30, 30 );
 
-					Utils.doEllipse( g, p.x-10, p.y-10, 20, 20, true );
+					Utils.doEllipse( g, p.x - 10, p.y - 10, 20, 20, true );
 
-					if ( Math.abs( mX - p.x ) < 10 && Math.abs( mY - p.y ) < 10 ){
+					if ( Math.abs( mX - p.x ) < 10 
+					&& Math.abs( mY - p.y ) < 10 ){
+						
 						System.out.println( "POI ADD BUTTON" );
 						overButton= POI_ADD_BUTTON; }
 
@@ -1451,14 +1604,15 @@ public class Viewer extends JFrame implements KeyListener {
 
 					LinkedList<String> chapters= new LinkedList<String>();
 					
-					
 					double rotate= 0;
 					double scale= 1;
-					Point shift= new Point();
+					Point shift = new Point();
 					Point imgCenter= new Point( view.getWidth()/2,view.getHeight()/2 ).add( imgOff );
 //					System.out.println( shift + ":" + scale + ":" + rotate );
 
-					if ( matchingDef.length>0 && matchingDef[ 0 ]!=null ){
+					if ( matchingDef.length>0 
+					&& matchingDef[ 0 ]!=null ){
+						
 						rotate= ( Double ) matchingDef[ 0 ].generalRotation;
 						scale= ( Double ) matchingDef[ 0 ].generalScale;
 						shift= new Point(); // (( Point ) matchingDef[ 0 ][ 4 ]).dup().mul( currRelScale );
@@ -1467,63 +1621,91 @@ public class Viewer extends JFrame implements KeyListener {
 
 					for ( String poi : Database.POIs ){
 
-						int currPoiPos= POI_POS+ poiPos++;
+						int currPoiPos= POI_POS + poiPos++;
 
 						int column= menuCounter / menuItemsPerColumn;
 
-						if ( column>10 )
+						if ( column > 10 )
 							continue;
 
 						boolean over= lastOverButton == currPoiPos;
 
-						boolean active= poiDef!=null && poiDef.POIs.containsKey( poi ) ;
+						boolean active= poiDef != null 
+										&& poiDef.POIs.containsKey( poi ) ;
 
-						boolean hinted= lastPOIs.indexOf( currPoiPos )>=0;
+						boolean hinted= lastPOIs.indexOf( currPoiPos ) >= 0;
 
 						String[] parts= poi.split( " " ); // chapters
+
 						if ( !parts[ 0 ].equals( tree[ 0 ]))
-							chapters.add( menuCounter + "/"+ ( tree[ 0 ]=parts[ 0 ]));
+							chapters.add( menuCounter + "/" + ( tree[ 0 ] = parts[ 0 ]));
 
-						boolean inChapter= selChapter==null || parts[ 0 ].equals( selChapter );
-						String poiName= parts.length==1 || active || selChapter==null ? poi : poi.substring( parts[ 0 ].length()+1 );
-						Point matchPoi= matchingDef.length>0 && matchingDef[ 0 ]!=null ? matchingDef[ 0 ].def.POIs.get( poiName ) : null;
+						boolean inChapter= selChapter == null || parts[ 0 ].equals( selChapter );
+						
+						String poiName= parts.length == 1 || active || selChapter==null ? 
+											poi 
+											: poi.substring( parts[ 0 ].length()+1 );
+						
+						Point matchPoi= matchingDef.length > 0 && matchingDef[ 0 ] !=null ? 
+											matchingDef[ 0 ].def.POIs.get( poiName ) 
+											: null;
 
-						if ( !drag || over ){
+						if ( !drag 
+						|| over ){
 
 							double ppx, ppy, mppx=0, mppy=0;
 
 							if ( active ) {
-								p= poiDef.POIs.get( poi );
+								
+								p = poiDef.POIs.get( poi );
+								
 								if ( poiDef.oldPOI ){ // recalc to relative pois from old absolute pois
-									p.x= ( p.x - view.getWidth()/2- imgOff.x )/currRelScale;
-									p.y= ( p.y - view.getHeight()/2- imgOff.y )/currRelScale; }
-								ppx= view.getWidth()/2+ imgOff.x+ p.x*currRelScale;
-								ppy= view.getHeight()/2+ imgOff.y+ p.y*currRelScale;
+									p.x = ( p.x - view.getWidth() / 2 - imgOff.x ) / currRelScale;
+									p.y = ( p.y - view.getHeight() / 2 - imgOff.y ) / currRelScale; }
+								
+								ppx = view.getWidth() / 2 + imgOff.x + p.x * currRelScale;
+								ppy = view.getHeight() / 2 + imgOff.y + p.y * currRelScale;
 
 							} else {
+								
 								if ( alt ) // zooming so don't show the menu
 									continue;
-								p= new Point( 150+30+ colPos[ column ], ( menuCounter % menuItemsPerColumn ) * menuRowHeight + 70 );
-								ppx= p.x;
-								ppy= p.y; }
+								
+								p = new Point( 150 + 30 + colPos[ column ], ( menuCounter % menuItemsPerColumn ) * menuRowHeight + 70 );
+								ppx = p.x;
+								ppy = p.y; }
 							
 							if ( matchPoi!=null ){
-								mppx = matchPoi.x*currRelScale;//* (( Double ) matchingDef[ 2 ]);
-								mppy= matchPoi.y*currRelScale;//* (( Double ) matchingDef[ 2 ]); 
+								mppx = matchPoi.x * currRelScale; //* (( Double ) matchingDef[ 2 ]);
+								mppy= matchPoi.y * currRelScale; //* (( Double ) matchingDef[ 2 ]); 
 							}
 
 							Shape txtBack;
-							if ( !drag && ( !active && showPOImenu && inChapter || active && over )){
+							if ( !drag 
+							&& ( !active 
+									&& showPOImenu 
+									&& inChapter 
+								|| active 
+									&& over )){
+								
 								double w= g.getFontMetrics().stringWidth( poiName )+10;
+								
 								if( maxWidths[ column ] < w ){
-									maxWidths[ column ]= w;
-									for ( int i=1; i<colPos.length; i++ )
+									maxWidths[ column ] = w;
+									
+									for ( int i=1; i < colPos.length; i++ )
 										colPos[ i ]= colPos[ i-1 ]+ maxWidths[ i-1 ]+ menuRowHeight; }
+								
 								txtBack = Utils.getRoundRectangle( ppx+ ( active?15:0 ), ppy-menuBoxHeight/2+ ( active?menuBoxHeight:0 ), w, menuBoxHeight, 5 );
 								Rectangle2D rr= txtBack.getBounds2D();
-								if ( mX>rr.getX() && mX<rr.getMaxX() && mY>rr.getY() && mY<rr.getMaxY() ){
+								
+								if ( mX > rr.getX() 
+								&& mX < rr.getMaxX() 
+								&& mY > rr.getY() 
+								&& mY < rr.getMaxY() ){
 									lastOverButton= overButton= currPoiPos; 
 									over= true; }
+								
 								g.setColor( over ? overMenuBack : hinted ? hintMenuBack : normalMenuBack );
 								g.fill( txtBack ); }
 
@@ -1532,9 +1714,11 @@ public class Viewer extends JFrame implements KeyListener {
 							
 							boolean matched= matchingDef.length>0 && matchingDef[ 0 ]!=null && matchingDef[ 0 ].contains( poi );
 
-							if ( matchPoi!=null && !drag && matched ){
+							if ( matchPoi != null 
+							&& !drag 
+							&& matched ){
 								
-								AffineTransform gg= ( AffineTransform ) g.getTransform();
+								AffineTransform gg = ( AffineTransform ) g.getTransform();
 
 								g.translate( imgCenter.x, imgCenter.y );
 								
@@ -1576,17 +1760,20 @@ public class Viewer extends JFrame implements KeyListener {
 //								g.rotate( -( Double ) matchingDef[ 1 ]);
 //								g.scale( 1/(( Double ) matchingDef[ 2 ]), 1/(( Double ) matchingDef[ 2 ]) );
 
-								g.setTransform( gg );
-							}
+								g.setTransform( gg ); }
 
 
 							if ( active ){
+								
 								pointBack= Utils.getEllipse( ppx- r, ppy-r, r* 2, r* 2 );
 								Rectangle2D rr= pointBack.getBounds2D();
-								if ( mX>rr.getX() && mX<rr.getMaxX() && mY>rr.getY() && mY<rr.getMaxY()){
+								
+								if ( mX>rr.getX() 
+								&& mX<rr.getMaxX() 
+								&& mY>rr.getY() 
+								&& mY<rr.getMaxY()){
 									lastOverButton= overButton= currPoiPos;
 									over= true; }
-
 
 								if ( drag ){
 									g.setColor( dragPointDark );
@@ -1605,6 +1792,7 @@ public class Viewer extends JFrame implements KeyListener {
 									g.setColor( Color.white );
 									Utils.doEllipse( g, ppx - 1, ppy - 1, 2, 2, true );
 									//g.setXORMode( null );
+									
 								} else {
 									g.setColor( over ? overPointBack: normalPointBack );
 									g.fill( pointBack );
@@ -1612,19 +1800,33 @@ public class Viewer extends JFrame implements KeyListener {
 									g.setStroke( new BasicStroke( 2 ));
 									g.draw( pointBack ); }}
 
-							if ( !drag && ( !active && showPOImenu && inChapter || active && over ) ){
-								g.setColor( over ?  overMenu : active ? normalMenu : hinted ? hintMenu : normalMenu );
-								Utils.drawString( g, ppx+ ( active ? r+ 15:5 ), ppy+ 5+ ( active ? menuBoxHeight: 0 ), poiName ); } 
+							if ( !drag 
+							&& ( !active 
+									&& showPOImenu 
+									&& inChapter 
+								|| active 
+									&& over ) ){
+								
+									g.setColor( over ?  overMenu : active ? normalMenu : hinted ? hintMenu : normalMenu );
+									Utils.drawString( g, ppx+ ( active ? r+ 15:5 ), ppy+ 5+ ( active ? menuBoxHeight: 0 ), poiName ); } 
 
 
 							// neigbouring stats pointers
 							g.setColor( new Color( 0,0,0,50 ));
 							g.setStroke( new BasicStroke( 1 ));
-							if ( over && active && !drag ){ 
-								PointStat ps= Database.avgs.get( poi );
+							
+							if ( over 
+							&& active 
+							&& !drag ){
+								
+								PointStat ps = Database.avgs.get( poi );
+								
 								if ( ps!=null )
+									
 									for ( Entry<String, Point> d : ps.distances.entrySet())
+										
 										if ( poiDef.POIs.containsKey( d.getKey())){
+											
 											int cnt= ps.counts.get( d.getKey());
 											double l= d.getValue().length()*currRelScale/cnt;
 											//Utils.doEllipse( g, ppx- l/2, ppy- l/2, l, l, false );
@@ -1633,50 +1835,61 @@ public class Viewer extends JFrame implements KeyListener {
 							if ( inChapter )
 								menuCounter++;
 
-						} else if ( drag && over )
-							overButton= lastOverButton= currPoiPos; 
+						} else if ( drag 
+								&& over )
+							
+							overButton = lastOverButton = currPoiPos; 
 
-					}
+					} // POIs
 
-					if ( poiDef!=null ) 
+					if ( poiDef != null ) 
 						poiDef.oldPOI= false;
 
 					if ( !alt ){
+						
 						g.setFont( bold );
-						int pos=0;
+						int pos = 0;
+						
 						for ( String chapter : chapters ){
+							
 							String[] ch= chapter.split( "/" );
 
 							//int pos= Integer.parseInt( ch[ 0 ]);
-							if ( !drag && showPOImenu ){
+							if ( !drag 
+							&& showPOImenu ){
+								
 								p= new Point( 20, pos* menuRowHeight*1.5+ menuBoxHeight/4 + 70 );
 								g.setColor( selChapter==null || !selChapter.equals( ch[ 1 ]) ? menuChapterBack : overMenuBack );
-								if ( Utils.doRoundRectangle( g, p.x-5, p.y-15, 150, menuBoxHeight*1.5, 5, true ).contains( mX, mY )){
+								if ( Utils.doRoundRectangle( g, p.x - 5, p.y - 15, 150, menuBoxHeight * 1.5, 5, true ).contains( mX, mY )){
 //									System.out.println( "over chapter "+ ch[ 1 ]);
-									selChapter= ch[ 1 ];
-								}
+									selChapter= ch[ 1 ]; }
 
 								g.setColor( menuChapterFront );
 								//Utils.doRectangle( g, p.x-5, p.y-15, maxWidths[ column ], menuBoxHeight, false );
 								Utils.drawString( g, p.x+ 150/2- g.getFontMetrics().stringWidth( ch[ 1 ])/2-10, p.y+ menuBoxHeight/4, ch[ 1 ] ); }
+							
 							pos++; }
 
 						g.setFont( bold );
 						pos= showPOImenu ? 200 : 50 ;
-						LinkedList<String> hints= new LinkedList<String>();
-						for ( int i=0; i<lastPOIs.size(); i++ )
-							if ( lastPOIs.get( i )!=null ){
-								int pp= lastPOIs.get( i )-POI_POS;
-								String poi= pp<Database.POIs.size() ? Database.POIs.get( pp ) : null;
-								if ( poi!=null )
+						LinkedList<String> hints = new LinkedList<String>();
+						
+						for ( int i = 0; i < lastPOIs.size(); i++ )
+							
+							if ( lastPOIs.get( i ) != null ){
+								
+								int pp= lastPOIs.get( i ) - POI_POS;
+								String poi= pp < Database.POIs.size() ? Database.POIs.get( pp ) : null;
+								
+								if ( poi != null )
 									hints.add( poi ); }
 						
 						if ( mb3 ){//&& ( mousePressedTime+500< System.currentTimeMillis())){
 							
-							String[] hintsSorted= hints.toArray( new String[ hints.size()]);
+							String[] hintsSorted = hints.toArray( new String[ hints.size()]);
 							Arrays.sort( hintsSorted );
-							String lastHintChapter= null;
-							int hintPos= 0;
+							String lastHintChapter = null;
+							int hintPos = 0;
 							
 							for ( String hint : hintsSorted ){
 								//int pos= Integer.parseInt( ch[ 0 ]);
@@ -1704,7 +1917,7 @@ public class Viewer extends JFrame implements KeyListener {
 											colPos[ i ] = colPos[ i-1 ]+ maxWidths[ i - 1 ] + menuRowHeight; }
 
 									p = showPOImenu || hintsCenter == null ? 
-											new Point( pos+ colPos[ ( int ) Math.floor( menuCounter / menuItemsPerColumn )], ( menuCounter % menuItemsPerColumn ) * menuRowHeight + 70 )
+											new Point( pos+ colPos[ (int) Math.floor( menuCounter / menuItemsPerColumn )], ( menuCounter % menuItemsPerColumn ) * menuRowHeight + 70 )
 											: hintsCenter.dup().add( 50, ( hintPos++ - hintsSorted.length / 2 ) * 25 ) ;
 									
 									Shape sh= Utils.getRoundRectangle( p.x - 10, p.y - 15, w + 20, menuBoxHeight, 5 );
@@ -1725,7 +1938,6 @@ public class Viewer extends JFrame implements KeyListener {
 				} else
 					showPOImenu = false;
 
-
 				if ( selectedDef != null ) {
 
 					if ( selectedDef.pos != null ) {
@@ -1737,9 +1949,9 @@ public class Viewer extends JFrame implements KeyListener {
 						
 						paintButton( g, 50, vh - 20, 10, TARGET_INDICATOR ); }
 
-					if ( alternativeImgF==null 
-						&& selectedDef.similar!=null
-					|| alternativeImgF!=null 
+					if ( alternativeImgF == null 
+						&& selectedDef.similar != null
+					|| alternativeImgF != null 
 						&& selectedDef.isSimilarTo( alternativeImgF.getName().toLowerCase())) {
 						
 							g.setColor( Color.green );
@@ -1751,9 +1963,9 @@ public class Viewer extends JFrame implements KeyListener {
 
 					stateLabel.setText( mb1 + ":" + mb2 + ":" + mb3 ); }}
 
-		g.setTransform( old );
+		g.setTransform( norm );
 
-		if ( viewedImg != null ){
+		if ( viewedImg != null ){ // image name and date title
 			
 			String dateLabel = "";
 			
@@ -1770,9 +1982,8 @@ public class Viewer extends JFrame implements KeyListener {
 	
 		int i = 0;
 		g.setColor(Color.yellow);
-		for ( String s : ImgProvider.REQUESTED_IMAGES.keySet()) {
-			Utils.doEllipse( g, 5, (i++)*20+10, 5, 5, true );
-		}
+		for ( String s : ImgProvider.REQUESTED_IMAGES.keySet()) { // loading threads
+			Utils.doEllipse( g, 5, (i++)*20+10, 5, 5, true ); }
 			
 	}
 	
@@ -1810,7 +2021,7 @@ public class Viewer extends JFrame implements KeyListener {
 		int slideX = view.getWidth() - stripWidth + 5, totalHeight = 40;
 		int offY = lastThumbsHeight == 0 ? 40
 				: lastThumbsHeight < view.getHeight() ? 40
-						: ( int ) Math.round(( view.getHeight() - lastThumbsHeight - 80 ) * ( mY * 1d / view.getHeight()))
+						: (int) Math.round(( view.getHeight() - lastThumbsHeight - 80 ) * ( mY * 1d / view.getHeight()))
 						+ 40;
 
 		if ( shift ){
@@ -1847,7 +2058,7 @@ public class Viewer extends JFrame implements KeyListener {
 						continue; }
 					
 					thumbs.put( def.file, thumb );
-					int imgH = ( int ) Math.round( thumb.getHeight() * (( stripWidth - 10 ) * 1d / thumb.getWidth()));
+					int imgH = (int) Math.round( thumb.getHeight() * (( stripWidth - 10 ) * 1d / thumb.getWidth()));
 					
 					if ( offY < view.getHeight() 
 					&& offY + totalHeight + imgH > 0 )
@@ -1898,7 +2109,7 @@ public class Viewer extends JFrame implements KeyListener {
 					continue; }
 				
 				thumbs.put( def.file, thumb );
-				int imgH = ( int ) Math.round( thumb.getHeight() * (( stripWidth - 10 ) * 1d / thumb.getWidth()));
+				int imgH = (int) Math.round( thumb.getHeight() * (( stripWidth - 10 ) * 1d / thumb.getWidth()));
 				
 				if ( offY < view.getHeight() 
 				&& offY + totalHeight + imgH > 0 )

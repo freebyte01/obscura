@@ -1,87 +1,63 @@
 package obscura.parts;
 
+import java.awt.Color;
+
+import obscura.Database;
+import obscura.Utils;
+
 public class Edge{
 	
-	public double x, y;
-	private double a=Double.MIN_VALUE, l= Double.MIN_VALUE;
-	
-	private Edge u;
+	public Similarity a, b;
+	public String ia, ib;
+	public Color clr = Color.white;
+	public double w = 1;
 	
 	public Edge() {}
 	
 	public Edge( String def ) {
-		
-		if ( def!=null && def.contains( "/" )){
-			String[] defA= def.split( "/" );
-			try{
-				x= Double.parseDouble( defA[ 0 ]);
-				y= Double.parseDouble( defA[ 1 ]);
-				
-			} catch ( NumberFormatException e ){ System.err.println( "cant read point "+ def ); }}}
+		if ( def !=null )
+			read( def ); }
 	
-	public Edge( double x, double y ) { 
-		this.x= x; this.y= y; }
 	
-	public Edge set( double x, double y ) { 
-		this.x = x; 
-		this.y = y; 
-		a = l = Double.MIN_VALUE; 
-		u = null; 
+	public Edge( Similarity a, Similarity b ) { 
+		this.ia = (this.a = a).id; 
+		this.ib = (this.b = b).id; }
+	
+	
+	public Edge set( Similarity a, Similarity b ) { 
+		this.ia = (this.a = a).id; 
+		this.ib = (this.b = b).id;
 		return this; }
 	
+	
 	public String serialize() { 
-		return Math.round( x*10000 ) / 10000.00 + "/" + Math.round( y*10000 ) / 10000.00; }
+		return ia + "/" + ib; }
+
 	
-	public Edge add( double x, double y ) { 
-		this.x += x; this.y += y; return this; }
+	Similarity getA() { return a = Database.similarities.get( ia ); }
+	Similarity getB() { return b = Database.similarities.get( ib ); }
 	
-	public Edge add( Edge p ) { 
-		this.x += p.x; this.y += p.y; return this; }
-	
-	public Edge sub( double x, double y ) { 
-		this.x -= x; this.y-= y; return this; }
-	
-	public Edge sub( Edge p ) { 
-		this.x -= p.x; this.y-= p.y; return this; }
-	
-	public Edge mul( double m ) { 
-		this.x *= m; this.y*= m; return this; }
-	
-	public Edge mul( double mx, double my ) { 
-		this.x *= mx; this.y*= my; return this; }
-	
-	public double length(){ 
-		return l == Double.MIN_VALUE ? 
-					Math.sqrt( x*x + y*y )
-					: l; }
-	
-	public double angle(){
-		
-		if ( a != Double.MIN_VALUE )
-			return a;
-		
-		double ac= Math.acos( this.unit().x );
-		double as= Math.asin( this.unit().y );
-		
-		a= x < 0 ? 
-				y < 0 ? 
-					Math.PI - as 
-					: ac 
-				: y < 0 ? 
-					as : ac;
-		return a; }
-	
-	public Edge unit(){ return u!=null? u : ( u = this.dup().mul( 1/this.length())); }
-	public Edge dup(){ return new Edge( x, y ); }
 	
 	public String toString() { 
-		return "[ "+ Math.round( x*10000 )/10000.00+ ":"+ Math.round( y*10000 )/10000.00+ " ]"; }
+		return "[ "+ ia + ":"+ ib+ " ]"; }
 	
-	public static Edge avg( Edge[] points ){
-		Edge res= new Edge();
-		for ( Edge p : points )
-			res.add( p.x, p.y );
-		return res.mul( points.length == 0 ? 
-							1
-							: 1d / points.length ); }
+
+	public String store(){
+		StringBuilder def= new StringBuilder( "edge;" );
+		if ( a != null ) def.append( "a:"+ ia + ";" );
+		if ( b != null ) def.append( "b:"+ ib + ";" );
+		if ( w != 1 ) def.append( "w:"+ w + ";" );
+		if ( clr != Color.white ) def.append( "c:"+ Utils.encodeColor( clr ) + ";" );
+		def.append( "\n" );
+		return def.toString(); }
+
+	
+	public void read( String definition ){
+		if ( !definition.startsWith( "edge;" ))
+			return;
+		ia= Database.getValue( definition, "a", "" );
+		ib= Database.getValue( definition, "b", "" ); 
+		clr= Utils.decodeColor( Database.getValue( definition, "c", null ), Color.white ); 
+		w= Double.parseDouble( (String) Database.getValue( definition, "w", "1" )); }
+	
 }

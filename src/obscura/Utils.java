@@ -48,7 +48,9 @@ public class Utils {
 			return def; }
 	}
 	
-	public static final void aaOn( Graphics2D g ) { aaOn( g, true ); }
+	public static final void aaOn( Graphics2D g ) { 
+		aaOn( g, true ); }
+	
 	public static final void aaOn( Graphics2D g, boolean full ) {
 		if ( full )
 			g.setRenderingHint(
@@ -84,7 +86,7 @@ public class Utils {
 
 		FontRenderContext frc = new FontRenderContext( null,false,false );
 		Font font = new Font( "Dialog",Font.BOLD,20 );
-		FontMetrics fontMetrics = g.getFontMetrics( font );
+//		FontMetrics fontMetrics = g.getFontMetrics( font );
 		TextLayout tl = new TextLayout( str, font, frc );
 		AffineTransform textAt = new AffineTransform();
 		//textAt.translate( 0, ( float )tl.getBounds().getHeight());

@@ -7,6 +7,7 @@ import obscura.Obscura;
 import obscura.Utils;
 
 public class Place{
+	
 	Area assoc;
 	double relX, relY;
 	Color clr= Color.yellow;

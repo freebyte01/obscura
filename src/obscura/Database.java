@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -15,6 +16,7 @@ import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 
 import obscura.parts.Area;
+import obscura.parts.Edge;
 import obscura.parts.ImgDef;
 import obscura.parts.Place;
 import obscura.parts.Point;
@@ -28,7 +30,9 @@ public class Database {
 	public static HashMap<String, ImgDef> imgInfos= new HashMap<String, ImgDef>();
 	
 	public static HashMap<String, Area> areas= new HashMap<String, Area>();
-	
+
+	public static ArrayList<Edge> edges= new ArrayList<Edge>();
+
 	/**
 	 * groups more images and POIs together
 	 * if image contains more of given POIs
@@ -214,6 +218,7 @@ public class Database {
 		    	else if ( line.startsWith( "area;" )) new Area().read( line );
 		    	else if ( line.startsWith( "place;" )) new Place( line );
 		    	else if ( line.startsWith( "poly;" )) new Poly( line );
+		    	else if ( line.startsWith( "edge;" )) new Edge( line );
 		    	else if ( line.startsWith( "map;" )) {
 		    		String arId= getValue( line, "ass", "0" );
 		    		Area a= areas.get( arId );
@@ -230,8 +235,7 @@ public class Database {
 		    imgInfos.values().toArray( sortedImgInfos );
 		    Arrays.sort( sortedImgInfos, new Comparator<ImgDef>() {@Override
 		    	public int compare( ImgDef o1, ImgDef o2 ) {
-		    		return o1.file == null ? o2.file == null ? 0 : -1 : o2.file==null ? 1 : o1.file.lastModified() >= o2.file.lastModified() ? 1 : -1;
-		    }
+		    		return o1.file == null ? o2.file == null ? 0 : -1 : o2.file==null ? 1 : o1.file.lastModified() >= o2.file.lastModified() ? 1 : -1; }
 			} );
 		    imgInfos.clear();
 		    for ( ImgDef imgInfo : sortedImgInfos )
@@ -263,6 +267,8 @@ public class Database {
 			sb.append( a.store() );
 		for ( Similarity s : similarities.values() )
 			sb.append( s.store() );
+		for ( Edge e : edges )
+			sb.append( e.store() );
 		BufferedWriter bw= null;
 		try {
 			bw= new BufferedWriter( new FileWriter( file ));
