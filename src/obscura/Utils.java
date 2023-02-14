@@ -3,7 +3,6 @@ package obscura;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -52,6 +51,8 @@ public class Utils {
 		aaOn( g, true ); }
 	
 	public static final void aaOn( Graphics2D g, boolean full ) {
+		aaOff(g);
+		if ( true) return;
 		if ( full )
 			g.setRenderingHint(
 				RenderingHints.KEY_ANTIALIASING,
@@ -119,4 +120,13 @@ public class Utils {
 		if ( fill ) g.fill( sh );
 		else g.draw( sh );
 		return sh; }
+	
+	public static int indexOf( Object[] arr, Object item ) {
+		int pos = 0;
+		for ( Object o : arr )
+			if ( o.equals( item ))
+				return pos;
+			else
+				pos++;
+		return -1; }
 }

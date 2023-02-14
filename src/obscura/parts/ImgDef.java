@@ -39,6 +39,7 @@ public class ImgDef{
 	public Point pos, targ, vect;
 	
 	public HashMap<String, Point> POIs = new HashMap<String, Point>();
+	public HashMap<Poi, Point> POIss = new HashMap<Poi, Point>();
 	
 	String assObs, assTarg;
 	public boolean oldPOI= true;
@@ -101,6 +102,7 @@ public class ImgDef{
 		if ( pos!=null ) def.append( "x:"+ Utils.shorter( pos.x )+ ";y:"+ Utils.shorter( pos.y )+ ";" );
 		if ( targ!=null ) def.append( "tx:"+ Utils.shorter( targ.x )+ ";ty:"+ Utils.shorter( targ.y )+ ";" );
 		ArrayList<String> toRemove= new ArrayList<String>();
+		ArrayList<Poi> toRemovePoi= new ArrayList<Poi>();
 		if ( POIs.size()>0 ){
 			StringBuilder sb= new StringBuilder( "pois:" );
 			for ( Entry<String, Point> e : POIs.entrySet())
@@ -112,6 +114,19 @@ public class ImgDef{
 				}
 			for ( String rem : toRemove )
 				POIs.remove( rem );
+			def.append( sb.toString().substring( 0, sb.length()-1 )+";" );
+
+			sb= new StringBuilder( "poiss:" ); // new style of pois id serialization
+			for ( Entry<Poi, Point> e : POIss.entrySet())
+				if ( e.getValue()!=null )
+					sb.append( e.getKey().id ).append( "@" ).append( e.getValue().serialize()+"," );
+				else {
+					System.err.println( e.getKey()+" is null!!!" );
+					toRemovePoi.add( e.getKey());
+				}
+			for ( Poi rem : toRemovePoi )
+				POIss.remove( rem );
+
 			def.append( sb.toString().substring( 0, sb.length()-1 )+";" );
 			if ( !oldPOI ) def.append( "oldpoi:false;" ); }
 		return def.toString()+"\n"; }
@@ -138,6 +153,7 @@ public class ImgDef{
 		if ( x != 0 || y != 0 ) pos = new Point( x, y );
 		x = Double.parseDouble( Database.getValue( definition, "tx", "0" ));
 		y = Double.parseDouble( Database.getValue( definition, "ty", "0" ));
+		
 		String pois= Database.getValue( definition, "pois", "" );
 		if ( pois.length() > 0 ){
 			for ( String poi : pois.split( "," ))
@@ -145,6 +161,15 @@ public class ImgDef{
 					String[] def = poi.split( "@" );
 					POIs.put( def[ 0 ], new Point( def[ 1 ])); 
 					Database.addPOI( def[ 0 ]); }}
+		
+		String poiss= Database.getValue( definition, "poiss", "" );
+		if ( poiss.length() > 0 ){
+			for ( String poi : poiss.split( "," ))
+				if ( poi.contains( "@" )){
+					String[] def = poi.split( "@" );
+					Poi ppoi = Database.POIss.get( def[ 0 ]);
+					if ( ppoi != null ) {
+						POIss.put( ppoi, new Point( def[ 1 ])); }}}
 		
 		oldPOI= Boolean.parseBoolean( Database.getValue( definition, "oldpoi", "true" ));
 		

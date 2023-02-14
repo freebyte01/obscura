@@ -1,0 +1,69 @@
+point groups
+
+			edge - very frequent appearing of the two picture points
+			
+			formation  - very frequent appearing of some edges together
+
+
+	localeness - spatial variability in relations between picture points across shots
+
+			
+			objects - can be observed from any angle (group rotation), lot of change
+			
+			
+			background - nearly no change in relation to each other in the background group - just shift and scale
+			
+			
+			lokalna grupa sa zvycajne hybe nezavisle na inych lokalnych grupach ( rozlicnej skaly ) 
+			
+			
+			dobre by bolo oddelit ktore body spolu nesuvisia lokalne
+			
+				- tj pretrhne sa spojitost ak bod ktory predtym v teorii patril do nejakej grupy sa voci nej pohybuje 'nezavisle',
+				- tj ze grupa na dvoch zaberoch je v podstate v rovnakej kompozicii ale dany bod markantne zmenil svoju polohu voci nej
+				
+			
+			
+			bod - je sucastou objektu
+			
+			skupina bodov vo vzajomnom lokalnom vztahu - objekt - da sa obist, vstupit dnu 
+			
+			objekt moze obsahovat ine objekty
+			
+			
+	najjednoduchsie porovnanie 
+	
+	- na kazdej fotke pozriet ktore body su na nej sucasne a zaznamenat 
+			
+			indexacia - fotku ku kazdemu z bodov aby sa dalo rychlo vyhladavat podla bodov
+			
+			porovnanie - kazda fotka vytvara postupnost bodov na sirku
+				- podobnost - tie ktore maju co najviac spolocnych bodov a v rovnakom poradi maju vyssie skore podobnosti
+				- podskupina (zoom) inej fotky, obsahuje len cast bodov z inej ale zato velmi podobnu
+			
+			
+			
+			
+	segmentacia
+			
+			teoria - ku kazdemu bodu zaznamenat hrany k ostatnym bodom z fotky
+			
+			hrana - je spojnica dvoch bodov fotky
+			
+
+			okraj - hrany ktorych body sa ukazali viditelne iba z jednej strany, s urcitou toleranciou - napr pre vertikalne hrany
+			
+			snapping - hrany bodov ktore su viditelne z oboch stran - tj. vyznamne zamenena horizontalna pozicia
+
+			roh - spolocny bod dvoch a viacerych hran
+			
+			objekt - sustava okrajov spojenych rohmi
+
+			
+			segmentacia - tieto hrany sa budu vyhodnocovat podla toho ako velkostne a polohovo variuju vo vztahu k ostatnym hranam 
+			
+			
+			
+			
+			
+	

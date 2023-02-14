@@ -15,6 +15,9 @@ import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 
+import ij.ImageJ;
+import ij.ImagePlus;
+import ij.io.Opener;
 import obscura.Database;
 import obscura.Obscura;
 import obscura.Utils;
@@ -49,6 +52,9 @@ public class ImgProvider {
 			throw new IllegalStateException( "provider not ready" );
 		return provideImage( imgF, genThumb, requestLevel, minLevel ); } 
 	
+	
+	public static boolean useImageJ = false;
+	
 	public static synchronized BufferedImage provideImage( File imgF, boolean genThumb, int requestLevel, int minLevel ) throws IOException{
 
 		try { 
@@ -76,12 +82,12 @@ public class ImgProvider {
 			BufferedImage orig = null, thumb = null, mini = null;
 			
 			if ( requestLevel == 1 
-			&& thumbFile.exists())
-				 return thumb= ImageIO.read( thumbFile );
+			&& thumbFile.exists()) 
+				 return thumb= useImageJ ? Opener.openUsingImageIO( thumbFile.getPath()).getBufferedImage() : ImageIO.read( thumbFile ); 
 			
 			if ( requestLevel == 2
-			&& miniFile.exists())
-				 return mini = ImageIO.read( miniFile );
+			&& miniFile.exists()) 
+				 return mini= useImageJ ? Opener.openUsingImageIO( miniFile.getPath() ).getBufferedImage() : ImageIO.read( miniFile ); 
 	
 			// read original
 			if ( requestLevel == 0 
@@ -98,7 +104,7 @@ public class ImgProvider {
 //			    options.inInputShareable = true;
 //			    options.inJustDecodeBounds = false;
 //			    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-				orig =  providerImgOrig = ( providerImgOrigF == imgF ? providerImgOrig : ImageIO.read( providerImgOrigF = imgF ));
+				orig =  providerImgOrig = ( providerImgOrigF == imgF ? providerImgOrig :  useImageJ ? Opener.openUsingImageIO(( providerImgOrigF = imgF ).getPath()).getBufferedImage() : ImageIO.read( providerImgOrigF = imgF ));
 				orig = convertTo( orig, BufferedImage.TYPE_INT_RGB ); 
 				
 				System.err.println( "red orig " 
@@ -145,7 +151,7 @@ public class ImgProvider {
 			&& !miniFile.exists()){
 			
 				if ( thumb == null )
-					thumb= ImageIO.read( thumbFile );
+					 return thumb= useImageJ ? Opener.openUsingImageIO( thumbFile.getPath() ).getBufferedImage() : ImageIO.read( thumbFile );
 				
 				int w= ( int ) Math.round( thumb.getWidth()/4 );
 				int h= ( int ) Math.round( thumb.getHeight()/4 );

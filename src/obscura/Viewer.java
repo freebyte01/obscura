@@ -69,6 +69,7 @@ import obscura.parts.Area;
 import obscura.parts.ImgDef;
 import obscura.parts.ImgDef.Comparison;
 import obscura.parts.ImgProvider;
+import obscura.parts.Poi;
 import obscura.parts.Point;
 import obscura.parts.PointStat;
 import obscura.parts.Poly;
@@ -253,6 +254,11 @@ public class Viewer extends JFrame implements KeyListener {
 		view.addMouseWheelListener( new MouseWheelListener() {
 			
 			public void mouseWheelMoved( MouseWheelEvent e ) {
+				
+				ctrl = e.isControlDown();
+				shift = e.isShiftDown();
+				alt = e.isAltDown();
+				
 				if ( isMapMode() 
 					|| alt 
 					|| overButton >= POI_POS ) { // zooming
@@ -264,7 +270,7 @@ public class Viewer extends JFrame implements KeyListener {
 						sx = ( mX - view.getWidth() / 2 ) / zoom - rX;
 						sy = ( mY - view.getHeight() / 2 ) / zoom - rY;
 					
-					} else { 
+					} else if ( alt || mb3 ) { 
 						double zoomRatio= imgZoom;
 						imgZoom -= e.getWheelRotation() * imgZoom / 10d;
 						onMouseMove( e );
@@ -275,6 +281,7 @@ public class Viewer extends JFrame implements KeyListener {
 					repaint();
 					
 				} else {
+					
 					if ( e.getX() > view.getWidth() - 200 ) { // in the thumbnail area
 						// nearestSel+= e.getWheelRotation();
 						// //nearestSel= nearestSel<0?0:nearestSel;
@@ -290,10 +297,11 @@ public class Viewer extends JFrame implements KeyListener {
 					} else {
 						
 						alternativeImgF = null;
-						ImgDef viewedDef = Database.imgInfos.get( viewedImgF.getName().toLowerCase());
+						
+						ImgDef viewedDef = viewedImgF == null ? null : Database.imgInfos.get( viewedImgF.getName().toLowerCase());
 						if ( shift 
-						&& viewedDef!=null 
-						&& viewedDef.similar!=null ){
+						&& viewedDef != null 
+						&& viewedDef.similar != null ){
 							
 							int newIndex = ( viewedDef.similar.register.indexOf( viewedDef.file.getName().toLowerCase()) + e.getWheelRotation()) % viewedDef.similar.register.size();
 							newIndex += newIndex<0? viewedDef.similar.register.size() : 0;
@@ -308,7 +316,7 @@ public class Viewer extends JFrame implements KeyListener {
 													: o1.getName().compareTo( o2.getName());
 								}
 							} );
-							if ( listPos>0 )
+							if ( listPos > 0 )
 								selectInList( listPos );
 							
 						} else {
@@ -346,7 +354,7 @@ public class Viewer extends JFrame implements KeyListener {
 						
 						if ( selButton >= POI_POS ){
 							
-							int poiPos= selButton- POI_POS;
+							int poiPos= selButton - POI_POS;
 							
 							if ( !Database.imgInfos.containsKey( viewedImgF.getName().toLowerCase())){ // add definition for image if missing
 								selectedDef= new ImgDef( viewedImgF );
@@ -355,13 +363,16 @@ public class Viewer extends JFrame implements KeyListener {
 							if ( selectedDef!=null 
 							&& poiPos < Database.POIs.size()){
 								
-								String poi = Database.POIs.get( poiPos );
+								String poiNm = Database.POIS_IX[ poiPos ];
+								Poi poi = Database.POIs.get(poiNm);
 								
-								if ( !selectedDef.POIs.containsKey( poi ))
-									selectedDef.POIs.put( poi, new Point(( mX - view.getWidth() / 2-imgOff.x ) / currRelScale, ( mY - view.getHeight() / 2 - imgOff.y ) / currRelScale ));
+								if ( !selectedDef.POIss.containsKey( poi )) {
+									selectedDef.POIs.put( poiNm, new Point(( mX - view.getWidth() / 2-imgOff.x ) / currRelScale, ( mY - view.getHeight() / 2 - imgOff.y ) / currRelScale ));
+									selectedDef.POIss.put( poi , new Point(( mX - view.getWidth() / 2-imgOff.x ) / currRelScale, ( mY - view.getHeight() / 2 - imgOff.y ) / currRelScale ));
 								
-								else
-									selectedDef.POIs.get( poi ).add(( mX - mXo ) / currRelScale, ( mY - mYo ) / currRelScale ); }}
+								} else {
+									selectedDef.POIs.get( poiNm ).add(( mX - mXo ) / currRelScale, ( mY - mYo ) / currRelScale ); 
+									selectedDef.POIss.get( poi ).add(( mX - mXo ) / currRelScale, ( mY - mYo ) / currRelScale );  }}}
 
 					} else 
 						imgOff.add( mX - mXo, mY - mYo );
@@ -435,7 +446,7 @@ public class Viewer extends JFrame implements KeyListener {
 		new Thread() { // lazy img reader
 			public void run() {
 				while ( true ) {
-					try { sleep( 10 ); } catch ( InterruptedException e ) {}
+					try { sleep( 2000 ); } catch ( InterruptedException e ) {}
 					/*					stateLabel.setText(
 							" viewedImgF != null : "+( viewedImgF != null )+
 							"    viewedOrigF != viewedImgF : "+ ( viewedOrigF != viewedImgF )+
@@ -509,6 +520,9 @@ public class Viewer extends JFrame implements KeyListener {
 				mb1 |= e.getButton() == MouseEvent.BUTTON1;
 				mb2 |= e.getButton() == MouseEvent.BUTTON2;
 				mb3 |= e.getButton() == MouseEvent.BUTTON3;
+				
+				if ( mb2 ) 
+					ImgProvider.useImageJ = !ImgProvider.useImageJ;
 
 				selRangeP1 = selRangeP2 = null;
 
@@ -517,7 +531,8 @@ public class Viewer extends JFrame implements KeyListener {
 					if ( selectedArea != null )
 						selectedArea.activePoly = selectedArea.getPolyFor( pickedPoint );
 					
-				} else if ( shift && e.getButton()==MouseEvent.BUTTON3 )
+				} else if ( shift 
+						&& e.getButton() == MouseEvent.BUTTON3 )
 					hintsCenter= new Point( mX, mY );
 					
 				selMap= overMap; 
@@ -539,7 +554,7 @@ public class Viewer extends JFrame implements KeyListener {
 			public void mouseExited( MouseEvent e ) {
 				mb1 = false;
 				mb2 = false;
-				mb3 = false;
+				ImgProvider.useImageJ = mb3 =  false;
 //				System.out.println( "mouse exited at x: " + e.getX() + " vw: " + view.getWidth());
 				selMap= null; selButton=-1;
 				onMouseMove( e );
@@ -549,10 +564,15 @@ public class Viewer extends JFrame implements KeyListener {
 			public void mouseEntered( MouseEvent e ) {
 				mb1 |= e.getButton() == MouseEvent.BUTTON1;
 				mb2 |= e.getButton() == MouseEvent.BUTTON2;
-				mb3 |= e.getButton() == MouseEvent.BUTTON3; }
+				mb3 |= e.getButton() == MouseEvent.BUTTON3; 
+			
+				ctrl = e.isControlDown();
+				shift = e.isShiftDown();
+				alt = e.isAltDown(); }
 
 			
 			public void mouseClicked( MouseEvent e ) {
+				
 //				System.out.println( "clicked " + e.getClickCount());
 				if ( !mapEditMode ) {
 					if ( ctrl ) {
@@ -605,15 +625,17 @@ public class Viewer extends JFrame implements KeyListener {
 						case OBSERVER_INDICATOR: sx= selectedDef.pos == null ? sx : selectedDef.pos.x; sy= selectedDef.pos == null ? sx : selectedDef.pos.y; break;
 						case TARGET_INDICATOR: sx= selectedDef.targ == null ? sx : selectedDef.targ.x; sy= selectedDef.targ == null ? sy : selectedDef.targ.y; break;
 						case POI_ADD_BUTTON: 
-							String poi= JOptionPane.showInputDialog( "new POI name" );
-							if ( poi!=null ) 
-								if ( poi.length()<3 )
+							String poiNm = JOptionPane.showInputDialog( "new POI name" );
+							if ( poiNm != null ) 
+								if ( poiNm.length()<3 )
 									JOptionPane.showMessageDialog( view, "wrong name, should be longer min 3 chars" );
 								else {
-									if ( selectedDef!=null )
-										if ( selectedDef.similar!=null && selectedDef.similar.POIs.indexOf( poi )<0 )
-											selectedDef.similar.POIs.add( poi );
-									Database.addPOI( poi ); }
+									if ( selectedDef!=null ) 
+										if ( selectedDef.similar != null 
+										&& selectedDef.similar.POIs.indexOf( poiNm ) < 0 )
+											selectedDef.similar.POIs.add( poiNm );
+									
+									Database.addPOI( poiNm ); }
 							break;
 							
 						default:
@@ -625,38 +647,28 @@ public class Viewer extends JFrame implements KeyListener {
 									
 									if ( poiPos < Database.POIs.size()){
 										
-										String oldName = Database.POIs.get( poiPos );
+										String oldName = Database.POIS_IX[ poiPos ];
 										
-										if ( e.getButton() == MouseEvent.BUTTON3 ){
+										if ( e.getButton() == MouseEvent.BUTTON3 ){ // simple removal from current image
 											if ( JOptionPane.showConfirmDialog( view, "do you want to delete POI "+ oldName + " from definition?" ) == JOptionPane.OK_OPTION ){
-												selectedDef.POIs.remove( oldName ); }
+												
+												selectedDef.POIs.remove( oldName );
+												selectedDef.POIss.remove( Database.POIs.get( oldName )); }
 											
 										} else { 
 											String newName= JOptionPane.showInputDialog( "new POI name", oldName );
 											if ( newName!=null 
 											&& newName.trim().length() > 3 ){
 												
-												if ( Database.POIs.indexOf( newName ) >= 0 )
+												Poi poi = Database.POIs.get( newName );
+												
+												if ( poi != null )
 													
 													if ( JOptionPane.showConfirmDialog( view, "Do you really want to rename "+ oldName+ " POI to "+ newName + " which already exist?" ) != JOptionPane.OK_OPTION )
 														return;
 												
-												Database.POIs.remove( oldName );
-												
-												for ( ImgDef def : Database.imgInfos.values()){
-													Point poiP = def.POIs.remove( oldName );
-													if ( poiP != null )
-														def.POIs.put( newName, poiP ); }
-												
-												for ( Similarity sim : Database.similarities.values())
-													if ( sim.POIs.contains( oldName )){
-														if ( !sim.POIs.contains( newName ))
-															sim.POIs.add( newName );
-														sim.POIs.remove( oldName ); }
-												
-												Database.POIs.remove( oldName );
-												Database.addPOI( newName );
-												Obscura.data.writeDatabase(); }}}}
+													poi.rename(newName); }}}}
+								
 								
 							} else if ( alternativeImgF != null ) {
 								
@@ -1112,6 +1124,14 @@ public class Viewer extends JFrame implements KeyListener {
 
 		AffineTransform norm = g.getTransform();
 
+//		  g.setRenderingHint(
+//			java.awt.RenderingHints.KEY_ANTIALIASING,
+//		    java.awt.RenderingHints.VALUE_ANTIALIAS_OFF );
+//		
+//		  g.setRenderingHint(
+//		    java.awt.RenderingHints.KEY_INTERPOLATION,
+//		    java.awt.RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+		
 		if ( isMapMode()) {
 
 			g.translate( vw / 2, vh / 2 );
@@ -1455,12 +1475,11 @@ public class Viewer extends JFrame implements KeyListener {
                     
                     g.setColor( new Color( 0, 0 , 0, 100 ) );
                     
-					for ( String poi : Database.POIs ){
-
-						if ( poiDef != null 
-						&& poiDef.POIs.containsKey( poi ) ) {
+                    if ( poiDef != null )
+                    	
+                    	for ( Point p : poiDef.POIss.values() ){
 								
-								Point p = poiDef.POIs.get( poi );
+//								= poiDef.POIs.get( poi );
 								
 								double riw = currRelScale; 
 								double rih = ih * currImgScale;
@@ -1496,7 +1515,7 @@ public class Viewer extends JFrame implements KeyListener {
 								Utils.doLine( (Graphics2D) g, 0, ppy, ppx, ppy );
 
 								Utils.doEllipse( (Graphics2D) g, ppx - 4, ppy - 4, 8, 8, true  );
-						}}
+						}
 					
 
 //					g.setClip( null );
@@ -1619,7 +1638,12 @@ public class Viewer extends JFrame implements KeyListener {
 //						System.out.println( shift + ":" + scale + ":" + rotate ); 
 						}
 
-					for ( String poi : Database.POIs ){
+					for ( String poiName : Database.POIS_IX ){
+						
+						Poi poi = Database.POIs.get( poiName );
+						
+						if ( poi == null )
+							continue;
 
 						int currPoiPos= POI_POS + poiPos++;
 
@@ -1631,20 +1655,20 @@ public class Viewer extends JFrame implements KeyListener {
 						boolean over= lastOverButton == currPoiPos;
 
 						boolean active= poiDef != null 
-										&& poiDef.POIs.containsKey( poi ) ;
+										&& poiDef.POIss.containsKey( poi ) ;
 
 						boolean hinted= lastPOIs.indexOf( currPoiPos ) >= 0;
 
-						String[] parts= poi.split( " " ); // chapters
+						String[] parts= poiName.split( " " ); // chapters
 
 						if ( !parts[ 0 ].equals( tree[ 0 ]))
 							chapters.add( menuCounter + "/" + ( tree[ 0 ] = parts[ 0 ]));
 
 						boolean inChapter= selChapter == null || parts[ 0 ].equals( selChapter );
 						
-						String poiName= parts.length == 1 || active || selChapter==null ? 
-											poi 
-											: poi.substring( parts[ 0 ].length()+1 );
+						poiName= parts.length == 1 || active || selChapter==null ? 
+											poiName
+											: poiName.substring( parts[ 0 ].length()+1 );
 						
 						Point matchPoi= matchingDef.length > 0 && matchingDef[ 0 ] !=null ? 
 											matchingDef[ 0 ].def.POIs.get( poiName ) 
@@ -1657,7 +1681,7 @@ public class Viewer extends JFrame implements KeyListener {
 
 							if ( active ) {
 								
-								p = poiDef.POIs.get( poi );
+								p = poiDef.POIss.get( poi );
 								
 								if ( poiDef.oldPOI ){ // recalc to relative pois from old absolute pois
 									p.x = ( p.x - view.getWidth() / 2 - imgOff.x ) / currRelScale;
@@ -1712,7 +1736,7 @@ public class Viewer extends JFrame implements KeyListener {
 							Shape pointBack=null;
 							int r= over ? 6 : 3;
 							
-							boolean matched= matchingDef.length>0 && matchingDef[ 0 ]!=null && matchingDef[ 0 ].contains( poi );
+							boolean matched= matchingDef.length>0 && matchingDef[ 0 ]!=null && matchingDef[ 0 ].contains( poiName );
 
 							if ( matchPoi != null 
 							&& !drag 
@@ -1879,7 +1903,7 @@ public class Viewer extends JFrame implements KeyListener {
 							if ( lastPOIs.get( i ) != null ){
 								
 								int pp= lastPOIs.get( i ) - POI_POS;
-								String poi= pp < Database.POIs.size() ? Database.POIs.get( pp ) : null;
+								String poi= pp < Database.POIS_IX.length ? Database.POIS_IX[ pp ] : null;
 								
 								if ( poi != null )
 									hints.add( poi ); }
@@ -1896,7 +1920,7 @@ public class Viewer extends JFrame implements KeyListener {
 								
 								if ( !drag ){
 									
-									int pp= Database.POIs.indexOf( hint );
+									int pp= Utils.indexOf( Database.POIS_IX,  hint );
 									String[] pa= hint.split( " " );
 									
 									if ( showPOImenu && pa[ 0 ].equals( selChapter ))
@@ -1909,7 +1933,7 @@ public class Viewer extends JFrame implements KeyListener {
 									boolean active = poiDef!=null && poiDef.POIs.containsKey( hint ) ;
 									int column = menuCounter++ / menuItemsPerColumn;
 									
-									double w = g.getFontMetrics().stringWidth( lastPOIs.indexOf( Database.POIs.indexOf( hint ) + POI_POS ) + " " + hint ) + 10;
+									double w = g.getFontMetrics().stringWidth( lastPOIs.indexOf( Utils.indexOf( Database.POIS_IX,  hint ) + POI_POS ) + " " + hint ) + 10;
 									
 									if( maxWidths[ column ] < w ){
 										maxWidths[ column ] = w;
@@ -1933,7 +1957,7 @@ public class Viewer extends JFrame implements KeyListener {
 															: hintMenuBack );
 									g.fill( sh );
 									g.setColor( active? disabledMenu : lastOverButton == pp || overButton == pp ? overMenu : hintMenu );
-									Utils.drawString( g, p.x, p.y, lastPOIs.indexOf( Database.POIs.indexOf( hint ) + POI_POS ) + " " + hint ); }}}}
+									Utils.drawString( g, p.x, p.y, lastPOIs.indexOf( Utils.indexOf( Database.POIS_IX,  hint ) + POI_POS ) + " " + hint ); }}}}
 					
 				} else
 					showPOImenu = false;
@@ -1977,7 +2001,7 @@ public class Viewer extends JFrame implements KeyListener {
 					dateLabel= sdfl.format( new Date( alternativeImgF.lastModified()));
 			
 			int w= g.getFontMetrics().stringWidth( dateLabel );
-			Utils.drawOutlinedString( g, dateLabel, getWidth() / 2 - w / 2 , 30 ); }
+			Utils.drawOutlinedString( g, dateLabel + " " + 	ImgProvider.useImageJ , getWidth() / 2 - w / 2 , 30 ); }
 		
 	
 		int i = 0;

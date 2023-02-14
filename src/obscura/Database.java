@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
@@ -19,6 +19,7 @@ import obscura.parts.Area;
 import obscura.parts.Edge;
 import obscura.parts.ImgDef;
 import obscura.parts.Place;
+import obscura.parts.Poi;
 import obscura.parts.Point;
 import obscura.parts.PointStat;
 import obscura.parts.Poly;
@@ -40,20 +41,29 @@ public class Database {
 	 */
 	public static HashMap<String, Similarity> similarities= new HashMap<String, Similarity>();
 	
-	public static LinkedList<String> POIs= new LinkedList<String>();
+	public static LinkedHashMap<String,Poi> POIs= new LinkedHashMap<>();
+	public static String[] POIS_IX= new String[0];
+	public static HashMap<String, Poi> POIss= new LinkedHashMap<String, Poi>(); 
 	
 	
-	public static void addPOI( String poi ){
-		if ( !POIs.contains( poi ))
-			POIs.add( poi );
-		sortPOIs(); }
+	public static Poi addPOI( String nm ){
+		if ( !POIs.containsKey( nm )) {
+			int i = 1;
+			while ( POIss.keySet().contains(i+""))
+				i++;
+			Poi poi = new Poi( nm,  i+"" );
+			POIs.put( nm, poi);
+			POIss.put( poi.id, poi);
+			sortPOIs();
+			return poi;}
+		
+//		System.err.println("the name for the POI already esists!");
+		return null; }
 	
 	
 	public static void sortPOIs(){
-		String[] pois= POIs.toArray( new String[ POIs.size()]);
-		Arrays.sort( pois );
-		POIs.clear();
-		POIs.addAll( Arrays.asList( pois )); }
+		POIS_IX= POIs.keySet().toArray( new String[ POIs.size()]);
+		Arrays.sort( POIS_IX ); }
 	
 	
 	public static boolean isSimilar( String defKey1, String defKey2 ){
@@ -214,6 +224,7 @@ public class Database {
 		    String line;
 		    while (( line = br.readLine()) != null ){ 
 		    	if ( line.startsWith( "img;" )) new ImgDef( line );
+		    	else if ( line.startsWith( "poi;" )) new Poi().read( line );
 		    	else if ( line.startsWith( "simil;" )) new Similarity().read( line );
 		    	else if ( line.startsWith( "area;" )) new Area().read( line );
 		    	else if ( line.startsWith( "place;" )) new Place( line );
@@ -231,6 +242,7 @@ public class Database {
 		    		m.rot= Double.parseDouble( getValue( line, "rot", "0" ));
 		    		m.scale= Double.parseDouble( getValue( line, "sc", "1" ));
 		    		a.maps.put( lev, m ); }}
+		    sortPOIs();
 		    ImgDef[] sortedImgInfos= new ImgDef[ imgInfos.size()];
 		    imgInfos.values().toArray( sortedImgInfos );
 		    Arrays.sort( sortedImgInfos, new Comparator<ImgDef>() {@Override
@@ -260,6 +272,8 @@ public class Database {
 		}
 		dataFile= path;
 		StringBuilder sb= new StringBuilder();
+		for ( Poi poi : POIs.values() )
+			sb.append( poi.store() );
 		for ( ImgDef id : imgInfos.values() )
 			if ( id.file!=null )
 				sb.append( id.store() );
